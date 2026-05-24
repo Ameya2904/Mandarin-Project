@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -6,16 +6,30 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import {
+  AudioModule,
+  useAudioRecorder,
+  RecordingPresets,
+  setAudioModeAsync,
+} from 'expo-audio';
 import { colors, spacing, radius, fontSize, getToneColor } from '@/src/theme';
 import { api, Flashcard, Vocabulary } from '@/src/api/client';
+import HandwritingCanvas, { HandwritingCanvasHandle } from '@/src/components/HandwritingCanvas';
+
+type Mode = 'reading' | 'writing' | 'speaking';
 
 type Card = {
   vocabulary: Vocabulary;
-  current_stage: number | null; // null = new card
+  current_stage: number | null;
+  mode: Mode;
 };
 
 const STAGE_LABELS: Record<number, string> = {
@@ -27,33 +41,57 @@ const STAGE_LABELS: Record<number, string> = {
   6: 'Stage 6 · 1 year',
 };
 
+const MODE_META: Record<Mode, { label: string; icon: keyof typeof Ionicons.glyphMap; description: string }> = {
+  reading: { label: 'Reading', icon: 'book-outline', description: 'Type the English meaning' },
+  writing: { label: 'Writing', icon: 'brush-outline', description: 'Handwrite the Chinese characters' },
+  speaking: { label: 'Speaking', icon: 'mic-outline', description: 'Say the Chinese aloud' },
+};
+
+const MODES: Mode[] = ['reading', 'writing', 'speaking'];
+
+function normalize(text: string): string {
+  return (text || '').trim().toLowerCase();
+}
+
+function englishMatches(answer: string, target: string): boolean {
+  const a = normalize(answer).replace(/[.;]+$/, '');
+  // Allow any of the semicolon/comma-separated meanings
+  const parts = target.split(/[;,/]|\bor\b/).map((s) => normalize(s).replace(/^(to |a |an |the )/, '').trim()).filter(Boolean);
+  const cleaned = a.replace(/^(to |a |an |the )/, '').trim();
+  return parts.some((p) => p === cleaned || cleaned === p.replace(/[.;]+$/, ''));
+}
+
 export default function ReviewScreen() {
   const router = useRouter();
   const [queue, setQueue] = useState<Card[]>([]);
   const [index, setIndex] = useState(0);
-  const [revealed, setRevealed] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
   const [sessionStats, setSessionStats] = useState({ correct: 0, total: 0 });
   const [done, setDone] = useState(false);
+  const [hasDeck, setHasDeck] = useState(true);
 
   const loadQueue = useCallback(async () => {
     setLoading(true);
     setDone(false);
     setIndex(0);
-    setRevealed(false);
     setSessionStats({ correct: 0, total: 0 });
     try {
-      const [due, fresh] = await Promise.all([api.dueFlashcards(20), api.newFlashcards(10)]);
+      const [due, fresh, deck] = await Promise.all([
+        api.dueFlashcards(20),
+        api.newFlashcards(10),
+        api.deck().catch(() => []),
+      ]);
+      setHasDeck(deck.length > 0);
       const dueCards: Card[] = due.map((c: Flashcard) => ({
         vocabulary: c.vocabulary,
         current_stage: c.current_stage,
+        mode: MODES[Math.floor(Math.random() * MODES.length)],
       }));
       const newCards: Card[] = fresh.map((v: Vocabulary) => ({
         vocabulary: v,
         current_stage: null,
+        mode: MODES[Math.floor(Math.random() * MODES.length)],
       }));
-      // Interleave: due cards first, then new
       setQueue([...dueCards, ...newCards]);
     } catch (e) {
       setQueue([]);
@@ -65,31 +103,23 @@ export default function ReviewScreen() {
   useFocusEffect(
     useCallback(() => {
       loadQueue();
-    }, [loadQueue])
+    }, [loadQueue]),
   );
 
-  const currentCard = queue[index];
-
-  const handleAnswer = async (wasCorrect: boolean) => {
-    if (!currentCard || submitting) return;
-    setSubmitting(true);
+  const handleAnswered = async (vocabId: string, wasCorrect: boolean, mode: Mode) => {
     try {
-      await api.reviewFlashcard(currentCard.vocabulary.id, wasCorrect);
-      setSessionStats((s) => ({
-        correct: s.correct + (wasCorrect ? 1 : 0),
-        total: s.total + 1,
-      }));
-
-      if (index + 1 >= queue.length) {
-        setDone(true);
-      } else {
-        setIndex(index + 1);
-        setRevealed(false);
-      }
-    } catch (e) {
+      await api.reviewFlashcardWithMode(vocabId, wasCorrect, mode);
+    } catch {
       // ignore
-    } finally {
-      setSubmitting(false);
+    }
+    setSessionStats((s) => ({
+      correct: s.correct + (wasCorrect ? 1 : 0),
+      total: s.total + 1,
+    }));
+    if (index + 1 >= queue.length) {
+      setDone(true);
+    } else {
+      setIndex(index + 1);
     }
   };
 
@@ -101,6 +131,34 @@ export default function ReviewScreen() {
     );
   }
 
+  if (!hasDeck) {
+    return (
+      <SafeAreaView style={styles.safe} edges={['top']}>
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyHanzi}>空</Text>
+          <Text style={styles.emptyTitle}>Your deck is empty</Text>
+          <Text style={styles.emptySub}>
+            Add words from the NPCR library or create your own to start practicing.
+          </Text>
+          <TouchableOpacity
+            testID="review-go-library-button"
+            style={styles.emptyBtn}
+            onPress={() => router.push('/library')}
+          >
+            <Text style={styles.emptyBtnText}>Browse Library</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            testID="review-add-word-button"
+            style={[styles.emptyBtn, styles.emptyBtnSecondary]}
+            onPress={() => router.push('/add-word')}
+          >
+            <Text style={[styles.emptyBtnText, styles.emptyBtnTextSecondary]}>Add Custom Word</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   if (queue.length === 0) {
     return (
       <SafeAreaView style={styles.safe} edges={['top']}>
@@ -108,14 +166,14 @@ export default function ReviewScreen() {
           <Text style={styles.emptyHanzi}>休息</Text>
           <Text style={styles.emptyTitle}>All caught up</Text>
           <Text style={styles.emptySub}>
-            No cards due for review. Visit Lessons to introduce new vocabulary.
+            No cards due. Visit Library to add more vocabulary.
           </Text>
           <TouchableOpacity
-            testID="review-go-to-lessons-button"
+            testID="review-go-library-button"
             style={styles.emptyBtn}
-            onPress={() => router.push('/(tabs)/lessons')}
+            onPress={() => router.push('/library')}
           >
-            <Text style={styles.emptyBtnText}>Browse Lessons</Text>
+            <Text style={styles.emptyBtnText}>Add More Words</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -150,20 +208,13 @@ export default function ReviewScreen() {
     );
   }
 
-  const vocab = currentCard.vocabulary;
-  const stageLabel = currentCard.current_stage
-    ? STAGE_LABELS[currentCard.current_stage]
-    : 'New card · first review';
-
+  const card = queue[index];
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <View style={styles.header}>
         <View style={styles.progressBar}>
           <View
-            style={[
-              styles.progressFill,
-              { width: `${((index + 1) / queue.length) * 100}%` },
-            ]}
+            style={[styles.progressFill, { width: `${((index + 1) / queue.length) * 100}%` }]}
           />
         </View>
         <Text style={styles.progressText} testID="review-progress-text">
@@ -171,190 +222,472 @@ export default function ReviewScreen() {
         </Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.cardScroll}>
-        <View style={styles.card} testID="review-flashcard">
-          <Text style={styles.stageLabel}>{stageLabel}</Text>
-          <Text style={styles.hanzi} testID="review-flashcard-hanzi">
-            {vocab.simplified}
-          </Text>
+      <View style={styles.modeBanner} testID={`review-mode-${card.mode}`}>
+        <Ionicons name={MODE_META[card.mode].icon} size={18} color={colors.primary} />
+        <View style={styles.flex}>
+          <Text style={styles.modeLabel}>{MODE_META[card.mode].label}</Text>
+          <Text style={styles.modeDesc}>{MODE_META[card.mode].description}</Text>
+        </View>
+        <Text style={styles.stageLabel}>
+          {card.current_stage ? STAGE_LABELS[card.current_stage] : 'New'}
+        </Text>
+      </View>
 
-          {revealed ? (
-            <View style={styles.revealBlock} testID="review-flashcard-reveal">
-              <Text style={[styles.pinyin, { color: getToneColor(vocab.pinyin) }]}>
-                {vocab.pinyin}
-              </Text>
-              <Text style={styles.english}>{vocab.english}</Text>
-              <View style={styles.divider} />
-              <Text style={styles.exampleLabel}>Example</Text>
-              <Text style={styles.exampleHanzi}>{vocab.example_chinese}</Text>
-              <Text style={[styles.examplePinyin, { color: getToneColor(vocab.example_pinyin) }]}>
-                {vocab.example_pinyin}
-              </Text>
-              <Text style={styles.exampleEnglish}>{vocab.example_english}</Text>
-            </View>
-          ) : (
-            <TouchableOpacity
-              testID="flashcard-reveal-button"
-              style={styles.revealBtn}
-              onPress={() => setRevealed(true)}
+      <CardBody
+        key={`${card.vocabulary.id}-${card.mode}-${index}`}
+        card={card}
+        onAnswered={handleAnswered}
+      />
+    </SafeAreaView>
+  );
+}
+
+// =====================
+// Card body
+// =====================
+
+function CardBody({
+  card,
+  onAnswered,
+}: {
+  card: Card;
+  onAnswered: (vocabId: string, wasCorrect: boolean, mode: Mode) => void;
+}) {
+  if (card.mode === 'reading') return <ReadingCard card={card} onAnswered={onAnswered} />;
+  if (card.mode === 'writing') return <WritingCard card={card} onAnswered={onAnswered} />;
+  return <SpeakingCard card={card} onAnswered={onAnswered} />;
+}
+
+// ----- Reading mode -----
+function ReadingCard({ card, onAnswered }: { card: Card; onAnswered: (id: string, ok: boolean, m: Mode) => void }) {
+  const vocab = card.vocabulary;
+  const [answer, setAnswer] = useState('');
+  const [result, setResult] = useState<null | { correct: boolean }>(null);
+
+  const handleCheck = () => {
+    const ok = englishMatches(answer, vocab.english);
+    setResult({ correct: ok });
+  };
+
+  return (
+    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <ScrollView contentContainerStyle={styles.cardScroll} keyboardShouldPersistTaps="handled">
+        <View style={styles.card}>
+          <Text style={styles.hanzi}>{vocab.simplified}</Text>
+          <Text style={styles.pinyinSmall}>(hidden until you answer)</Text>
+
+          <Text style={styles.inputLabel}>What does this mean in English?</Text>
+          <TextInput
+            testID="review-reading-input"
+            style={[
+              styles.input,
+              result?.correct === true && styles.inputCorrect,
+              result?.correct === false && styles.inputIncorrect,
+            ]}
+            value={answer}
+            onChangeText={setAnswer}
+            placeholder="English meaning..."
+            placeholderTextColor={colors.textTertiary}
+            autoCapitalize="none"
+            autoCorrect={false}
+            editable={!result}
+          />
+
+          {result && (
+            <View
+              testID="review-reading-feedback"
+              style={[styles.feedback, result.correct ? styles.feedbackCorrect : styles.feedbackIncorrect]}
             >
-              <Ionicons name="eye-outline" size={20} color={colors.primary} />
-              <Text style={styles.revealBtnText}>Show Answer</Text>
-            </TouchableOpacity>
+              <Ionicons
+                name={result.correct ? 'checkmark-circle' : 'close-circle'}
+                size={22}
+                color={result.correct ? colors.success : colors.error}
+              />
+              <View style={styles.flex}>
+                <Text style={[styles.feedbackTitle, { color: result.correct ? colors.success : colors.error }]}>
+                  {result.correct ? 'Correct!' : 'Not quite'}
+                </Text>
+                <Text style={[styles.pinyinSmall, { color: getToneColor(vocab.pinyin) }]}>{vocab.pinyin}</Text>
+                <Text style={styles.englishAnswer}>{vocab.english}</Text>
+              </View>
+            </View>
           )}
         </View>
       </ScrollView>
 
-      {revealed && (
-        <View style={styles.actionRow} testID="review-action-row">
+      <View style={styles.footer}>
+        {result ? (
+          <View style={styles.actionRow}>
+            <TouchableOpacity
+              testID="review-mark-incorrect"
+              style={[styles.actionBtn, styles.incorrectBtn]}
+              onPress={() => onAnswered(vocab.id, false, 'reading')}
+            >
+              <Ionicons name="close" size={22} color={colors.error} />
+              <Text style={[styles.actionLabel, { color: colors.error }]}>Mark incorrect</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              testID="review-mark-correct"
+              style={[styles.actionBtn, styles.correctBtn]}
+              onPress={() => onAnswered(vocab.id, true, 'reading')}
+            >
+              <Ionicons name="checkmark" size={22} color={colors.success} />
+              <Text style={[styles.actionLabel, { color: colors.success }]}>Continue</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
           <TouchableOpacity
-            testID="flashcard-mark-incorrect-button"
-            style={[styles.actionBtn, styles.incorrectBtn]}
-            onPress={() => handleAnswer(false)}
-            disabled={submitting}
+            testID="review-reading-check"
+            style={[styles.primaryBtn, !answer && styles.btnDisabled]}
+            onPress={handleCheck}
+            disabled={!answer}
           >
-            <Ionicons name="close" size={26} color={colors.error} />
-            <Text style={[styles.actionLabel, { color: colors.error }]}>I forgot</Text>
+            <Text style={styles.primaryBtnText}>Check</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            testID="flashcard-mark-correct-button"
-            style={[styles.actionBtn, styles.correctBtn]}
-            onPress={() => handleAnswer(true)}
-            disabled={submitting}
-          >
-            <Ionicons name="checkmark" size={26} color={colors.success} />
-            <Text style={[styles.actionLabel, { color: colors.success }]}>I knew it</Text>
-          </TouchableOpacity>
+        )}
+      </View>
+    </KeyboardAvoidingView>
+  );
+}
+
+// ----- Writing mode -----
+function WritingCard({ card, onAnswered }: { card: Card; onAnswered: (id: string, ok: boolean, m: Mode) => void }) {
+  const vocab = card.vocabulary;
+  const canvasRef = useRef<HandwritingCanvasHandle>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [result, setResult] = useState<null | { correct: boolean; score: number; feedback: string; recognized: string }>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async () => {
+    setError(null);
+    if (!canvasRef.current || canvasRef.current.isEmpty()) {
+      setError('Please write the characters first.');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const base64 = await canvasRef.current.captureBase64();
+      const r = await api.recognizeHandwriting(base64, vocab.simplified, vocab.id);
+      setResult({ correct: r.correct, score: r.score, feedback: r.feedback, recognized: r.recognized_text });
+    } catch (e: any) {
+      setError(e?.message || 'Recognition failed');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.cardScroll}>
+      <View style={styles.card}>
+        <Text style={styles.englishPrompt}>{vocab.english}</Text>
+        <Text style={[styles.pinyinSmall, { color: getToneColor(vocab.pinyin) }]}>{vocab.pinyin}</Text>
+        <Text style={styles.writePrompt}>Handwrite the Chinese characters below</Text>
+
+        <View style={styles.canvasWrap}>
+          <HandwritingCanvas ref={canvasRef} height={240} testID="review-handwriting" />
         </View>
-      )}
-    </SafeAreaView>
+
+        {error && (
+          <View style={[styles.feedback, styles.feedbackIncorrect]} testID="review-writing-error">
+            <Ionicons name="alert-circle" size={20} color={colors.error} />
+            <Text style={[styles.feedbackTitle, { color: colors.error, flex: 1 }]}>{error}</Text>
+          </View>
+        )}
+
+        {result && (
+          <View
+            testID="review-writing-feedback"
+            style={[styles.feedback, result.correct ? styles.feedbackCorrect : styles.feedbackIncorrect]}
+          >
+            <View style={styles.feedbackHeader}>
+              <Ionicons
+                name={result.correct ? 'checkmark-circle' : 'information-circle'}
+                size={22}
+                color={result.correct ? colors.success : colors.warning}
+              />
+              <Text style={[styles.feedbackTitle, { color: result.correct ? colors.success : colors.warning, flex: 1 }]}>
+                {result.feedback}
+              </Text>
+            </View>
+            <Text style={styles.compareLabel}>Target</Text>
+            <Text style={styles.compareHanzi}>{vocab.simplified}</Text>
+            <Text style={styles.compareLabel}>AI read</Text>
+            <Text style={styles.compareHanzi} testID="review-writing-recognized">
+              {result.recognized || '(unreadable)'}
+            </Text>
+            <Text style={styles.scoreText}>Match score: {result.score}%</Text>
+          </View>
+        )}
+      </View>
+
+      <View style={styles.footer}>
+        {result ? (
+          <View style={styles.actionRow}>
+            <TouchableOpacity
+              testID="review-mark-incorrect"
+              style={[styles.actionBtn, styles.incorrectBtn]}
+              onPress={() => onAnswered(vocab.id, false, 'writing')}
+            >
+              <Ionicons name="close" size={22} color={colors.error} />
+              <Text style={[styles.actionLabel, { color: colors.error }]}>Mark incorrect</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              testID="review-mark-correct"
+              style={[styles.actionBtn, styles.correctBtn]}
+              onPress={() => onAnswered(vocab.id, true, 'writing')}
+            >
+              <Ionicons name="checkmark" size={22} color={colors.success} />
+              <Text style={[styles.actionLabel, { color: colors.success }]}>Continue</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity
+            testID="review-writing-submit"
+            style={[styles.primaryBtn, submitting && styles.btnDisabled]}
+            onPress={handleSubmit}
+            disabled={submitting}
+          >
+            {submitting ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.primaryBtnText}>Submit writing</Text>
+            )}
+          </TouchableOpacity>
+        )}
+      </View>
+    </ScrollView>
+  );
+}
+
+// ----- Speaking mode -----
+function SpeakingCard({ card, onAnswered }: { card: Card; onAnswered: (id: string, ok: boolean, m: Mode) => void }) {
+  const vocab = card.vocabulary;
+  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const [permission, setPermission] = useState<'undetermined' | 'granted' | 'denied' | 'blocked'>('undetermined');
+  const [recording, setRecording] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [result, setResult] = useState<null | { correct: boolean; score: number; feedback: string; transcribed: string }>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true });
+        const status = await AudioModule.getRecordingPermissionsAsync();
+        if (status.granted) setPermission('granted');
+        else if (!status.canAskAgain) setPermission('blocked');
+        else setPermission('undetermined');
+      } catch {
+        // ignore
+      }
+    })();
+  }, []);
+
+  const requestPermission = async () => {
+    const status = await AudioModule.requestRecordingPermissionsAsync();
+    if (status.granted) {
+      setPermission('granted');
+      return true;
+    }
+    setPermission(status.canAskAgain ? 'denied' : 'blocked');
+    return false;
+  };
+
+  const startRec = async () => {
+    setErrorMsg(null);
+    setResult(null);
+    if (permission !== 'granted') {
+      const ok = await requestPermission();
+      if (!ok) {
+        setErrorMsg('Microphone access needed.');
+        return;
+      }
+    }
+    try {
+      await recorder.prepareToRecordAsync();
+      recorder.record();
+      setRecording(true);
+    } catch (e: any) {
+      setErrorMsg(e?.message || 'Could not start recording');
+    }
+  };
+
+  const stopAndUpload = async () => {
+    setRecording(false);
+    try {
+      await recorder.stop();
+      const uri = recorder.uri;
+      if (!uri) {
+        setErrorMsg('No audio captured.');
+        return;
+      }
+      setUploading(true);
+      const data = await api.transcribeAudio(uri, vocab.simplified, vocab.id);
+      setResult({
+        correct: !!data.correct,
+        score: data.score ?? 0,
+        feedback: data.feedback || 'Transcription complete',
+        transcribed: data.transcribed_text || '',
+      });
+    } catch (e: any) {
+      setErrorMsg(e?.message || 'Transcription failed');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.cardScroll}>
+      <View style={styles.card}>
+        <Text style={styles.englishPrompt}>{vocab.english}</Text>
+        <Text style={styles.writePrompt}>Say the Chinese aloud</Text>
+
+        {permission === 'blocked' && (
+          <View style={[styles.feedback, styles.feedbackIncorrect]} testID="review-speaking-permission">
+            <Ionicons name="alert-circle" size={22} color={colors.error} />
+            <View style={styles.flex}>
+              <Text style={[styles.feedbackTitle, { color: colors.error }]}>Microphone blocked</Text>
+              <TouchableOpacity onPress={() => Linking.openSettings()} style={styles.settingsBtn}>
+                <Text style={styles.settingsBtnText}>Open Settings</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {errorMsg && (
+          <View style={[styles.feedback, styles.feedbackIncorrect]} testID="review-speaking-error">
+            <Ionicons name="alert-circle" size={20} color={colors.error} />
+            <Text style={[styles.feedbackTitle, { color: colors.error, flex: 1 }]}>{errorMsg}</Text>
+          </View>
+        )}
+
+        {result && (
+          <View
+            testID="review-speaking-feedback"
+            style={[styles.feedback, result.correct ? styles.feedbackCorrect : styles.feedbackIncorrect]}
+          >
+            <View style={styles.feedbackHeader}>
+              <Ionicons
+                name={result.correct ? 'checkmark-circle' : 'information-circle'}
+                size={22}
+                color={result.correct ? colors.success : colors.warning}
+              />
+              <Text style={[styles.feedbackTitle, { color: result.correct ? colors.success : colors.warning, flex: 1 }]}>
+                {result.feedback}
+              </Text>
+            </View>
+            <Text style={styles.compareLabel}>Target</Text>
+            <Text style={styles.compareHanzi}>{vocab.simplified}</Text>
+            <Text style={styles.compareLabel}>Whisper heard</Text>
+            <Text style={styles.compareHanzi}>{result.transcribed || '(silence)'}</Text>
+            <Text style={styles.scoreText}>Match score: {result.score}%</Text>
+          </View>
+        )}
+      </View>
+
+      <View style={styles.footer}>
+        {result ? (
+          <View style={styles.actionRow}>
+            <TouchableOpacity
+              testID="review-mark-incorrect"
+              style={[styles.actionBtn, styles.incorrectBtn]}
+              onPress={() => onAnswered(vocab.id, false, 'speaking')}
+            >
+              <Ionicons name="close" size={22} color={colors.error} />
+              <Text style={[styles.actionLabel, { color: colors.error }]}>Mark incorrect</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              testID="review-mark-correct"
+              style={[styles.actionBtn, styles.correctBtn]}
+              onPress={() => onAnswered(vocab.id, true, 'speaking')}
+            >
+              <Ionicons name="checkmark" size={22} color={colors.success} />
+              <Text style={[styles.actionLabel, { color: colors.success }]}>Continue</Text>
+            </TouchableOpacity>
+          </View>
+        ) : recording ? (
+          <TouchableOpacity
+            testID="review-speak-stop"
+            style={[styles.primaryBtn, { backgroundColor: colors.secondary }]}
+            onPress={stopAndUpload}
+          >
+            <View style={styles.recordingDot} />
+            <Text style={styles.primaryBtnText}>Stop & transcribe</Text>
+          </TouchableOpacity>
+        ) : uploading ? (
+          <View style={[styles.primaryBtn, { backgroundColor: colors.textSecondary }]}>
+            <ActivityIndicator color="#fff" />
+            <Text style={styles.primaryBtnText}>Transcribing...</Text>
+          </View>
+        ) : (
+          <TouchableOpacity testID="review-speak-record" style={styles.primaryBtn} onPress={startRec}>
+            <Ionicons name="mic" size={20} color="#fff" />
+            <Text style={styles.primaryBtnText}>Tap to record</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
+  flex: { flex: 1 },
   loading: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background },
-  header: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  progressBar: {
-    flex: 1,
-    height: 4,
-    backgroundColor: colors.border,
-    borderRadius: radius.full,
-    overflow: 'hidden',
-  },
+  header: { paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: spacing.sm, flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  progressBar: { flex: 1, height: 4, backgroundColor: colors.border, borderRadius: radius.full, overflow: 'hidden' },
   progressFill: { height: '100%', backgroundColor: colors.primary, borderRadius: radius.full },
   progressText: { fontSize: fontSize.sm, color: colors.textSecondary, fontWeight: '500' },
-  cardScroll: { flexGrow: 1, padding: spacing.lg, justifyContent: 'center' },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.xl,
-    minHeight: 380,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  stageLabel: {
-    fontSize: fontSize.xs,
-    color: colors.textTertiary,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    marginBottom: spacing.lg,
-  },
-  hanzi: {
-    fontSize: fontSize.hanziLg,
-    color: colors.textPrimary,
-    fontWeight: '500',
-    textAlign: 'center',
-  },
-  revealBtn: {
-    marginTop: spacing.xl,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: spacing.xl,
-    borderRadius: radius.full,
-    borderWidth: 1,
-    borderColor: colors.primary,
-    gap: spacing.sm,
-    minHeight: 48,
-  },
-  revealBtnText: { color: colors.primary, fontSize: fontSize.base, fontWeight: '600' },
-  revealBlock: { marginTop: spacing.xl, alignItems: 'center', width: '100%' },
-  pinyin: { fontSize: fontSize.xxl, fontWeight: '400', letterSpacing: 1, textAlign: 'center' },
-  english: {
-    fontSize: fontSize.lg,
-    color: colors.textPrimary,
+  modeBanner: {
+    marginHorizontal: spacing.lg,
     marginTop: spacing.sm,
-    textAlign: 'center',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.border,
-    width: '60%',
-    marginVertical: spacing.lg,
-  },
-  exampleLabel: {
-    fontSize: fontSize.xs,
-    color: colors.textTertiary,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    marginBottom: spacing.sm,
-  },
-  exampleHanzi: { fontSize: fontSize.xl, color: colors.textPrimary, textAlign: 'center' },
-  examplePinyin: { fontSize: fontSize.base, marginTop: 4, textAlign: 'center' },
-  exampleEnglish: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: 4, textAlign: 'center' },
-  actionRow: {
-    flexDirection: 'row',
-    padding: spacing.lg,
-    gap: spacing.md,
-    backgroundColor: colors.background,
-  },
-  actionBtn: {
-    flex: 1,
+    padding: spacing.md,
+    backgroundColor: colors.primaryLight,
     borderRadius: radius.lg,
-    padding: spacing.lg,
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xs,
-    minHeight: 76,
-    justifyContent: 'center',
+    gap: spacing.sm,
   },
+  modeLabel: { fontSize: fontSize.base, color: colors.textPrimary, fontWeight: '600' },
+  modeDesc: { fontSize: fontSize.xs, color: colors.textSecondary, marginTop: 2 },
+  stageLabel: { fontSize: 10, color: colors.textTertiary, textTransform: 'uppercase', letterSpacing: 1, fontWeight: '500' },
+  cardScroll: { flexGrow: 1, padding: spacing.lg },
+  card: { backgroundColor: colors.surface, borderRadius: radius.xl, borderWidth: 1, borderColor: colors.border, padding: spacing.lg, gap: spacing.sm },
+  hanzi: { fontSize: fontSize.hanziLg, color: colors.textPrimary, fontWeight: '500', textAlign: 'center' },
+  englishPrompt: { fontSize: fontSize.xxl, color: colors.textPrimary, fontWeight: '400', textAlign: 'center', marginTop: spacing.sm },
+  pinyinSmall: { fontSize: fontSize.sm, color: colors.textTertiary, textAlign: 'center' },
+  writePrompt: { fontSize: fontSize.xs, color: colors.textTertiary, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1, marginTop: spacing.md, marginBottom: spacing.sm },
+  inputLabel: { fontSize: fontSize.sm, color: colors.textSecondary, fontWeight: '500', marginTop: spacing.lg },
+  input: { borderBottomWidth: 2, borderBottomColor: colors.textPrimary, paddingVertical: spacing.md, fontSize: fontSize.xl, color: colors.textPrimary, textAlign: 'center', minHeight: 56 },
+  inputCorrect: { borderBottomColor: colors.success },
+  inputIncorrect: { borderBottomColor: colors.error },
+  canvasWrap: { marginTop: spacing.md },
+  feedback: { padding: spacing.md, borderRadius: radius.lg, marginTop: spacing.md, gap: spacing.xs, flexDirection: 'column' },
+  feedbackHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  feedbackCorrect: { backgroundColor: colors.successLight },
+  feedbackIncorrect: { backgroundColor: colors.errorLight },
+  feedbackTitle: { fontSize: fontSize.base, fontWeight: '600' },
+  englishAnswer: { fontSize: fontSize.base, color: colors.textPrimary, marginTop: 4 },
+  compareLabel: { fontSize: 10, color: colors.textTertiary, textTransform: 'uppercase', letterSpacing: 1, marginTop: spacing.sm },
+  compareHanzi: { fontSize: fontSize.xl, color: colors.textPrimary, marginTop: 2 },
+  scoreText: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: spacing.sm },
+  settingsBtn: { backgroundColor: colors.primary, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: radius.sm, alignSelf: 'flex-start', marginTop: spacing.sm, minHeight: 36, justifyContent: 'center' },
+  settingsBtnText: { color: '#fff', fontWeight: '600', fontSize: fontSize.sm },
+  footer: { padding: spacing.lg },
+  primaryBtn: { backgroundColor: colors.primary, borderRadius: radius.md, paddingVertical: 16, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: spacing.sm, minHeight: 52 },
+  primaryBtnText: { color: '#fff', fontSize: fontSize.lg, fontWeight: '600' },
+  btnDisabled: { opacity: 0.5 },
+  recordingDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: '#fff' },
+  actionRow: { flexDirection: 'row', gap: spacing.md },
+  actionBtn: { flex: 1, borderRadius: radius.lg, padding: spacing.md, alignItems: 'center', gap: spacing.xs, minHeight: 64, justifyContent: 'center', flexDirection: 'row' },
   correctBtn: { backgroundColor: colors.successLight, borderWidth: 1, borderColor: colors.success },
   incorrectBtn: { backgroundColor: colors.errorLight, borderWidth: 1, borderColor: colors.error },
-  actionLabel: { fontSize: fontSize.base, fontWeight: '600' },
-  emptyContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.xl,
-  },
+  actionLabel: { fontSize: fontSize.sm, fontWeight: '600' },
+  emptyContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
   emptyHanzi: { fontSize: 88, color: colors.primary, fontWeight: '300', marginBottom: spacing.md },
   emptyTitle: { fontSize: fontSize.xxl, color: colors.textPrimary, fontWeight: '500' },
-  emptySub: {
-    fontSize: fontSize.base,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginTop: spacing.md,
-    paddingHorizontal: spacing.xl,
-    lineHeight: 22,
-  },
-  emptyBtn: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: 14,
-    borderRadius: radius.full,
-    marginTop: spacing.xl,
-    minHeight: 48,
-    justifyContent: 'center',
-  },
+  emptySub: { fontSize: fontSize.base, color: colors.textSecondary, textAlign: 'center', marginTop: spacing.md, paddingHorizontal: spacing.xl, lineHeight: 22 },
+  emptyBtn: { backgroundColor: colors.primary, paddingHorizontal: spacing.xl, paddingVertical: 14, borderRadius: radius.full, marginTop: spacing.xl, minHeight: 48, justifyContent: 'center' },
   emptyBtnSecondary: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.primary, marginTop: spacing.md },
   emptyBtnText: { color: '#fff', fontSize: fontSize.base, fontWeight: '600' },
   emptyBtnTextSecondary: { color: colors.primary },

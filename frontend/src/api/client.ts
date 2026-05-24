@@ -161,6 +161,65 @@ export const api = {
       body: JSON.stringify({ drill_id, user_answer, was_correct, response_time_ms }),
     }),
 
+  // Deck management
+  deck: () => request<any[]>('/deck'),
+  addToDeck: (vocabulary_ids: string[]) =>
+    request<{ added: number }>('/deck/add', { method: 'POST', body: JSON.stringify({ vocabulary_ids }) }),
+  removeFromDeck: (vocabulary_id: string) =>
+    request<{ removed: boolean }>(`/deck/${vocabulary_id}`, { method: 'DELETE' }),
+
+  // Vocabulary library
+  library: (params: { q?: string; lesson_number?: number; source?: 'npcr' | 'custom' } = {}) => {
+    const search = new URLSearchParams();
+    if (params.q) search.set('q', params.q);
+    if (params.lesson_number !== undefined) search.set('lesson_number', String(params.lesson_number));
+    if (params.source) search.set('source', params.source);
+    const qs = search.toString();
+    return request<(Vocabulary & { in_deck: boolean; is_custom: boolean })[]>(
+      `/vocabulary/library${qs ? `?${qs}` : ''}`
+    );
+  },
+
+  createCustomVocab: (payload: {
+    simplified: string;
+    pinyin: string;
+    english: string;
+    example_chinese?: string;
+    example_pinyin?: string;
+    example_english?: string;
+  }) =>
+    request<Vocabulary>('/vocabulary/custom', { method: 'POST', body: JSON.stringify(payload) }),
+
+  deleteCustomVocab: (vocab_id: string) =>
+    request<{ deleted: boolean }>(`/vocabulary/custom/${vocab_id}`, { method: 'DELETE' }),
+
+  // Writing recognition
+  recognizeHandwriting: (image_base64: string, target_chinese: string, vocabulary_id?: string) =>
+    request<{
+      correct: boolean;
+      score: number;
+      feedback: string;
+      recognized_text: string;
+      target_text: string;
+    }>('/writing/recognize', {
+      method: 'POST',
+      body: JSON.stringify({ image_base64, target_chinese, vocabulary_id }),
+    }),
+
+  reviewFlashcardWithMode: (
+    vocabulary_id: string,
+    was_correct: boolean,
+    mode: 'reading' | 'writing' | 'speaking',
+    response_time_ms?: number,
+  ) =>
+    request<{ success: boolean; new_stage: number; next_review_at: string }>(
+      '/flashcards/review',
+      {
+        method: 'POST',
+        body: JSON.stringify({ vocabulary_id, was_correct, mode, response_time_ms }),
+      },
+    ),
+
   evaluateSpeaking: (target_chinese: string, spoken_text: string, vocabulary_id?: string) =>
     request<{ correct: boolean; score: number; feedback: string; spoken_text: string; target_text: string }>(
       '/speaking/evaluate',

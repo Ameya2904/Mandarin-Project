@@ -146,6 +146,26 @@ export default function HomeScreen() {
         </View>
         <View style={styles.tileRow}>
           <TouchableOpacity
+            testID="home-tile-library"
+            style={styles.tile}
+            onPress={() => router.push('/library')}
+          >
+            <Ionicons name="library-outline" size={28} color={colors.primary} />
+            <Text style={styles.tileTitle}>Library</Text>
+            <Text style={styles.tileSub}>Browse & add words</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            testID="home-tile-add-word"
+            style={styles.tile}
+            onPress={() => router.push('/add-word')}
+          >
+            <Ionicons name="add-circle-outline" size={28} color={colors.primary} />
+            <Text style={styles.tileTitle}>Add Word</Text>
+            <Text style={styles.tileSub}>Custom vocab</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.tileRow}>
+          <TouchableOpacity
             testID="home-tile-speak"
             style={styles.tile}
             onPress={() => router.push('/(tabs)/speak')}

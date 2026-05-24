@@ -102,8 +102,18 @@ class TestLessons:
 
 
 # ---------- Flashcards / SRS ----------
+def _seed_deck(api, fresh_user, n=5):
+    """Helper: add the first `n` NPCR vocab to the user's deck so /flashcards/new returns items."""
+    h = fresh_user["headers"]
+    lib = api.get(f"{BASE_URL}/api/vocabulary/library?source=npcr&limit={n}", headers=h).json()
+    vids = [v["id"] for v in lib[:n]]
+    api.post(f"{BASE_URL}/api/deck/add", headers=h, json={"vocabulary_ids": vids})
+    return vids
+
+
 class TestFlashcardsSRS:
     def test_new_flashcards(self, api, fresh_user):
+        _seed_deck(api, fresh_user, 5)
         r = api.get(f"{BASE_URL}/api/flashcards/new?limit=5", headers=fresh_user["headers"])
         assert r.status_code == 200
         cards = r.json()
@@ -112,6 +122,7 @@ class TestFlashcardsSRS:
         assert "pinyin" in cards[0]
 
     def test_srs_correct_advances_stage(self, api, fresh_user):
+        _seed_deck(api, fresh_user, 5)
         # get a new vocab
         r = api.get(f"{BASE_URL}/api/flashcards/new?limit=1", headers=fresh_user["headers"])
         vocab = r.json()[0]
@@ -129,6 +140,7 @@ class TestFlashcardsSRS:
         assert r2.json()["new_stage"] == 3
 
     def test_srs_incorrect_resets_to_stage_1(self, api, fresh_user):
+        _seed_deck(api, fresh_user, 5)
         r = api.get(f"{BASE_URL}/api/flashcards/new?limit=2", headers=fresh_user["headers"])
         vocab = r.json()[1]  # different word
         vocab_id = vocab["id"]

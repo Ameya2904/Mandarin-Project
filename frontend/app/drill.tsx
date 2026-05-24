@@ -3,21 +3,24 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import {
+  AudioModule,
+  useAudioRecorder,
+  RecordingPresets,
+  setAudioModeAsync,
+} from 'expo-audio';
 import { colors, spacing, radius, fontSize, getToneColor } from '@/src/theme';
 import { api, Drill } from '@/src/api/client';
 
 function normalize(text: string): string {
-  // eslint-disable-next-line no-misleading-character-class
   return (text || '').replace(/[\s\W_，。!?,.!?]/g, '');
 }
 
@@ -26,51 +29,51 @@ export default function DrillScreen() {
   const { lesson } = useLocalSearchParams<{ lesson?: string }>();
   const [drills, setDrills] = useState<Drill[]>([]);
   const [index, setIndex] = useState(0);
-  const [answer, setAnswer] = useState('');
-  const [feedback, setFeedback] = useState<{ correct: boolean; message: string } | null>(null);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [sessionStats, setSessionStats] = useState({ correct: 0, total: 0 });
   const [done, setDone] = useState(false);
+  const [sessionStats, setSessionStats] = useState({ correct: 0, total: 0 });
+
+  // Hint tiers: 0 = none, 1 = chinese characters, 2 = pinyin
+  const [hintLevel, setHintLevel] = useState(0);
+
+  // Audio recording state
+  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const [permission, setPermission] = useState<'undetermined' | 'granted' | 'denied' | 'blocked'>('undetermined');
+  const [recording, setRecording] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [result, setResult] = useState<null | { correct: boolean; score: number; feedback: string; transcribed: string }>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
       try {
         const data = await api.drills(lesson ? Number(lesson) : undefined);
         setDrills(data);
-      } catch (e) {
+      } catch {
         setDrills([]);
       } finally {
         setLoading(false);
+      }
+      try {
+        await setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true });
+        const status = await AudioModule.getRecordingPermissionsAsync();
+        if (status.granted) setPermission('granted');
+        else if (!status.canAskAgain) setPermission('blocked');
+        else setPermission('undetermined');
+      } catch {
+        // ignore
       }
     })();
   }, [lesson]);
 
   const current = drills[index];
 
-  const handleSubmit = async () => {
-    if (!current || submitting) return;
-    setSubmitting(true);
-
-    const normalizedAnswer = normalize(answer);
-    const normalizedExpected = normalize(current.expected_answer);
-    const isCorrect = normalizedAnswer === normalizedExpected;
-
-    setFeedback({
-      correct: isCorrect,
-      message: isCorrect ? 'Perfect! 完美!' : `Expected: ${current.expected_answer}`,
-    });
-    setSessionStats((s) => ({
-      correct: s.correct + (isCorrect ? 1 : 0),
-      total: s.total + 1,
-    }));
-
-    try {
-      await api.drillAttempt(current.id, answer, isCorrect);
-    } catch {
-      // ignore
-    }
-    setSubmitting(false);
+  const resetCard = () => {
+    setHintLevel(0);
+    setResult(null);
+    setErrorMsg(null);
+    setRecording(false);
+    setUploading(false);
   };
 
   const handleNext = () => {
@@ -78,8 +81,70 @@ export default function DrillScreen() {
       setDone(true);
     } else {
       setIndex(index + 1);
-      setAnswer('');
-      setFeedback(null);
+      resetCard();
+    }
+  };
+
+  const requestPermission = async () => {
+    const status = await AudioModule.requestRecordingPermissionsAsync();
+    if (status.granted) {
+      setPermission('granted');
+      return true;
+    }
+    setPermission(status.canAskAgain ? 'denied' : 'blocked');
+    return false;
+  };
+
+  const startRec = async () => {
+    setErrorMsg(null);
+    setResult(null);
+    if (permission !== 'granted') {
+      const ok = await requestPermission();
+      if (!ok) {
+        setErrorMsg('Microphone access needed.');
+        return;
+      }
+    }
+    try {
+      await recorder.prepareToRecordAsync();
+      recorder.record();
+      setRecording(true);
+    } catch (e: any) {
+      setErrorMsg(e?.message || 'Could not start recording');
+    }
+  };
+
+  const stopAndCheck = async () => {
+    setRecording(false);
+    if (!current) return;
+    try {
+      await recorder.stop();
+      const uri = recorder.uri;
+      if (!uri) {
+        setErrorMsg('No audio captured. Try again.');
+        return;
+      }
+      setUploading(true);
+      const r = await api.transcribeAudio(uri, current.expected_answer);
+      const isCorrect = !!r.correct;
+      const fb = {
+        correct: isCorrect,
+        score: r.score ?? 0,
+        feedback: r.feedback || 'Transcription complete',
+        transcribed: r.transcribed_text || '',
+      };
+      setResult(fb);
+      setSessionStats((s) => ({ correct: s.correct + (isCorrect ? 1 : 0), total: s.total + 1 }));
+
+      try {
+        await api.drillAttempt(current.id, r.transcribed_text || '', isCorrect);
+      } catch {
+        // ignore
+      }
+    } catch (e: any) {
+      setErrorMsg(e?.message || 'Transcription failed');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -129,101 +194,144 @@ export default function DrillScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <Stack.Screen options={{ headerShown: false }} />
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        <View style={styles.header}>
-          <TouchableOpacity
-            testID="drill-close-button"
-            onPress={() => router.back()}
-            style={styles.backBtn}
-          >
-            <Ionicons name="close" size={24} color={colors.textPrimary} />
-          </TouchableOpacity>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${((index + 1) / drills.length) * 100}%` }]} />
-          </View>
-          <Text style={styles.progressText}>
-            {index + 1}/{drills.length}
+
+      <View style={styles.header}>
+        <TouchableOpacity testID="drill-close-button" onPress={() => router.back()} style={styles.backBtn}>
+          <Ionicons name="close" size={24} color={colors.textPrimary} />
+        </TouchableOpacity>
+        <View style={styles.progressBar}>
+          <View style={[styles.progressFill, { width: `${((index + 1) / drills.length) * 100}%` }]} />
+        </View>
+        <Text style={styles.progressText}>
+          {index + 1}/{drills.length}
+        </Text>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.scroll}>
+        <Text style={styles.drillType}>
+          {current.drill_type === 'substitution' ? 'Substitution Drill' : current.drill_type === 'transformation' ? 'Transformation Drill' : 'Drill'}
+        </Text>
+
+        <View style={styles.promptCard} testID="drill-prompt-card">
+          <Text style={styles.promptLabel}>Say this in Mandarin</Text>
+          <Text style={styles.englishTarget}>{current.expected_english}</Text>
+          <Text style={styles.instructionInline}>
+            ({current.instruction_english})
           </Text>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          <Text style={styles.drillType}>
-            {current.drill_type === 'substitution' ? 'Substitution Drill' : current.drill_type === 'transformation' ? 'Transformation Drill' : 'Drill'}
-          </Text>
-
-          <View style={styles.promptCard} testID="drill-prompt-card">
-            <Text style={styles.promptLabel}>Base sentence</Text>
-            <Text style={styles.promptHanzi}>{current.prompt_chinese}</Text>
-            <Text style={styles.promptEnglish}>{current.prompt_english}</Text>
-          </View>
-
-          <View style={styles.instructionCard} testID="drill-instruction-card">
-            <Ionicons name="information-circle-outline" size={20} color={colors.primary} />
-            <View style={styles.flex}>
-              <Text style={styles.instructionText}>{current.instruction_english}</Text>
-              <Text style={styles.instructionChinese}>{current.instruction_chinese}</Text>
-            </View>
-          </View>
-
-          <Text style={styles.inputLabel}>Your answer (in Chinese)</Text>
-          <TextInput
-            testID="drill-sentence-input"
-            style={[styles.input, feedback?.correct === true && styles.inputCorrect, feedback?.correct === false && styles.inputIncorrect]}
-            value={answer}
-            onChangeText={setAnswer}
-            placeholder="Type here..."
-            placeholderTextColor={colors.textTertiary}
-            editable={!feedback}
-            autoCorrect={false}
-            autoCapitalize="none"
-          />
-
-          {feedback && (
-            <View
-              testID="drill-feedback"
-              style={[styles.feedback, feedback.correct ? styles.feedbackCorrect : styles.feedbackIncorrect]}
-            >
-              <Ionicons
-                name={feedback.correct ? 'checkmark-circle' : 'close-circle'}
-                size={22}
-                color={feedback.correct ? colors.success : colors.error}
-              />
-              <View style={styles.flex}>
-                <Text style={[styles.feedbackText, { color: feedback.correct ? colors.success : colors.error }]}>
-                  {feedback.message}
-                </Text>
-                <Text style={[styles.feedbackPinyin, { color: getToneColor(current.expected_pinyin) }]}>
+        {/* Hint tiers */}
+        {!result && (
+          <View style={styles.hintBlock} testID="drill-hint-block">
+            {hintLevel >= 1 && (
+              <View style={styles.hintRow}>
+                <Text style={styles.hintLabel}>Characters</Text>
+                <Text style={styles.hintHanzi}>{current.expected_answer}</Text>
+              </View>
+            )}
+            {hintLevel >= 2 && (
+              <View style={styles.hintRow}>
+                <Text style={styles.hintLabel}>Pinyin</Text>
+                <Text style={[styles.hintPinyin, { color: getToneColor(current.expected_pinyin) }]}>
                   {current.expected_pinyin}
                 </Text>
-                <Text style={styles.feedbackEnglish}>{current.expected_english}</Text>
               </View>
-            </View>
-          )}
-        </ScrollView>
+            )}
+            {hintLevel < 2 && (
+              <TouchableOpacity
+                testID="drill-hint-button"
+                style={styles.hintBtn}
+                onPress={() => setHintLevel((h) => h + 1)}
+              >
+                <Ionicons name="bulb-outline" size={18} color={colors.warning} />
+                <Text style={styles.hintBtnText}>
+                  {hintLevel === 0 ? 'Show characters' : 'Show pinyin'}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
 
-        <View style={styles.footer}>
-          {feedback ? (
-            <TouchableOpacity testID="drill-next-button" style={styles.primaryBtn} onPress={handleNext}>
-              <Text style={styles.primaryBtnText}>
-                {index + 1 >= drills.length ? 'Finish' : 'Next'}
+        {permission === 'blocked' && (
+          <View style={[styles.feedback, styles.feedbackIncorrect]} testID="drill-permission-blocked">
+            <Ionicons name="alert-circle" size={22} color={colors.error} />
+            <View style={styles.flex}>
+              <Text style={[styles.feedbackTitle, { color: colors.error }]}>Microphone blocked</Text>
+              <TouchableOpacity onPress={() => Linking.openSettings()} style={styles.settingsBtn}>
+                <Text style={styles.settingsBtnText}>Open Settings</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {errorMsg && (
+          <View style={[styles.feedback, styles.feedbackIncorrect]} testID="drill-error">
+            <Ionicons name="alert-circle" size={20} color={colors.error} />
+            <Text style={[styles.feedbackTitle, { color: colors.error, flex: 1 }]}>{errorMsg}</Text>
+          </View>
+        )}
+
+        {result && (
+          <View
+            testID="drill-feedback"
+            style={[styles.feedback, result.correct ? styles.feedbackCorrect : styles.feedbackIncorrect]}
+          >
+            <View style={styles.feedbackHeader}>
+              <Ionicons
+                name={result.correct ? 'checkmark-circle' : 'information-circle'}
+                size={22}
+                color={result.correct ? colors.success : colors.warning}
+              />
+              <Text style={[styles.feedbackTitle, { color: result.correct ? colors.success : colors.warning, flex: 1 }]}>
+                {result.feedback}
               </Text>
-              <Ionicons name="arrow-forward" size={20} color="#fff" />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              testID="drill-submit-button"
-              style={[styles.primaryBtn, !answer && styles.btnDisabled]}
-              onPress={handleSubmit}
-              disabled={!answer || submitting}
-            >
-              <Text style={styles.primaryBtnText}>Check</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </KeyboardAvoidingView>
+            </View>
+            <Text style={styles.compareLabel}>Target</Text>
+            <Text style={styles.compareHanzi}>{current.expected_answer}</Text>
+            <Text style={[styles.comparePinyin, { color: getToneColor(current.expected_pinyin) }]}>
+              {current.expected_pinyin}
+            </Text>
+            <Text style={styles.compareLabel}>Whisper heard</Text>
+            <Text style={styles.compareHanzi}>{result.transcribed || '(silence)'}</Text>
+            <Text style={styles.scoreText}>Match score: {result.score}%</Text>
+            {hintLevel > 0 && (
+              <Text style={styles.hintUsedNote}>
+                {hintLevel === 1 ? '· Used character hint' : '· Used character + pinyin hint'}
+              </Text>
+            )}
+          </View>
+        )}
+      </ScrollView>
+
+      <View style={styles.footer}>
+        {result ? (
+          <TouchableOpacity testID="drill-next-button" style={styles.primaryBtn} onPress={handleNext}>
+            <Text style={styles.primaryBtnText}>
+              {index + 1 >= drills.length ? 'Finish' : 'Next'}
+            </Text>
+            <Ionicons name="arrow-forward" size={20} color="#fff" />
+          </TouchableOpacity>
+        ) : recording ? (
+          <TouchableOpacity
+            testID="drill-stop-record-button"
+            style={[styles.primaryBtn, { backgroundColor: colors.secondary }]}
+            onPress={stopAndCheck}
+          >
+            <View style={styles.recordingDot} />
+            <Text style={styles.primaryBtnText}>Stop & check</Text>
+          </TouchableOpacity>
+        ) : uploading ? (
+          <View style={[styles.primaryBtn, { backgroundColor: colors.textSecondary }]}>
+            <ActivityIndicator color="#fff" />
+            <Text style={styles.primaryBtnText}>Transcribing...</Text>
+          </View>
+        ) : (
+          <TouchableOpacity testID="drill-record-button" style={styles.primaryBtn} onPress={startRec}>
+            <Ionicons name="mic" size={20} color="#fff" />
+            <Text style={styles.primaryBtnText}>Tap to speak</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </SafeAreaView>
   );
 }
@@ -239,72 +347,33 @@ const styles = StyleSheet.create({
   progressText: { fontSize: fontSize.sm, color: colors.textSecondary, fontWeight: '500' },
   scroll: { padding: spacing.lg, flexGrow: 1 },
   drillType: { fontSize: fontSize.xs, color: colors.textTertiary, letterSpacing: 1, textTransform: 'uppercase', marginBottom: spacing.md },
-  promptCard: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.lg,
-    alignItems: 'center',
-  },
+  promptCard: { backgroundColor: colors.surface, borderRadius: radius.xl, borderWidth: 1, borderColor: colors.border, padding: spacing.lg, alignItems: 'center' },
   promptLabel: { fontSize: fontSize.xs, color: colors.textTertiary, letterSpacing: 1, textTransform: 'uppercase' },
-  promptHanzi: { fontSize: fontSize.hanzi, color: colors.textPrimary, fontWeight: '500', marginTop: spacing.sm, textAlign: 'center' },
-  promptEnglish: { fontSize: fontSize.base, color: colors.textSecondary, marginTop: spacing.sm, textAlign: 'center' },
-  instructionCard: {
-    backgroundColor: colors.primaryLight,
-    borderRadius: radius.lg,
-    padding: spacing.md,
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginTop: spacing.lg,
-    alignItems: 'flex-start',
-  },
-  instructionText: { fontSize: fontSize.base, color: colors.textPrimary, fontWeight: '500' },
-  instructionChinese: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: 2 },
-  inputLabel: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    fontWeight: '500',
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-  },
-  input: {
-    borderBottomWidth: 2,
-    borderBottomColor: colors.textPrimary,
-    paddingVertical: spacing.md,
-    fontSize: fontSize.xxl,
-    color: colors.textPrimary,
-    textAlign: 'center',
-    minHeight: 60,
-  },
-  inputCorrect: { borderBottomColor: colors.success },
-  inputIncorrect: { borderBottomColor: colors.error },
-  feedback: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-    padding: spacing.md,
-    borderRadius: radius.lg,
-    marginTop: spacing.lg,
-  },
+  englishTarget: { fontSize: fontSize.xxl, color: colors.textPrimary, fontWeight: '500', marginTop: spacing.md, textAlign: 'center' },
+  instructionInline: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: spacing.md, textAlign: 'center', fontStyle: 'italic' },
+  hintBlock: { marginTop: spacing.lg, gap: spacing.sm },
+  hintRow: { backgroundColor: colors.surfaceAlt, padding: spacing.md, borderRadius: radius.md, alignItems: 'center' },
+  hintLabel: { fontSize: fontSize.xs, color: colors.textTertiary, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 },
+  hintHanzi: { fontSize: fontSize.xl, color: colors.textPrimary },
+  hintPinyin: { fontSize: fontSize.base, fontWeight: '500' },
+  hintBtn: { flexDirection: 'row', alignItems: 'center', alignSelf: 'center', gap: spacing.xs, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: radius.full, borderWidth: 1, borderColor: colors.warning, backgroundColor: '#FDF4DD', minHeight: 36 },
+  hintBtnText: { color: colors.warning, fontSize: fontSize.sm, fontWeight: '600' },
+  feedback: { padding: spacing.md, borderRadius: radius.lg, marginTop: spacing.lg, gap: spacing.xs, flexDirection: 'column' },
+  feedbackHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   feedbackCorrect: { backgroundColor: colors.successLight },
   feedbackIncorrect: { backgroundColor: colors.errorLight },
-  feedbackText: { fontSize: fontSize.base, fontWeight: '600' },
-  feedbackPinyin: { fontSize: fontSize.sm, marginTop: 4 },
-  feedbackEnglish: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: 2 },
+  feedbackTitle: { fontSize: fontSize.base, fontWeight: '600' },
+  compareLabel: { fontSize: 10, color: colors.textTertiary, textTransform: 'uppercase', letterSpacing: 1, marginTop: spacing.sm },
+  compareHanzi: { fontSize: fontSize.xl, color: colors.textPrimary, marginTop: 2 },
+  comparePinyin: { fontSize: fontSize.sm, marginTop: 2 },
+  scoreText: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: spacing.sm },
+  hintUsedNote: { fontSize: fontSize.xs, color: colors.textTertiary, marginTop: 4, fontStyle: 'italic' },
+  settingsBtn: { backgroundColor: colors.primary, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: radius.sm, alignSelf: 'flex-start', marginTop: spacing.sm, minHeight: 36, justifyContent: 'center' },
+  settingsBtnText: { color: '#fff', fontWeight: '600', fontSize: fontSize.sm },
   footer: { padding: spacing.lg },
-  primaryBtn: {
-    backgroundColor: colors.primary,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingVertical: 16,
-    borderRadius: radius.md,
-    minHeight: 52,
-  },
+  primaryBtn: { backgroundColor: colors.primary, borderRadius: radius.md, paddingVertical: 16, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: spacing.sm, minHeight: 52 },
   primaryBtnText: { color: '#fff', fontSize: fontSize.lg, fontWeight: '600' },
-  btnDisabled: { opacity: 0.5 },
+  recordingDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: '#fff' },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
   emptyHanzi: { fontSize: 88, color: colors.primary, fontWeight: '300', marginBottom: spacing.md },
   emptyTitle: { fontSize: fontSize.xxl, color: colors.textPrimary, fontWeight: '500' },
