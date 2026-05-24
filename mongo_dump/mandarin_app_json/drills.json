@@ -1,0 +1,436 @@
+[{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd06"
+	},
+	"id": "48b3e4d2-edb6-4623-8e29-ddb9fda9c49a",
+	"lesson_number": 1,
+	"drill_type": "substitution",
+	"prompt_chinese": "我很好",
+	"prompt_english": "I am very well",
+	"instruction_english": "Replace 好 (good) with 忙 (busy)",
+	"instruction_chinese": "用'忙'替换'好'",
+	"expected_answer": "我很忙",
+	"expected_pinyin": "Wǒ hěn máng",
+	"expected_english": "I am very busy"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd07"
+	},
+	"id": "1ec971c1-63ee-407b-ac31-107859fe8cd4",
+	"lesson_number": 1,
+	"drill_type": "substitution",
+	"prompt_chinese": "你好",
+	"prompt_english": "Hello (you good)",
+	"instruction_english": "Replace 你 (you) with 他 (he)",
+	"instruction_chinese": "用'他'替换'你'",
+	"expected_answer": "他好",
+	"expected_pinyin": "Tā hǎo",
+	"expected_english": "He is good"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd08"
+	},
+	"id": "cb29945d-c63a-4352-b266-2baef2a363c7",
+	"lesson_number": 2,
+	"drill_type": "transformation",
+	"prompt_chinese": "我忙",
+	"prompt_english": "I am busy",
+	"instruction_english": "Make this sentence negative",
+	"instruction_chinese": "把句子变成否定句",
+	"expected_answer": "我不忙",
+	"expected_pinyin": "Wǒ bù máng",
+	"expected_english": "I am not busy"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd09"
+	},
+	"id": "7353af93-4281-4755-a3c4-f88ad09a212f",
+	"lesson_number": 2,
+	"drill_type": "transformation",
+	"prompt_chinese": "你忙",
+	"prompt_english": "You are busy",
+	"instruction_english": "Turn this into a yes/no question with 吗",
+	"instruction_chinese": "用'吗'变成疑问句",
+	"expected_answer": "你忙吗",
+	"expected_pinyin": "Nǐ máng ma?",
+	"expected_english": "Are you busy?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd0a"
+	},
+	"id": "6cb16547-de58-4fe4-ad0a-f94688aa089a",
+	"lesson_number": 2,
+	"drill_type": "substitution",
+	"prompt_chinese": "我很忙",
+	"prompt_english": "I am very busy",
+	"instruction_english": "Replace 我 (I) with 他 (he)",
+	"instruction_chinese": "用'他'替换'我'",
+	"expected_answer": "他很忙",
+	"expected_pinyin": "Tā hěn máng",
+	"expected_english": "He is very busy"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd0b"
+	},
+	"id": "708f5429-9256-47c7-8797-9a3b35769af4",
+	"lesson_number": 3,
+	"drill_type": "substitution",
+	"prompt_chinese": "她是中国人",
+	"prompt_english": "She is Chinese",
+	"instruction_english": "Replace 她 (she) with 他 (he)",
+	"instruction_chinese": "用'他'替换'她'",
+	"expected_answer": "他是中国人",
+	"expected_pinyin": "Tā shì Zhōngguó rén",
+	"expected_english": "He is Chinese"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd0c"
+	},
+	"id": "d0fe57f8-f10d-4482-8289-3eea7a6ed31f",
+	"lesson_number": 3,
+	"drill_type": "transformation",
+	"prompt_chinese": "她是中国人",
+	"prompt_english": "She is Chinese",
+	"instruction_english": "Turn this into a question using 吗",
+	"instruction_chinese": "用'吗'变成疑问句",
+	"expected_answer": "她是中国人吗",
+	"expected_pinyin": "Tā shì Zhōngguó rén ma?",
+	"expected_english": "Is she Chinese?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd0d"
+	},
+	"id": "699516c9-9435-44a6-975e-3ee35ed955a7",
+	"lesson_number": 3,
+	"drill_type": "substitution",
+	"prompt_chinese": "那是我朋友",
+	"prompt_english": "That is my friend",
+	"instruction_english": "Replace 那 (that) with 这 (this)",
+	"instruction_chinese": "用'这'替换'那'",
+	"expected_answer": "这是我朋友",
+	"expected_pinyin": "Zhè shì wǒ péngyǒu",
+	"expected_english": "This is my friend"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd0e"
+	},
+	"id": "419d0733-2b00-4707-a202-e0a0011a8c63",
+	"lesson_number": 4,
+	"drill_type": "substitution",
+	"prompt_chinese": "我叫林娜",
+	"prompt_english": "My name is Lin Na",
+	"instruction_english": "Replace 林娜 with 马大为",
+	"instruction_chinese": "用'马大为'替换'林娜'",
+	"expected_answer": "我叫马大为",
+	"expected_pinyin": "Wǒ jiào Mǎ Dàwéi",
+	"expected_english": "My name is Ma Dawei"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd0f"
+	},
+	"id": "646129c9-0b6c-40ee-99e8-b506cad4dded",
+	"lesson_number": 4,
+	"drill_type": "transformation",
+	"prompt_chinese": "我认识他",
+	"prompt_english": "I know him",
+	"instruction_english": "Make this a question with 吗",
+	"instruction_chinese": "用'吗'变成疑问句",
+	"expected_answer": "我认识他吗",
+	"expected_pinyin": "Wǒ rènshí tā ma?",
+	"expected_english": "Do I know him?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd10"
+	},
+	"id": "48d1bf77-0aa2-476d-96d8-af10dcc2e757",
+	"lesson_number": 5,
+	"drill_type": "substitution",
+	"prompt_chinese": "餐厅在那儿",
+	"prompt_english": "The restaurant is over there",
+	"instruction_english": "Replace 餐厅 (restaurant) with 学校 (school)",
+	"instruction_chinese": "用'学校'替换'餐厅'",
+	"expected_answer": "学校在那儿",
+	"expected_pinyin": "Xuéxiào zài nàr",
+	"expected_english": "The school is over there"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd11"
+	},
+	"id": "a785c47a-cd4d-427b-8480-b681e75052d5",
+	"lesson_number": 5,
+	"drill_type": "substitution",
+	"prompt_chinese": "我在家",
+	"prompt_english": "I am at home",
+	"instruction_english": "Replace 家 (home) with 学校 (school)",
+	"instruction_chinese": "用'学校'替换'家'",
+	"expected_answer": "我在学校",
+	"expected_pinyin": "Wǒ zài xuéxiào",
+	"expected_english": "I am at school"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd12"
+	},
+	"id": "c4399edc-89e5-4d7a-b42d-0fa6ff893f8a",
+	"lesson_number": 5,
+	"drill_type": "transformation",
+	"prompt_chinese": "餐厅在那儿",
+	"prompt_english": "The restaurant is over there",
+	"instruction_english": "Turn into a question: where is the restaurant?",
+	"instruction_chinese": "改为'餐厅在哪儿?'",
+	"expected_answer": "餐厅在哪儿",
+	"expected_pinyin": "Cāntīng zài nǎr?",
+	"expected_english": "Where is the restaurant?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd13"
+	},
+	"id": "90dde922-c5a4-4207-8f48-afc22bbfbebe",
+	"lesson_number": 6,
+	"drill_type": "substitution",
+	"prompt_chinese": "我们去游泳",
+	"prompt_english": "We are going swimming",
+	"instruction_english": "Replace 游泳 with 吃饭",
+	"instruction_chinese": "用'吃饭'替换'游泳'",
+	"expected_answer": "我们去吃饭",
+	"expected_pinyin": "Wǒmen qù chī fàn",
+	"expected_english": "We are going to eat"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd14"
+	},
+	"id": "c3132b2d-2698-4f7d-ba42-5a45816ac7a8",
+	"lesson_number": 6,
+	"drill_type": "transformation",
+	"prompt_chinese": "我们去游泳",
+	"prompt_english": "We go swimming",
+	"instruction_english": "Turn into suggestion with 好吗?",
+	"instruction_chinese": "加上'好吗?'",
+	"expected_answer": "我们去游泳好吗",
+	"expected_pinyin": "Wǒmen qù yóuyǒng hǎo ma?",
+	"expected_english": "Shall we go swimming?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd15"
+	},
+	"id": "23dce297-0917-40ad-969b-19f17e61a8f2",
+	"lesson_number": 7,
+	"drill_type": "transformation",
+	"prompt_chinese": "你认识他吗",
+	"prompt_english": "Do you know him? (with 吗)",
+	"instruction_english": "Convert to V-not-V question form",
+	"instruction_chinese": "改为正反问句",
+	"expected_answer": "你认识不认识他",
+	"expected_pinyin": "Nǐ rènshí bú rènshí tā?",
+	"expected_english": "Do you know him?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd16"
+	},
+	"id": "18495d81-eadc-4c90-939c-fea64713b802",
+	"lesson_number": 8,
+	"drill_type": "substitution",
+	"prompt_chinese": "我们家有四口人",
+	"prompt_english": "We have four family members",
+	"instruction_english": "Replace 四 with 五 (five)",
+	"instruction_chinese": "用'五'替换'四'",
+	"expected_answer": "我们家有五口人",
+	"expected_pinyin": "Wǒmen jiā yǒu wǔ kǒu rén",
+	"expected_english": "We have five family members"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd17"
+	},
+	"id": "6adc1f4c-c860-4c20-b619-bbd3434719ff",
+	"lesson_number": 9,
+	"drill_type": "substitution",
+	"prompt_chinese": "我今年二十岁",
+	"prompt_english": "I am 20 this year",
+	"instruction_english": "Replace 二十 with 三十 (thirty)",
+	"instruction_chinese": "用'三十'替换'二十'",
+	"expected_answer": "我今年三十岁",
+	"expected_pinyin": "Wǒ jīnnián sānshí suì",
+	"expected_english": "I am 30 this year"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd18"
+	},
+	"id": "62b75dfb-642f-4ca1-88cc-3e4fe1fe70c8",
+	"lesson_number": 10,
+	"drill_type": "transformation",
+	"prompt_chinese": "我买光盘",
+	"prompt_english": "I buy CDs",
+	"instruction_english": "Make it progressive: I am buying CDs (use 在)",
+	"instruction_chinese": "用'在'变成进行式",
+	"expected_answer": "我在买光盘",
+	"expected_pinyin": "Wǒ zài mǎi guāngpán",
+	"expected_english": "I am buying CDs"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd19"
+	},
+	"id": "fdafa37c-19e8-43b2-8ac2-d4d27d9f3dcf",
+	"lesson_number": 11,
+	"drill_type": "substitution",
+	"prompt_chinese": "我会说汉语",
+	"prompt_english": "I can speak Chinese",
+	"instruction_english": "Replace 汉语 with 英语 (English)",
+	"instruction_chinese": "用'英语'替换'汉语'",
+	"expected_answer": "我会说英语",
+	"expected_pinyin": "Wǒ huì shuō Yīngyǔ",
+	"expected_english": "I can speak English"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd1a"
+	},
+	"id": "c0e2d27a-975b-4ad8-825c-2554e2dc942e",
+	"lesson_number": 12,
+	"drill_type": "transformation",
+	"prompt_chinese": "我不舒服",
+	"prompt_english": "I'm not feeling well",
+	"instruction_english": "Turn into a question with 吗",
+	"instruction_chinese": "用'吗'变成疑问句",
+	"expected_answer": "你不舒服吗",
+	"expected_pinyin": "Nǐ bù shūfu ma?",
+	"expected_english": "Are you unwell?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd1b"
+	},
+	"id": "4693a3b8-9d65-4ee9-94c7-58df4c524df8",
+	"lesson_number": 13,
+	"drill_type": "transformation",
+	"prompt_chinese": "我认识一个姑娘",
+	"prompt_english": "I know a girl",
+	"instruction_english": "Add 了 to indicate completed past action",
+	"instruction_chinese": "加上'了'表示完成",
+	"expected_answer": "我认识了一个姑娘",
+	"expected_pinyin": "Wǒ rènshí le yí ge gūniang",
+	"expected_english": "I met a girl"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd1c"
+	},
+	"id": "49481302-53ab-4399-a841-f7f528728be0",
+	"lesson_number": 14,
+	"drill_type": "substitution",
+	"prompt_chinese": "祝你圣诞快乐",
+	"prompt_english": "Merry Christmas",
+	"instruction_english": "Replace 圣诞 with 新年 (New Year)",
+	"instruction_chinese": "用'新年'替换'圣诞'",
+	"expected_answer": "祝你新年快乐",
+	"expected_pinyin": "Zhù nǐ xīnnián kuàilè",
+	"expected_english": "Happy New Year"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd1d"
+	},
+	"id": "d64c106f-815c-4b7c-a76c-2613af03a625",
+	"lesson_number": 15,
+	"drill_type": "substitution",
+	"prompt_chinese": "银行在邮局旁边",
+	"prompt_english": "The bank is beside the post office",
+	"instruction_english": "Replace 旁边 with 后面 (behind)",
+	"instruction_chinese": "用'后面'替换'旁边'",
+	"expected_answer": "银行在邮局后面",
+	"expected_pinyin": "Yínháng zài yóujú hòumiàn",
+	"expected_english": "The bank is behind the post office"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd1e"
+	},
+	"id": "052dfa81-43ff-46f8-a2dc-a19dd6e08945",
+	"lesson_number": 16,
+	"drill_type": "substitution",
+	"prompt_chinese": "我要一杯茶",
+	"prompt_english": "I want a cup of tea",
+	"instruction_english": "Replace 茶 with 咖啡 (coffee)",
+	"instruction_chinese": "用'咖啡'替换'茶'",
+	"expected_answer": "我要一杯咖啡",
+	"expected_pinyin": "Wǒ yào yì bēi kāfēi",
+	"expected_english": "I want a cup of coffee"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd1f"
+	},
+	"id": "becd6e01-5f9f-4300-aaf9-24b64d78e0c8",
+	"lesson_number": 17,
+	"drill_type": "transformation",
+	"prompt_chinese": "这件衣服贵",
+	"prompt_english": "This clothing is expensive",
+	"instruction_english": "Add 太...了 to make 'too expensive'",
+	"instruction_chinese": "用'太...了'",
+	"expected_answer": "这件衣服太贵了",
+	"expected_pinyin": "Zhè jiàn yīfu tài guì le",
+	"expected_english": "This clothing is too expensive"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd20"
+	},
+	"id": "bcde382d-34f3-4063-ae33-4cb89405ffae",
+	"lesson_number": 18,
+	"drill_type": "substitution",
+	"prompt_chinese": "我每天七点起床",
+	"prompt_english": "I get up at 7 every day",
+	"instruction_english": "Replace 七 with 八 (eight)",
+	"instruction_chinese": "用'八'替换'七'",
+	"expected_answer": "我每天八点起床",
+	"expected_pinyin": "Wǒ měitiān bā diǎn qǐchuáng",
+	"expected_english": "I get up at 8 every day"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd21"
+	},
+	"id": "e84ec63e-18b4-469b-a936-ed4a6c6601aa",
+	"lesson_number": 19,
+	"drill_type": "substitution",
+	"prompt_chinese": "今天比昨天冷",
+	"prompt_english": "Today is colder than yesterday",
+	"instruction_english": "Replace 冷 with 热 (hot)",
+	"instruction_chinese": "用'热'替换'冷'",
+	"expected_answer": "今天比昨天热",
+	"expected_pinyin": "Jīntiān bǐ zuótiān rè",
+	"expected_english": "Today is hotter than yesterday"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd22"
+	},
+	"id": "a8d165f9-03ac-48ab-8282-ea00ca04a134",
+	"lesson_number": 20,
+	"drill_type": "substitution",
+	"prompt_chinese": "我打算去北京",
+	"prompt_english": "I plan to go to Beijing",
+	"instruction_english": "Replace 北京 with 上海 (Shanghai)",
+	"instruction_chinese": "用'上海'替换'北京'",
+	"expected_answer": "我打算去上海",
+	"expected_pinyin": "Wǒ dǎsuàn qù Shànghǎi",
+	"expected_english": "I plan to go to Shanghai"
+}]
+

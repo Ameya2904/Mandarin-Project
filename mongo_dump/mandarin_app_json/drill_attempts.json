@@ -1,0 +1,71 @@
+[{
+	"_id": {
+		"$oid": "6a12d6f4327e872d279492cf"
+	},
+	"id": "7896acbf-8366-4073-a10b-9238b3ffb288",
+	"user_id": "1ffa2b63-7e33-4a9f-b5dd-02c4f5b128e3",
+	"drill_id": "c70b4998-f0a6-4dc5-8e7c-b63e5d28e681",
+	"user_answer": "我不忙",
+	"was_correct": true,
+	"response_time_ms": null,
+	"timestamp": {
+		"$date": "2026-05-24T10:46:12.063Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "6a12d7d47b9b4ccebe2253da"
+	},
+	"id": "08a0b572-111b-4e1c-82b9-df9b8887688f",
+	"user_id": "1ffa2b63-7e33-4a9f-b5dd-02c4f5b128e3",
+	"drill_id": "c70b4998-f0a6-4dc5-8e7c-b63e5d28e681",
+	"user_answer": "我不忙",
+	"was_correct": true,
+	"response_time_ms": null,
+	"timestamp": {
+		"$date": "2026-05-24T10:49:56.648Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "6a12dd491feb2fb73ee730c9"
+	},
+	"id": "23377205-0508-410d-8ae1-85d4e28a578b",
+	"user_id": "1ffa2b63-7e33-4a9f-b5dd-02c4f5b128e3",
+	"drill_id": "48b3e4d2-edb6-4623-8e29-ddb9fda9c49a",
+	"user_answer": "我不忙",
+	"was_correct": true,
+	"response_time_ms": null,
+	"timestamp": {
+		"$date": "2026-05-24T11:13:13.925Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "6a12ecf1f8a56a1e1c03583c"
+	},
+	"id": "b249d76e-bf86-4526-9fad-ceb132795ddc",
+	"user_id": "1ffa2b63-7e33-4a9f-b5dd-02c4f5b128e3",
+	"drill_id": "48b3e4d2-edb6-4623-8e29-ddb9fda9c49a",
+	"user_answer": "我不忙",
+	"was_correct": true,
+	"response_time_ms": null,
+	"timestamp": {
+		"$date": "2026-05-24T12:20:01.215Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "6a12ed26b05e23291aa05f2c"
+	},
+	"id": "ae7ab89e-b553-4aa1-a1f4-5d532610e9e9",
+	"user_id": "1ffa2b63-7e33-4a9f-b5dd-02c4f5b128e3",
+	"drill_id": "48b3e4d2-edb6-4623-8e29-ddb9fda9c49a",
+	"user_answer": "我不忙",
+	"was_correct": true,
+	"response_time_ms": null,
+	"timestamp": {
+		"$date": "2026-05-24T12:20:54.072Z"
+	}
+}]
+
