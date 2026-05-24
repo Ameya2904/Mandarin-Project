@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   TextInput,
   Alert,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -55,16 +56,23 @@ export default function ProfileScreen() {
   );
 
   const handleLogout = async () => {
+    const doLogout = async () => {
+      await logout();
+      router.replace('/(auth)/login');
+    };
+
+    if (Platform.OS === 'web') {
+      // Alert.alert is a no-op on web, use window.confirm instead.
+      // eslint-disable-next-line no-undef
+      if (typeof window !== 'undefined' && window.confirm('Are you sure you want to log out?')) {
+        await doLogout();
+      }
+      return;
+    }
+
     Alert.alert('Logout', 'Are you sure you want to log out?', [
       { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Logout',
-        style: 'destructive',
-        onPress: async () => {
-          await logout();
-          router.replace('/(auth)/login');
-        },
-      },
+      { text: 'Logout', style: 'destructive', onPress: doLogout },
     ]);
   };
 
