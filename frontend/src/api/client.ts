@@ -1,0 +1,169 @@
+/**
+ * API client for the Mandarin learning backend.
+ * All routes are prefixed with /api and use bearer token auth.
+ */
+import { storage } from '@/src/utils/storage';
+
+const BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+const TOKEN_KEY = 'mandarin_auth_token';
+
+export type Vocabulary = {
+  id: string;
+  lesson_id: string;
+  lesson_number: number;
+  simplified: string;
+  traditional: string;
+  pinyin: string;
+  english: string;
+  part_of_speech: string;
+  example_chinese: string;
+  example_pinyin: string;
+  example_english: string;
+};
+
+export type Flashcard = {
+  id: string;
+  user_id: string;
+  vocabulary_id: string;
+  current_stage: number;
+  next_review_at: string;
+  correct_count: number;
+  incorrect_count: number;
+  vocabulary: Vocabulary;
+};
+
+export type Lesson = {
+  id: string;
+  lesson_number: number;
+  title: string;
+  subtitle: string;
+  description: string;
+  level: string;
+  video_url: string;
+  dialogue: { speaker: string; chinese: string; pinyin: string; english: string }[];
+  grammar_notes: { title: string; explanation: string }[];
+  vocabulary_count: number;
+  vocabulary?: Vocabulary[];
+  progress?: { mastered: number; started: number; total: number };
+};
+
+export type Drill = {
+  id: string;
+  lesson_number: number;
+  drill_type: string;
+  prompt_chinese: string;
+  prompt_english: string;
+  instruction_english: string;
+  instruction_chinese: string;
+  expected_answer: string;
+  expected_pinyin: string;
+  expected_english: string;
+};
+
+export type Dashboard = {
+  due_count: number;
+  new_count: number;
+  total_cards: number;
+  mastered_count: number;
+  reviews_today: number;
+  correct_today: number;
+  daily_goal: number;
+  streak_count: number;
+  progress_percent: number;
+};
+
+export type UserPublic = {
+  id: string;
+  email: string;
+  name: string;
+  daily_goal: number;
+  streak_count: number;
+  created_at: string;
+};
+
+async function getToken(): Promise<string | null> {
+  return storage.secureGet<string>(TOKEN_KEY, '');
+}
+
+export async function setAuthToken(token: string): Promise<void> {
+  await storage.secureSet(TOKEN_KEY, token);
+}
+
+export async function clearAuthToken(): Promise<void> {
+  await storage.secureRemove(TOKEN_KEY);
+}
+
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const token = await getToken();
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...((init.headers as Record<string, string>) || {}),
+  };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  const res = await fetch(`${BASE_URL}/api${path}`, { ...init, headers });
+  const text = await res.text();
+  const data = text ? JSON.parse(text) : null;
+
+  if (!res.ok) {
+    const message = data?.detail || data?.message || `Request failed (${res.status})`;
+    throw new Error(message);
+  }
+  return data as T;
+}
+
+// Auth
+export const api = {
+  signup: (email: string, password: string, name: string) =>
+    request<{ access_token: string; user: UserPublic }>('/auth/signup', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, name }),
+    }),
+  login: (email: string, password: string) =>
+    request<{ access_token: string; user: UserPublic }>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    }),
+  me: () => request<UserPublic>('/auth/me'),
+  updateMe: (payload: { name?: string; daily_goal?: number; learner_level?: string }) =>
+    request<UserPublic>('/auth/me', { method: 'PUT', body: JSON.stringify(payload) }),
+
+  dashboard: () => request<Dashboard>('/progress/dashboard'),
+  stats: () =>
+    request<{
+      total_reviews: number;
+      correct_reviews: number;
+      retention_rate: number;
+      mastered_count: number;
+      learning_count: number;
+      weak_words: { simplified: string; pinyin: string; english: string; correct: number; incorrect: number }[];
+      speaking_attempts: number;
+      streak_count: number;
+    }>('/progress/stats'),
+
+  lessons: () => request<Lesson[]>('/lessons'),
+  lesson: (id: string) => request<Lesson>(`/lessons/${id}`),
+
+  dueFlashcards: (limit = 20) => request<Flashcard[]>(`/flashcards/due?limit=${limit}`),
+  newFlashcards: (limit = 10, lessonId?: string) =>
+    request<Vocabulary[]>(`/flashcards/new?limit=${limit}${lessonId ? `&lesson_id=${lessonId}` : ''}`),
+  reviewFlashcard: (vocabulary_id: string, was_correct: boolean, response_time_ms?: number) =>
+    request<{ success: boolean; new_stage: number; next_review_at: string }>('/flashcards/review', {
+      method: 'POST',
+      body: JSON.stringify({ vocabulary_id, was_correct, response_time_ms }),
+    }),
+
+  drills: (lessonNumber?: number) =>
+    request<Drill[]>(`/drills${lessonNumber !== undefined ? `?lesson_number=${lessonNumber}` : ''}`),
+  drillAttempt: (drill_id: string, user_answer: string, was_correct: boolean, response_time_ms?: number) =>
+    request<{ success: boolean }>('/drills/attempt', {
+      method: 'POST',
+      body: JSON.stringify({ drill_id, user_answer, was_correct, response_time_ms }),
+    }),
+
+  evaluateSpeaking: (target_chinese: string, spoken_text: string, vocabulary_id?: string) =>
+    request<{ correct: boolean; score: number; feedback: string; spoken_text: string; target_text: string }>(
+      '/speaking/evaluate',
+      { method: 'POST', body: JSON.stringify({ target_chinese, spoken_text, vocabulary_id }) }
+    ),
+};
