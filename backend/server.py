@@ -17,10 +17,8 @@ from typing import List, Optional
 from datetime import datetime, timedelta, timezone
 
 from seed_data import NPCR_LESSONS, SENTENCE_DRILLS
-from emergentintegrations.llm.openai.speech_to_text import OpenAISpeechToText
-from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
+from openai import AsyncOpenAI
 import tempfile
-import base64
 
 # ---------- Setup ----------
 ROOT_DIR = Path(__file__).parent
@@ -33,7 +31,7 @@ db = client[os.environ['DB_NAME']]
 JWT_SECRET = os.environ['JWT_SECRET_KEY']
 JWT_ALGO = os.environ.get('JWT_ALGORITHM', 'HS256')
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES', 43200))
-EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
 
 app = FastAPI(title="Mandarin Learning API")
 api_router = APIRouter(prefix="/api")
@@ -638,10 +636,9 @@ async def transcribe_audio(
 ):
     """Accept an audio file (m4a/wav/webm), transcribe via OpenAI Whisper-1 (zh),
     then compare to target_chinese (if provided) for pronunciation feedback."""
-    if not EMERGENT_LLM_KEY:
-        raise HTTPException(status_code=500, detail="LLM key not configured on server")
+    if not OPENAI_API_KEY:
+        raise HTTPException(status_code=500, detail="OpenAI API key not configured on server")
 
-    # Determine extension from filename / content-type
     filename = file.filename or "audio.m4a"
     suffix = "." + filename.rsplit(".", 1)[-1].lower() if "." in filename else ".m4a"
     if suffix.lstrip(".") not in {"mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"}:
@@ -653,25 +650,21 @@ async def transcribe_audio(
     if len(contents) < 100:
         raise HTTPException(status_code=400, detail="Audio file too small / empty")
 
-    # Save to a temp file because emergentintegrations whisper accepts paths/file handles with names
     tmp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
     tmp.write(contents)
     tmp.close()
 
     try:
-        stt = OpenAISpeechToText(api_key=EMERGENT_LLM_KEY)
+        oai = AsyncOpenAI(api_key=OPENAI_API_KEY)
         with open(tmp.name, "rb") as f:
-            response = await stt.transcribe(
-                file=f,
+            transcribed = await oai.audio.transcriptions.create(
                 model="whisper-1",
+                file=f,
                 language="zh",
                 response_format="text",
             )
-        # litellm's atranscription returns an object with a .text attribute or a string
-        if isinstance(response, str):
-            transcribed = response
-        else:
-            transcribed = getattr(response, "text", "") or str(response)
+        if not isinstance(transcribed, str):
+            transcribed = getattr(transcribed, "text", "") or str(transcribed)
     except Exception as e:
         logger.exception("Whisper transcription failed")
         raise HTTPException(status_code=502, detail=f"Transcription failed: {str(e)}")
@@ -879,33 +872,45 @@ async def vocabulary_library(
 async def recognize_handwriting(payload: WritingRecognizeRequest, current_user: dict = Depends(get_current_user)):
     """Recognize handwritten Chinese characters using GPT-4o-mini vision via Emergent key.
     Compares to target_chinese and returns a score + feedback."""
-    if not EMERGENT_LLM_KEY:
-        raise HTTPException(status_code=500, detail="LLM key not configured")
+    if not OPENAI_API_KEY:
+        raise HTTPException(status_code=500, detail="OpenAI API key not configured")
 
     image_b64 = payload.image_base64
-    # Accept data URL too
     if image_b64.startswith("data:"):
         _, _, image_b64 = image_b64.partition(",")
     if not image_b64 or len(image_b64) < 100:
         raise HTTPException(status_code=400, detail="Image is empty or invalid")
 
     try:
-        chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY,
-            session_id=f"writing-{current_user['id']}-{uuid.uuid4()}",
-            system_message=(
-                "You are a Chinese handwriting recognizer. The user has handwritten Chinese characters on a digital canvas. "
-                "Read the handwriting and return ONLY the recognized simplified Chinese characters, nothing else — no pinyin, "
-                "no English, no punctuation, no explanation. If illegible, return an empty string."
-            ),
-        ).with_model("openai", "gpt-4o-mini").with_max_tokens(64)
-
-        msg = UserMessage(
-            text=f"Read the handwritten Chinese characters in this image. Expected (for context only, do not echo if wrong): {payload.target_chinese}. Return only what you actually see written.",
-            file_contents=[ImageContent(image_base64=image_b64)],
+        oai = AsyncOpenAI(api_key=OPENAI_API_KEY)
+        response = await oai.chat.completions.create(
+            model="gpt-4o-mini",
+            max_tokens=64,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a Chinese handwriting recognizer. The user has handwritten Chinese characters on a digital canvas. "
+                        "Read the handwriting and return ONLY the recognized simplified Chinese characters, nothing else — no pinyin, "
+                        "no English, no punctuation, no explanation. If illegible, return an empty string."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": f"Read the handwritten Chinese characters in this image. Expected (for context only, do not echo if wrong): {payload.target_chinese}. Return only what you actually see written.",
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:image/png;base64,{image_b64}"},
+                        },
+                    ],
+                },
+            ],
         )
-        recognized = await chat.send_message(msg)
-        recognized = (recognized or "").strip().replace("\n", "").replace(" ", "")
+        recognized = (response.choices[0].message.content or "").strip().replace("\n", "").replace(" ", "")
     except Exception as e:
         logger.exception("Handwriting recognition failed")
         raise HTTPException(status_code=502, detail=f"Recognition failed: {str(e)[:200]}")

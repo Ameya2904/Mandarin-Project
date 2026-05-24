@@ -1,0 +1,2405 @@
+[{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc5d"
+	},
+	"id": "b4a74077-9153-43ad-b596-2c70074aeeb2",
+	"lesson_id": "7fab3743-1cb7-4ece-82c2-896440c75061",
+	"lesson_number": 1,
+	"simplified": "你",
+	"traditional": "你",
+	"pinyin": "nǐ",
+	"english": "you",
+	"part_of_speech": "pronoun",
+	"example_chinese": "你好",
+	"example_pinyin": "Nǐ hǎo",
+	"example_english": "Hello"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc5e"
+	},
+	"id": "e9d3bc80-d418-42b1-9023-f0bb2f3433f4",
+	"lesson_id": "7fab3743-1cb7-4ece-82c2-896440c75061",
+	"lesson_number": 1,
+	"simplified": "好",
+	"traditional": "好",
+	"pinyin": "hǎo",
+	"english": "good; well",
+	"part_of_speech": "adjective",
+	"example_chinese": "你好",
+	"example_pinyin": "Nǐ hǎo",
+	"example_english": "Hello"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc5f"
+	},
+	"id": "55296bda-86b2-4eca-85a4-b898775ac451",
+	"lesson_id": "7fab3743-1cb7-4ece-82c2-896440c75061",
+	"lesson_number": 1,
+	"simplified": "你好",
+	"traditional": "你好",
+	"pinyin": "nǐ hǎo",
+	"english": "hello",
+	"part_of_speech": "phrase",
+	"example_chinese": "你好,林娜",
+	"example_pinyin": "Nǐ hǎo, Lín Nà",
+	"example_english": "Hello, Lin Na"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc60"
+	},
+	"id": "7ebed8c5-c183-46ec-b055-feb1c7d0c61f",
+	"lesson_id": "7fab3743-1cb7-4ece-82c2-896440c75061",
+	"lesson_number": 1,
+	"simplified": "吗",
+	"traditional": "嗎",
+	"pinyin": "ma",
+	"english": "question particle",
+	"part_of_speech": "particle",
+	"example_chinese": "你好吗?",
+	"example_pinyin": "Nǐ hǎo ma?",
+	"example_english": "How are you?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc61"
+	},
+	"id": "7a12d369-86d9-4bdc-bebf-a8c8f4bd499f",
+	"lesson_id": "7fab3743-1cb7-4ece-82c2-896440c75061",
+	"lesson_number": 1,
+	"simplified": "我",
+	"traditional": "我",
+	"pinyin": "wǒ",
+	"english": "I; me",
+	"part_of_speech": "pronoun",
+	"example_chinese": "我很好",
+	"example_pinyin": "Wǒ hěn hǎo",
+	"example_english": "I am well"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc62"
+	},
+	"id": "3be278ba-367c-49b6-aa9a-514216eead6c",
+	"lesson_id": "7fab3743-1cb7-4ece-82c2-896440c75061",
+	"lesson_number": 1,
+	"simplified": "很",
+	"traditional": "很",
+	"pinyin": "hěn",
+	"english": "very",
+	"part_of_speech": "adverb",
+	"example_chinese": "我很好",
+	"example_pinyin": "Wǒ hěn hǎo",
+	"example_english": "I am very well"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc64"
+	},
+	"id": "b708d443-3dcb-4f21-8215-839bd6f896ab",
+	"lesson_id": "808de5d8-219b-442e-a501-7965d1066f59",
+	"lesson_number": 2,
+	"simplified": "忙",
+	"traditional": "忙",
+	"pinyin": "máng",
+	"english": "busy",
+	"part_of_speech": "adjective",
+	"example_chinese": "我很忙",
+	"example_pinyin": "Wǒ hěn máng",
+	"example_english": "I am very busy"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc65"
+	},
+	"id": "7ea8a82b-fac8-40b2-bc63-425e31f38d72",
+	"lesson_id": "808de5d8-219b-442e-a501-7965d1066f59",
+	"lesson_number": 2,
+	"simplified": "不",
+	"traditional": "不",
+	"pinyin": "bù",
+	"english": "not; no",
+	"part_of_speech": "adverb",
+	"example_chinese": "我不忙",
+	"example_pinyin": "Wǒ bù máng",
+	"example_english": "I am not busy"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc66"
+	},
+	"id": "9cd08623-82e8-4f1b-82ad-a528de190e14",
+	"lesson_id": "808de5d8-219b-442e-a501-7965d1066f59",
+	"lesson_number": 2,
+	"simplified": "呢",
+	"traditional": "呢",
+	"pinyin": "ne",
+	"english": "and you? (question particle)",
+	"part_of_speech": "particle",
+	"example_chinese": "你呢?",
+	"example_pinyin": "Nǐ ne?",
+	"example_english": "And you?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc67"
+	},
+	"id": "c48777ed-6914-444d-a0dc-8c352497413c",
+	"lesson_id": "808de5d8-219b-442e-a501-7965d1066f59",
+	"lesson_number": 2,
+	"simplified": "也",
+	"traditional": "也",
+	"pinyin": "yě",
+	"english": "also; too",
+	"part_of_speech": "adverb",
+	"example_chinese": "我也很好",
+	"example_pinyin": "Wǒ yě hěn hǎo",
+	"example_english": "I am also very well"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc68"
+	},
+	"id": "70be4b2b-0b47-4949-88a2-86a6050bb36a",
+	"lesson_id": "808de5d8-219b-442e-a501-7965d1066f59",
+	"lesson_number": 2,
+	"simplified": "都",
+	"traditional": "都",
+	"pinyin": "dōu",
+	"english": "all; both",
+	"part_of_speech": "adverb",
+	"example_chinese": "我们都很忙",
+	"example_pinyin": "Wǒmen dōu hěn máng",
+	"example_english": "We are all busy"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc69"
+	},
+	"id": "95f3aece-1933-4727-b97a-ef0043131f7e",
+	"lesson_id": "808de5d8-219b-442e-a501-7965d1066f59",
+	"lesson_number": 2,
+	"simplified": "他",
+	"traditional": "他",
+	"pinyin": "tā",
+	"english": "he; him",
+	"part_of_speech": "pronoun",
+	"example_chinese": "他很忙",
+	"example_pinyin": "Tā hěn máng",
+	"example_english": "He is busy"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc6a"
+	},
+	"id": "cbaa69a2-fec0-4a76-96dc-02450ee8bc26",
+	"lesson_id": "808de5d8-219b-442e-a501-7965d1066f59",
+	"lesson_number": 2,
+	"simplified": "她",
+	"traditional": "她",
+	"pinyin": "tā",
+	"english": "she; her",
+	"part_of_speech": "pronoun",
+	"example_chinese": "她很好",
+	"example_pinyin": "Tā hěn hǎo",
+	"example_english": "She is well"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc6c"
+	},
+	"id": "4ce07cf8-26b2-4d2f-9b18-601576eecb9f",
+	"lesson_id": "26c66d44-c3cc-4871-a269-25a3f72dd07b",
+	"lesson_number": 3,
+	"simplified": "是",
+	"traditional": "是",
+	"pinyin": "shì",
+	"english": "to be (is/am/are)",
+	"part_of_speech": "verb",
+	"example_chinese": "我是学生",
+	"example_pinyin": "Wǒ shì xuéshēng",
+	"example_english": "I am a student"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc6d"
+	},
+	"id": "f660779e-bd6d-4580-9eea-922f5b102257",
+	"lesson_id": "26c66d44-c3cc-4871-a269-25a3f72dd07b",
+	"lesson_number": 3,
+	"simplified": "那",
+	"traditional": "那",
+	"pinyin": "nà",
+	"english": "that",
+	"part_of_speech": "pronoun",
+	"example_chinese": "那是书",
+	"example_pinyin": "Nà shì shū",
+	"example_english": "That is a book"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc6e"
+	},
+	"id": "896d03fa-3892-4567-8ac4-6d39f087953a",
+	"lesson_id": "26c66d44-c3cc-4871-a269-25a3f72dd07b",
+	"lesson_number": 3,
+	"simplified": "这",
+	"traditional": "這",
+	"pinyin": "zhè",
+	"english": "this",
+	"part_of_speech": "pronoun",
+	"example_chinese": "这是茶",
+	"example_pinyin": "Zhè shì chá",
+	"example_english": "This is tea"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc6f"
+	},
+	"id": "97fe9092-6e6b-4584-a989-30f4c57d6b2d",
+	"lesson_id": "26c66d44-c3cc-4871-a269-25a3f72dd07b",
+	"lesson_number": 3,
+	"simplified": "谁",
+	"traditional": "誰",
+	"pinyin": "shéi",
+	"english": "who",
+	"part_of_speech": "pronoun",
+	"example_chinese": "他是谁?",
+	"example_pinyin": "Tā shì shéi?",
+	"example_english": "Who is he?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc70"
+	},
+	"id": "340bf209-29aa-4d95-9994-9b0fa308a9f7",
+	"lesson_id": "26c66d44-c3cc-4871-a269-25a3f72dd07b",
+	"lesson_number": 3,
+	"simplified": "朋友",
+	"traditional": "朋友",
+	"pinyin": "péngyǒu",
+	"english": "friend",
+	"part_of_speech": "noun",
+	"example_chinese": "我的朋友",
+	"example_pinyin": "Wǒ de péngyǒu",
+	"example_english": "My friend"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc71"
+	},
+	"id": "cae11280-c470-41b3-ba34-c0d711fd538a",
+	"lesson_id": "26c66d44-c3cc-4871-a269-25a3f72dd07b",
+	"lesson_number": 3,
+	"simplified": "哪",
+	"traditional": "哪",
+	"pinyin": "nǎ",
+	"english": "which",
+	"part_of_speech": "pronoun",
+	"example_chinese": "哪国人?",
+	"example_pinyin": "Nǎ guó rén?",
+	"example_english": "What nationality?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc72"
+	},
+	"id": "4a6a8e22-d58b-4b05-85c1-c9c29c4b8a5e",
+	"lesson_id": "26c66d44-c3cc-4871-a269-25a3f72dd07b",
+	"lesson_number": 3,
+	"simplified": "国",
+	"traditional": "國",
+	"pinyin": "guó",
+	"english": "country",
+	"part_of_speech": "noun",
+	"example_chinese": "中国",
+	"example_pinyin": "Zhōngguó",
+	"example_english": "China"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc73"
+	},
+	"id": "580725e9-6fef-43c2-ae13-ecf9427569e4",
+	"lesson_id": "26c66d44-c3cc-4871-a269-25a3f72dd07b",
+	"lesson_number": 3,
+	"simplified": "人",
+	"traditional": "人",
+	"pinyin": "rén",
+	"english": "person; people",
+	"part_of_speech": "noun",
+	"example_chinese": "中国人",
+	"example_pinyin": "Zhōngguó rén",
+	"example_english": "Chinese person"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc74"
+	},
+	"id": "4375778f-3ac0-4686-8bba-0f79023cc300",
+	"lesson_id": "26c66d44-c3cc-4871-a269-25a3f72dd07b",
+	"lesson_number": 3,
+	"simplified": "中国",
+	"traditional": "中國",
+	"pinyin": "Zhōngguó",
+	"english": "China",
+	"part_of_speech": "noun",
+	"example_chinese": "我爱中国",
+	"example_pinyin": "Wǒ ài Zhōngguó",
+	"example_english": "I love China"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc76"
+	},
+	"id": "9b42e2ea-102b-4acc-8e9e-8b8e92842c5a",
+	"lesson_id": "6c71917c-ea40-4f80-9a56-8da1d91428d6",
+	"lesson_number": 4,
+	"simplified": "叫",
+	"traditional": "叫",
+	"pinyin": "jiào",
+	"english": "to be called; to call",
+	"part_of_speech": "verb",
+	"example_chinese": "我叫林娜",
+	"example_pinyin": "Wǒ jiào Lín Nà",
+	"example_english": "My name is Lin Na"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc77"
+	},
+	"id": "4e8667a7-33d2-43a7-a225-d4ffa97ff868",
+	"lesson_id": "6c71917c-ea40-4f80-9a56-8da1d91428d6",
+	"lesson_number": 4,
+	"simplified": "什么",
+	"traditional": "什麼",
+	"pinyin": "shénme",
+	"english": "what",
+	"part_of_speech": "pronoun",
+	"example_chinese": "你叫什么?",
+	"example_pinyin": "Nǐ jiào shénme?",
+	"example_english": "What's your name?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc78"
+	},
+	"id": "9f6d76bf-2001-4134-97ed-ee903eab2b38",
+	"lesson_id": "6c71917c-ea40-4f80-9a56-8da1d91428d6",
+	"lesson_number": 4,
+	"simplified": "名字",
+	"traditional": "名字",
+	"pinyin": "míngzì",
+	"english": "name",
+	"part_of_speech": "noun",
+	"example_chinese": "我的名字",
+	"example_pinyin": "Wǒ de míngzì",
+	"example_english": "My name"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc79"
+	},
+	"id": "0bbcc9cd-186d-4e52-8f9a-ccd2a3a2b234",
+	"lesson_id": "6c71917c-ea40-4f80-9a56-8da1d91428d6",
+	"lesson_number": 4,
+	"simplified": "认识",
+	"traditional": "認識",
+	"pinyin": "rènshí",
+	"english": "to know; to be acquainted with",
+	"part_of_speech": "verb",
+	"example_chinese": "认识你",
+	"example_pinyin": "Rènshí nǐ",
+	"example_english": "To know you"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc7a"
+	},
+	"id": "0e5b247c-2173-4ab0-8ab0-90904d238b72",
+	"lesson_id": "6c71917c-ea40-4f80-9a56-8da1d91428d6",
+	"lesson_number": 4,
+	"simplified": "高兴",
+	"traditional": "高興",
+	"pinyin": "gāoxìng",
+	"english": "happy; glad",
+	"part_of_speech": "adjective",
+	"example_chinese": "我很高兴",
+	"example_pinyin": "Wǒ hěn gāoxìng",
+	"example_english": "I am happy"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc7b"
+	},
+	"id": "c983c0de-1411-4c21-8f13-585576c285f2",
+	"lesson_id": "6c71917c-ea40-4f80-9a56-8da1d91428d6",
+	"lesson_number": 4,
+	"simplified": "请",
+	"traditional": "請",
+	"pinyin": "qǐng",
+	"english": "please",
+	"part_of_speech": "verb",
+	"example_chinese": "请进",
+	"example_pinyin": "Qǐng jìn",
+	"example_english": "Please come in"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc7c"
+	},
+	"id": "a7b061ee-9482-4ec7-b4a3-bf84d02aeef7",
+	"lesson_id": "6c71917c-ea40-4f80-9a56-8da1d91428d6",
+	"lesson_number": 4,
+	"simplified": "问",
+	"traditional": "問",
+	"pinyin": "wèn",
+	"english": "to ask",
+	"part_of_speech": "verb",
+	"example_chinese": "请问",
+	"example_pinyin": "Qǐng wèn",
+	"example_english": "Excuse me (may I ask)"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc7d"
+	},
+	"id": "ce9961e5-546d-4d97-92f1-0d03d9a61dc8",
+	"lesson_id": "6c71917c-ea40-4f80-9a56-8da1d91428d6",
+	"lesson_number": 4,
+	"simplified": "贵姓",
+	"traditional": "貴姓",
+	"pinyin": "guìxìng",
+	"english": "your honorable surname",
+	"part_of_speech": "phrase",
+	"example_chinese": "您贵姓?",
+	"example_pinyin": "Nín guìxìng?",
+	"example_english": "What is your surname?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc7f"
+	},
+	"id": "6da476f7-ddc0-4679-bcf2-dd28b58c9616",
+	"lesson_id": "2baf514a-32f0-4b79-b717-be1d86a348c7",
+	"lesson_number": 5,
+	"simplified": "在",
+	"traditional": "在",
+	"pinyin": "zài",
+	"english": "to be at; in",
+	"part_of_speech": "verb",
+	"example_chinese": "我在家",
+	"example_pinyin": "Wǒ zài jiā",
+	"example_english": "I am at home"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc80"
+	},
+	"id": "9ec62ca3-e8cb-40b7-9eb9-d1026ae85590",
+	"lesson_id": "2baf514a-32f0-4b79-b717-be1d86a348c7",
+	"lesson_number": 5,
+	"simplified": "哪儿",
+	"traditional": "哪兒",
+	"pinyin": "nǎr",
+	"english": "where",
+	"part_of_speech": "pronoun",
+	"example_chinese": "你在哪儿?",
+	"example_pinyin": "Nǐ zài nǎr?",
+	"example_english": "Where are you?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc81"
+	},
+	"id": "c669e027-e029-4414-8c4f-74f24c4b8635",
+	"lesson_id": "2baf514a-32f0-4b79-b717-be1d86a348c7",
+	"lesson_number": 5,
+	"simplified": "这儿",
+	"traditional": "這兒",
+	"pinyin": "zhèr",
+	"english": "here",
+	"part_of_speech": "pronoun",
+	"example_chinese": "我在这儿",
+	"example_pinyin": "Wǒ zài zhèr",
+	"example_english": "I am here"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc82"
+	},
+	"id": "9a8c8ce2-c0a3-4442-a47e-21dbf2f9965c",
+	"lesson_id": "2baf514a-32f0-4b79-b717-be1d86a348c7",
+	"lesson_number": 5,
+	"simplified": "那儿",
+	"traditional": "那兒",
+	"pinyin": "nàr",
+	"english": "there",
+	"part_of_speech": "pronoun",
+	"example_chinese": "他在那儿",
+	"example_pinyin": "Tā zài nàr",
+	"example_english": "He is there"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc83"
+	},
+	"id": "1b964571-92cf-464e-98b7-adde8e23b75c",
+	"lesson_id": "2baf514a-32f0-4b79-b717-be1d86a348c7",
+	"lesson_number": 5,
+	"simplified": "餐厅",
+	"traditional": "餐廳",
+	"pinyin": "cāntīng",
+	"english": "dining hall; restaurant",
+	"part_of_speech": "noun",
+	"example_chinese": "学校的餐厅",
+	"example_pinyin": "Xuéxiào de cāntīng",
+	"example_english": "School cafeteria"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc84"
+	},
+	"id": "d46722e2-3303-47ec-ab6d-0d17fa7c3a67",
+	"lesson_id": "2baf514a-32f0-4b79-b717-be1d86a348c7",
+	"lesson_number": 5,
+	"simplified": "谢谢",
+	"traditional": "謝謝",
+	"pinyin": "xièxie",
+	"english": "thank you",
+	"part_of_speech": "phrase",
+	"example_chinese": "谢谢你",
+	"example_pinyin": "Xièxie nǐ",
+	"example_english": "Thank you"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc85"
+	},
+	"id": "aa714eae-36c3-4edc-99d3-96c8919f6936",
+	"lesson_id": "2baf514a-32f0-4b79-b717-be1d86a348c7",
+	"lesson_number": 5,
+	"simplified": "不客气",
+	"traditional": "不客氣",
+	"pinyin": "bú kèqì",
+	"english": "you're welcome",
+	"part_of_speech": "phrase",
+	"example_chinese": "不客气",
+	"example_pinyin": "Bú kèqì",
+	"example_english": "You're welcome"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc86"
+	},
+	"id": "d7615cd2-773a-47b0-bd19-02d1783319fa",
+	"lesson_id": "2baf514a-32f0-4b79-b717-be1d86a348c7",
+	"lesson_number": 5,
+	"simplified": "家",
+	"traditional": "家",
+	"pinyin": "jiā",
+	"english": "home; family",
+	"part_of_speech": "noun",
+	"example_chinese": "我的家",
+	"example_pinyin": "Wǒ de jiā",
+	"example_english": "My home"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc87"
+	},
+	"id": "c39fe9c4-38fa-4182-b310-2a7c7c9df94b",
+	"lesson_id": "2baf514a-32f0-4b79-b717-be1d86a348c7",
+	"lesson_number": 5,
+	"simplified": "学校",
+	"traditional": "學校",
+	"pinyin": "xuéxiào",
+	"english": "school",
+	"part_of_speech": "noun",
+	"example_chinese": "我们的学校",
+	"example_pinyin": "Wǒmen de xuéxiào",
+	"example_english": "Our school"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc88"
+	},
+	"id": "eb5716bb-e34b-4824-b67d-511bd2451890",
+	"lesson_id": "2baf514a-32f0-4b79-b717-be1d86a348c7",
+	"lesson_number": 5,
+	"simplified": "去",
+	"traditional": "去",
+	"pinyin": "qù",
+	"english": "to go",
+	"part_of_speech": "verb",
+	"example_chinese": "我去学校",
+	"example_pinyin": "Wǒ qù xuéxiào",
+	"example_english": "I go to school"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc8a"
+	},
+	"id": "e933c8c2-75c8-4c7b-ad7e-b8e422e3396a",
+	"lesson_id": "0a17fe96-4ff2-4e1b-9125-f748cccbf9e0",
+	"lesson_number": 6,
+	"simplified": "今天",
+	"traditional": "今天",
+	"pinyin": "jīntiān",
+	"english": "today",
+	"part_of_speech": "noun",
+	"example_chinese": "今天很忙",
+	"example_pinyin": "Jīntiān hěn máng",
+	"example_english": "Today is busy"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc8b"
+	},
+	"id": "1ef294a1-6533-455c-92e6-11e2a99d14e7",
+	"lesson_id": "0a17fe96-4ff2-4e1b-9125-f748cccbf9e0",
+	"lesson_number": 6,
+	"simplified": "天气",
+	"traditional": "天氣",
+	"pinyin": "tiānqì",
+	"english": "weather",
+	"part_of_speech": "noun",
+	"example_chinese": "天气好",
+	"example_pinyin": "Tiānqì hǎo",
+	"example_english": "Weather is good"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc8c"
+	},
+	"id": "69d5b1e4-de51-4ec2-8bee-d5e39537a47c",
+	"lesson_id": "0a17fe96-4ff2-4e1b-9125-f748cccbf9e0",
+	"lesson_number": 6,
+	"simplified": "真",
+	"traditional": "真",
+	"pinyin": "zhēn",
+	"english": "really; truly",
+	"part_of_speech": "adverb",
+	"example_chinese": "真好",
+	"example_pinyin": "Zhēn hǎo",
+	"example_english": "Really good"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc8d"
+	},
+	"id": "3dbf72af-9ee2-4ce1-b861-059eb778b2b4",
+	"lesson_id": "0a17fe96-4ff2-4e1b-9125-f748cccbf9e0",
+	"lesson_number": 6,
+	"simplified": "我们",
+	"traditional": "我們",
+	"pinyin": "wǒmen",
+	"english": "we; us",
+	"part_of_speech": "pronoun",
+	"example_chinese": "我们走吧",
+	"example_pinyin": "Wǒmen zǒu ba",
+	"example_english": "Let's go"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc8e"
+	},
+	"id": "b8aecd2e-5589-410e-b194-dc7a4bef8d5f",
+	"lesson_id": "0a17fe96-4ff2-4e1b-9125-f748cccbf9e0",
+	"lesson_number": 6,
+	"simplified": "游泳",
+	"traditional": "游泳",
+	"pinyin": "yóuyǒng",
+	"english": "to swim",
+	"part_of_speech": "verb",
+	"example_chinese": "我去游泳",
+	"example_pinyin": "Wǒ qù yóuyǒng",
+	"example_english": "I go swimming"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc8f"
+	},
+	"id": "a7a57a1f-a85d-4bc2-bc3b-87d11d4612a7",
+	"lesson_id": "0a17fe96-4ff2-4e1b-9125-f748cccbf9e0",
+	"lesson_number": 6,
+	"simplified": "时候",
+	"traditional": "時候",
+	"pinyin": "shíhòu",
+	"english": "time; moment",
+	"part_of_speech": "noun",
+	"example_chinese": "什么时候?",
+	"example_pinyin": "Shénme shíhòu?",
+	"example_english": "When?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc90"
+	},
+	"id": "b2efd982-f6ad-4989-bacc-8ffe4ee0d3b3",
+	"lesson_id": "0a17fe96-4ff2-4e1b-9125-f748cccbf9e0",
+	"lesson_number": 6,
+	"simplified": "下午",
+	"traditional": "下午",
+	"pinyin": "xiàwǔ",
+	"english": "afternoon",
+	"part_of_speech": "noun",
+	"example_chinese": "下午见",
+	"example_pinyin": "Xiàwǔ jiàn",
+	"example_english": "See you this afternoon"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc91"
+	},
+	"id": "3d6ae719-bc0a-4fd4-b6ad-e542da248893",
+	"lesson_id": "0a17fe96-4ff2-4e1b-9125-f748cccbf9e0",
+	"lesson_number": 6,
+	"simplified": "点",
+	"traditional": "點",
+	"pinyin": "diǎn",
+	"english": "o'clock",
+	"part_of_speech": "measure word",
+	"example_chinese": "三点",
+	"example_pinyin": "Sān diǎn",
+	"example_english": "Three o'clock"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc93"
+	},
+	"id": "5c9a4ed2-9aeb-4da4-9c04-b7e5d710b933",
+	"lesson_id": "9db7d253-19df-4ffd-b7a7-1adb1eac8d36",
+	"lesson_number": 7,
+	"simplified": "同学",
+	"traditional": "同學",
+	"pinyin": "tóngxué",
+	"english": "classmate",
+	"part_of_speech": "noun",
+	"example_chinese": "我的同学",
+	"example_pinyin": "Wǒ de tóngxué",
+	"example_english": "My classmate"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc94"
+	},
+	"id": "7570bbf4-33e7-406b-8642-16ae1e3099cf",
+	"lesson_id": "9db7d253-19df-4ffd-b7a7-1adb1eac8d36",
+	"lesson_number": 7,
+	"simplified": "老师",
+	"traditional": "老師",
+	"pinyin": "lǎoshī",
+	"english": "teacher",
+	"part_of_speech": "noun",
+	"example_chinese": "我们的老师",
+	"example_pinyin": "Wǒmen de lǎoshī",
+	"example_english": "Our teacher"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc95"
+	},
+	"id": "9bf10b9f-d698-4835-90a0-f7c28330fe62",
+	"lesson_id": "9db7d253-19df-4ffd-b7a7-1adb1eac8d36",
+	"lesson_number": 7,
+	"simplified": "学生",
+	"traditional": "學生",
+	"pinyin": "xuéshēng",
+	"english": "student",
+	"part_of_speech": "noun",
+	"example_chinese": "我是学生",
+	"example_pinyin": "Wǒ shì xuéshēng",
+	"example_english": "I am a student"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc96"
+	},
+	"id": "f3b1ed3c-3aa6-4c29-9589-ea177939fd7c",
+	"lesson_id": "9db7d253-19df-4ffd-b7a7-1adb1eac8d36",
+	"lesson_number": 7,
+	"simplified": "的",
+	"traditional": "的",
+	"pinyin": "de",
+	"english": "possessive particle",
+	"part_of_speech": "particle",
+	"example_chinese": "我的书",
+	"example_pinyin": "Wǒ de shū",
+	"example_english": "My book"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc97"
+	},
+	"id": "73f0c2e6-e7cd-4e83-8e27-a673577b7ca6",
+	"lesson_id": "9db7d253-19df-4ffd-b7a7-1adb1eac8d36",
+	"lesson_number": 7,
+	"simplified": "书",
+	"traditional": "書",
+	"pinyin": "shū",
+	"english": "book",
+	"part_of_speech": "noun",
+	"example_chinese": "一本书",
+	"example_pinyin": "Yì běn shū",
+	"example_english": "A book"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc99"
+	},
+	"id": "8911051b-4f15-4385-8752-2262f43d1c74",
+	"lesson_id": "e341186b-871b-46ba-8ae5-aa835ff7be35",
+	"lesson_number": 8,
+	"simplified": "有",
+	"traditional": "有",
+	"pinyin": "yǒu",
+	"english": "to have; there is",
+	"part_of_speech": "verb",
+	"example_chinese": "我有书",
+	"example_pinyin": "Wǒ yǒu shū",
+	"example_english": "I have a book"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc9a"
+	},
+	"id": "0ded552f-c578-44b3-9c1f-4cfa052bc870",
+	"lesson_id": "e341186b-871b-46ba-8ae5-aa835ff7be35",
+	"lesson_number": 8,
+	"simplified": "几",
+	"traditional": "幾",
+	"pinyin": "jǐ",
+	"english": "how many (small)",
+	"part_of_speech": "pronoun",
+	"example_chinese": "几个人?",
+	"example_pinyin": "Jǐ ge rén?",
+	"example_english": "How many people?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc9b"
+	},
+	"id": "cc1d984b-cf0b-40c2-8b3c-8572a728aa6e",
+	"lesson_id": "e341186b-871b-46ba-8ae5-aa835ff7be35",
+	"lesson_number": 8,
+	"simplified": "口",
+	"traditional": "口",
+	"pinyin": "kǒu",
+	"english": "measure word for family members",
+	"part_of_speech": "measure word",
+	"example_chinese": "四口人",
+	"example_pinyin": "Sì kǒu rén",
+	"example_english": "Four people"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc9c"
+	},
+	"id": "f8bd9f9e-679c-44e0-9045-9766f972c97b",
+	"lesson_id": "e341186b-871b-46ba-8ae5-aa835ff7be35",
+	"lesson_number": 8,
+	"simplified": "爸爸",
+	"traditional": "爸爸",
+	"pinyin": "bàba",
+	"english": "father",
+	"part_of_speech": "noun",
+	"example_chinese": "我爸爸",
+	"example_pinyin": "Wǒ bàba",
+	"example_english": "My dad"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc9d"
+	},
+	"id": "8ba864b6-4c99-41d5-8b95-10b52ecf4f36",
+	"lesson_id": "e341186b-871b-46ba-8ae5-aa835ff7be35",
+	"lesson_number": 8,
+	"simplified": "妈妈",
+	"traditional": "媽媽",
+	"pinyin": "māma",
+	"english": "mother",
+	"part_of_speech": "noun",
+	"example_chinese": "我妈妈",
+	"example_pinyin": "Wǒ māma",
+	"example_english": "My mom"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc9e"
+	},
+	"id": "52f4da74-cd66-4674-a540-c93d2547084e",
+	"lesson_id": "e341186b-871b-46ba-8ae5-aa835ff7be35",
+	"lesson_number": 8,
+	"simplified": "哥哥",
+	"traditional": "哥哥",
+	"pinyin": "gēge",
+	"english": "older brother",
+	"part_of_speech": "noun",
+	"example_chinese": "我哥哥",
+	"example_pinyin": "Wǒ gēge",
+	"example_english": "My older brother"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc9f"
+	},
+	"id": "46bf1143-4cf7-4aa1-9326-aa31dd91dff1",
+	"lesson_id": "e341186b-871b-46ba-8ae5-aa835ff7be35",
+	"lesson_number": 8,
+	"simplified": "和",
+	"traditional": "和",
+	"pinyin": "hé",
+	"english": "and",
+	"part_of_speech": "conjunction",
+	"example_chinese": "我和你",
+	"example_pinyin": "Wǒ hé nǐ",
+	"example_english": "You and I"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bca0"
+	},
+	"id": "f6be39ed-f35b-4eba-ac02-806120191250",
+	"lesson_id": "e341186b-871b-46ba-8ae5-aa835ff7be35",
+	"lesson_number": 8,
+	"simplified": "四",
+	"traditional": "四",
+	"pinyin": "sì",
+	"english": "four",
+	"part_of_speech": "number",
+	"example_chinese": "四个人",
+	"example_pinyin": "Sì ge rén",
+	"example_english": "Four people"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bca2"
+	},
+	"id": "b32c9792-f49a-4b66-b3e0-6fbb6a5348e3",
+	"lesson_id": "b41a5888-46a3-4d59-8e06-894facfefcf3",
+	"lesson_number": 9,
+	"simplified": "今年",
+	"traditional": "今年",
+	"pinyin": "jīnnián",
+	"english": "this year",
+	"part_of_speech": "noun",
+	"example_chinese": "今年很忙",
+	"example_pinyin": "Jīnnián hěn máng",
+	"example_english": "This year is busy"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bca3"
+	},
+	"id": "c2ac72f4-efd2-49ba-becf-1d0cfce8c667",
+	"lesson_id": "b41a5888-46a3-4d59-8e06-894facfefcf3",
+	"lesson_number": 9,
+	"simplified": "多大",
+	"traditional": "多大",
+	"pinyin": "duō dà",
+	"english": "how old",
+	"part_of_speech": "phrase",
+	"example_chinese": "你多大?",
+	"example_pinyin": "Nǐ duō dà?",
+	"example_english": "How old are you?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bca4"
+	},
+	"id": "981f768d-a301-4679-8987-871fd8f4edcf",
+	"lesson_id": "b41a5888-46a3-4d59-8e06-894facfefcf3",
+	"lesson_number": 9,
+	"simplified": "岁",
+	"traditional": "歲",
+	"pinyin": "suì",
+	"english": "years (of age)",
+	"part_of_speech": "measure word",
+	"example_chinese": "二十岁",
+	"example_pinyin": "Èrshí suì",
+	"example_english": "20 years old"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bca5"
+	},
+	"id": "f7231e8c-ff1a-4d17-8d8c-a0b189d70ce0",
+	"lesson_id": "b41a5888-46a3-4d59-8e06-894facfefcf3",
+	"lesson_number": 9,
+	"simplified": "二十",
+	"traditional": "二十",
+	"pinyin": "èrshí",
+	"english": "twenty",
+	"part_of_speech": "number",
+	"example_chinese": "二十个",
+	"example_pinyin": "Èrshí ge",
+	"example_english": "Twenty (of something)"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bca6"
+	},
+	"id": "1f60f64e-b01c-4e21-aa0b-0a35bfb92b3a",
+	"lesson_id": "b41a5888-46a3-4d59-8e06-894facfefcf3",
+	"lesson_number": 9,
+	"simplified": "十",
+	"traditional": "十",
+	"pinyin": "shí",
+	"english": "ten",
+	"part_of_speech": "number",
+	"example_chinese": "十本书",
+	"example_pinyin": "Shí běn shū",
+	"example_english": "Ten books"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bca7"
+	},
+	"id": "06d3db3f-9b68-4810-b75e-c0838cef963e",
+	"lesson_id": "b41a5888-46a3-4d59-8e06-894facfefcf3",
+	"lesson_number": 9,
+	"simplified": "生日",
+	"traditional": "生日",
+	"pinyin": "shēngrì",
+	"english": "birthday",
+	"part_of_speech": "noun",
+	"example_chinese": "我的生日",
+	"example_pinyin": "Wǒ de shēngrì",
+	"example_english": "My birthday"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bca8"
+	},
+	"id": "4d072084-ef54-4d86-b3f5-08d84fc4fab1",
+	"lesson_id": "b41a5888-46a3-4d59-8e06-894facfefcf3",
+	"lesson_number": 9,
+	"simplified": "月",
+	"traditional": "月",
+	"pinyin": "yuè",
+	"english": "month",
+	"part_of_speech": "noun",
+	"example_chinese": "三月",
+	"example_pinyin": "Sān yuè",
+	"example_english": "March"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bca9"
+	},
+	"id": "fb99b464-6840-47ce-8309-f98d2eecd0f1",
+	"lesson_id": "b41a5888-46a3-4d59-8e06-894facfefcf3",
+	"lesson_number": 9,
+	"simplified": "号",
+	"traditional": "號",
+	"pinyin": "hào",
+	"english": "day of month",
+	"part_of_speech": "noun",
+	"example_chinese": "五号",
+	"example_pinyin": "Wǔ hào",
+	"example_english": "The 5th"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcab"
+	},
+	"id": "4d436fd1-3ef3-44fd-92a2-1533f1a67aab",
+	"lesson_id": "2881ecce-efa8-4c57-abdb-11f4ecd2ec9b",
+	"lesson_number": 10,
+	"simplified": "做",
+	"traditional": "做",
+	"pinyin": "zuò",
+	"english": "to do; to make",
+	"part_of_speech": "verb",
+	"example_chinese": "做饭",
+	"example_pinyin": "Zuò fàn",
+	"example_english": "To cook"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcac"
+	},
+	"id": "4154d43e-f733-4be9-8961-f66765f34134",
+	"lesson_id": "2881ecce-efa8-4c57-abdb-11f4ecd2ec9b",
+	"lesson_number": 10,
+	"simplified": "买",
+	"traditional": "買",
+	"pinyin": "mǎi",
+	"english": "to buy",
+	"part_of_speech": "verb",
+	"example_chinese": "买书",
+	"example_pinyin": "Mǎi shū",
+	"example_english": "Buy a book"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcad"
+	},
+	"id": "54d27e33-9668-4435-bc04-b036dd841263",
+	"lesson_id": "2881ecce-efa8-4c57-abdb-11f4ecd2ec9b",
+	"lesson_number": 10,
+	"simplified": "光盘",
+	"traditional": "光盤",
+	"pinyin": "guāngpán",
+	"english": "CD; disc",
+	"part_of_speech": "noun",
+	"example_chinese": "买光盘",
+	"example_pinyin": "Mǎi guāngpán",
+	"example_english": "Buy a CD"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcae"
+	},
+	"id": "291d5ab8-b32e-42a9-97c4-0a5525715c67",
+	"lesson_id": "2881ecce-efa8-4c57-abdb-11f4ecd2ec9b",
+	"lesson_number": 10,
+	"simplified": "想",
+	"traditional": "想",
+	"pinyin": "xiǎng",
+	"english": "to want; to think",
+	"part_of_speech": "verb",
+	"example_chinese": "我想吃",
+	"example_pinyin": "Wǒ xiǎng chī",
+	"example_english": "I want to eat"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcaf"
+	},
+	"id": "59b4d6f3-4df7-4699-87ab-1682efbce722",
+	"lesson_id": "2881ecce-efa8-4c57-abdb-11f4ecd2ec9b",
+	"lesson_number": 10,
+	"simplified": "音乐",
+	"traditional": "音樂",
+	"pinyin": "yīnyuè",
+	"english": "music",
+	"part_of_speech": "noun",
+	"example_chinese": "听音乐",
+	"example_pinyin": "Tīng yīnyuè",
+	"example_english": "Listen to music"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcb0"
+	},
+	"id": "2f101c78-c8d7-4ce5-b27d-ca99eb8b3d47",
+	"lesson_id": "2881ecce-efa8-4c57-abdb-11f4ecd2ec9b",
+	"lesson_number": 10,
+	"simplified": "中文",
+	"traditional": "中文",
+	"pinyin": "Zhōngwén",
+	"english": "Chinese (language)",
+	"part_of_speech": "noun",
+	"example_chinese": "学中文",
+	"example_pinyin": "Xué Zhōngwén",
+	"example_english": "Study Chinese"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcb1"
+	},
+	"id": "6eccb6b3-3f17-478d-a6ca-7a6fcf47cdb5",
+	"lesson_id": "2881ecce-efa8-4c57-abdb-11f4ecd2ec9b",
+	"lesson_number": 10,
+	"simplified": "钱",
+	"traditional": "錢",
+	"pinyin": "qián",
+	"english": "money",
+	"part_of_speech": "noun",
+	"example_chinese": "多少钱?",
+	"example_pinyin": "Duōshǎo qián?",
+	"example_english": "How much?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcb3"
+	},
+	"id": "8bb4ba3e-5b28-4c55-b14e-22a444f2f4c1",
+	"lesson_id": "ba6e955a-e980-4047-9641-2ee58debfa89",
+	"lesson_number": 11,
+	"simplified": "会",
+	"traditional": "會",
+	"pinyin": "huì",
+	"english": "can; able to (learned)",
+	"part_of_speech": "modal verb",
+	"example_chinese": "我会游泳",
+	"example_pinyin": "Wǒ huì yóuyǒng",
+	"example_english": "I can swim"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcb4"
+	},
+	"id": "4cc01865-f8d7-4d77-9428-c607d6fa1406",
+	"lesson_id": "ba6e955a-e980-4047-9641-2ee58debfa89",
+	"lesson_number": 11,
+	"simplified": "说",
+	"traditional": "說",
+	"pinyin": "shuō",
+	"english": "to speak; to say",
+	"part_of_speech": "verb",
+	"example_chinese": "说汉语",
+	"example_pinyin": "Shuō Hànyǔ",
+	"example_english": "Speak Chinese"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcb5"
+	},
+	"id": "ef819122-7fba-45bf-a3a9-40d170fc6c98",
+	"lesson_id": "ba6e955a-e980-4047-9641-2ee58debfa89",
+	"lesson_number": 11,
+	"simplified": "汉语",
+	"traditional": "漢語",
+	"pinyin": "Hànyǔ",
+	"english": "Chinese language",
+	"part_of_speech": "noun",
+	"example_chinese": "学汉语",
+	"example_pinyin": "Xué Hànyǔ",
+	"example_english": "Study Chinese"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcb6"
+	},
+	"id": "5fd54bd8-a08b-4ac9-8561-69882422a6e3",
+	"lesson_id": "ba6e955a-e980-4047-9641-2ee58debfa89",
+	"lesson_number": 11,
+	"simplified": "英语",
+	"traditional": "英語",
+	"pinyin": "Yīngyǔ",
+	"english": "English language",
+	"part_of_speech": "noun",
+	"example_chinese": "说英语",
+	"example_pinyin": "Shuō Yīngyǔ",
+	"example_english": "Speak English"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcb7"
+	},
+	"id": "a11cfaa5-b987-459f-9041-2e8e8d17afeb",
+	"lesson_id": "ba6e955a-e980-4047-9641-2ee58debfa89",
+	"lesson_number": 11,
+	"simplified": "一点儿",
+	"traditional": "一點兒",
+	"pinyin": "yìdiǎnr",
+	"english": "a little",
+	"part_of_speech": "phrase",
+	"example_chinese": "一点儿水",
+	"example_pinyin": "Yìdiǎnr shuǐ",
+	"example_english": "A little water"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcb8"
+	},
+	"id": "5b4d2125-51a8-4111-9582-d9661cd3581b",
+	"lesson_id": "ba6e955a-e980-4047-9641-2ee58debfa89",
+	"lesson_number": 11,
+	"simplified": "得",
+	"traditional": "得",
+	"pinyin": "de",
+	"english": "particle (degree)",
+	"part_of_speech": "particle",
+	"example_chinese": "说得好",
+	"example_pinyin": "Shuō de hǎo",
+	"example_english": "Speaks well"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcb9"
+	},
+	"id": "f9c126c6-3ed0-484d-89e7-b8667c1fbc6a",
+	"lesson_id": "ba6e955a-e980-4047-9641-2ee58debfa89",
+	"lesson_number": 11,
+	"simplified": "学",
+	"traditional": "學",
+	"pinyin": "xué",
+	"english": "to study; to learn",
+	"part_of_speech": "verb",
+	"example_chinese": "学中文",
+	"example_pinyin": "Xué Zhōngwén",
+	"example_english": "Study Chinese"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcbb"
+	},
+	"id": "0a9df3a0-f8d3-4230-9af8-9967090d5203",
+	"lesson_id": "4189cec5-6468-46da-8911-d7110c2ed106",
+	"lesson_number": 12,
+	"simplified": "怎么",
+	"traditional": "怎麼",
+	"pinyin": "zěnme",
+	"english": "how; what",
+	"part_of_speech": "pronoun",
+	"example_chinese": "怎么去?",
+	"example_pinyin": "Zěnme qù?",
+	"example_english": "How to go?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcbc"
+	},
+	"id": "d412bfc5-9fee-4067-b658-ccf2cd965d8a",
+	"lesson_id": "4189cec5-6468-46da-8911-d7110c2ed106",
+	"lesson_number": 12,
+	"simplified": "舒服",
+	"traditional": "舒服",
+	"pinyin": "shūfu",
+	"english": "comfortable; well",
+	"part_of_speech": "adjective",
+	"example_chinese": "不舒服",
+	"example_pinyin": "Bù shūfu",
+	"example_english": "Not feeling well"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcbd"
+	},
+	"id": "04f3344d-905f-45de-a79c-598bcf3868bd",
+	"lesson_id": "4189cec5-6468-46da-8911-d7110c2ed106",
+	"lesson_number": 12,
+	"simplified": "头",
+	"traditional": "頭",
+	"pinyin": "tóu",
+	"english": "head",
+	"part_of_speech": "noun",
+	"example_chinese": "我的头",
+	"example_pinyin": "Wǒ de tóu",
+	"example_english": "My head"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcbe"
+	},
+	"id": "f9e827a0-a0a6-4dcc-9ead-378814cd07c0",
+	"lesson_id": "4189cec5-6468-46da-8911-d7110c2ed106",
+	"lesson_number": 12,
+	"simplified": "疼",
+	"traditional": "疼",
+	"pinyin": "téng",
+	"english": "to hurt; painful",
+	"part_of_speech": "adjective",
+	"example_chinese": "头疼",
+	"example_pinyin": "Tóu téng",
+	"example_english": "Headache"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcbf"
+	},
+	"id": "5891908b-459d-4eda-aa03-4a4dad859157",
+	"lesson_id": "4189cec5-6468-46da-8911-d7110c2ed106",
+	"lesson_number": 12,
+	"simplified": "发烧",
+	"traditional": "發燒",
+	"pinyin": "fāshāo",
+	"english": "to have a fever",
+	"part_of_speech": "verb",
+	"example_chinese": "我发烧",
+	"example_pinyin": "Wǒ fāshāo",
+	"example_english": "I have a fever"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcc0"
+	},
+	"id": "e2dad655-50d8-4dfe-97cf-87f4a7943efe",
+	"lesson_id": "4189cec5-6468-46da-8911-d7110c2ed106",
+	"lesson_number": 12,
+	"simplified": "应该",
+	"traditional": "應該",
+	"pinyin": "yīnggāi",
+	"english": "should",
+	"part_of_speech": "modal verb",
+	"example_chinese": "应该休息",
+	"example_pinyin": "Yīnggāi xiūxi",
+	"example_english": "Should rest"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcc1"
+	},
+	"id": "e6149abe-317d-4709-961a-4086547e9f9e",
+	"lesson_id": "4189cec5-6468-46da-8911-d7110c2ed106",
+	"lesson_number": 12,
+	"simplified": "医院",
+	"traditional": "醫院",
+	"pinyin": "yīyuàn",
+	"english": "hospital",
+	"part_of_speech": "noun",
+	"example_chinese": "去医院",
+	"example_pinyin": "Qù yīyuàn",
+	"example_english": "Go to hospital"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcc2"
+	},
+	"id": "d1b1a94c-42ec-47d0-a167-f93eca616279",
+	"lesson_id": "4189cec5-6468-46da-8911-d7110c2ed106",
+	"lesson_number": 12,
+	"simplified": "休息",
+	"traditional": "休息",
+	"pinyin": "xiūxi",
+	"english": "to rest",
+	"part_of_speech": "verb",
+	"example_chinese": "好好休息",
+	"example_pinyin": "Hǎohǎo xiūxi",
+	"example_english": "Rest well"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcc4"
+	},
+	"id": "e26c930b-f54b-4340-b14e-161c595ac7ad",
+	"lesson_id": "7cf88f2e-f1d4-4836-8f9d-b590ae0d6593",
+	"lesson_number": 13,
+	"simplified": "昨天",
+	"traditional": "昨天",
+	"pinyin": "zuótiān",
+	"english": "yesterday",
+	"part_of_speech": "noun",
+	"example_chinese": "昨天来",
+	"example_pinyin": "Zuótiān lái",
+	"example_english": "Came yesterday"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcc5"
+	},
+	"id": "d33dc994-dd92-451b-90e5-0533471fbe5e",
+	"lesson_id": "7cf88f2e-f1d4-4836-8f9d-b590ae0d6593",
+	"lesson_number": 13,
+	"simplified": "了",
+	"traditional": "了",
+	"pinyin": "le",
+	"english": "particle (completed action)",
+	"part_of_speech": "particle",
+	"example_chinese": "吃了饭",
+	"example_pinyin": "Chī le fàn",
+	"example_english": "Ate"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcc6"
+	},
+	"id": "fcd75f3d-09a2-4b94-a4f3-2f0a690bc272",
+	"lesson_id": "7cf88f2e-f1d4-4836-8f9d-b590ae0d6593",
+	"lesson_number": 13,
+	"simplified": "漂亮",
+	"traditional": "漂亮",
+	"pinyin": "piàoliang",
+	"english": "pretty; beautiful",
+	"part_of_speech": "adjective",
+	"example_chinese": "很漂亮",
+	"example_pinyin": "Hěn piàoliang",
+	"example_english": "Very pretty"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcc7"
+	},
+	"id": "78dacc14-bc19-4d1d-86b1-6f69d59838be",
+	"lesson_id": "7cf88f2e-f1d4-4836-8f9d-b590ae0d6593",
+	"lesson_number": 13,
+	"simplified": "姑娘",
+	"traditional": "姑娘",
+	"pinyin": "gūniang",
+	"english": "girl; young woman",
+	"part_of_speech": "noun",
+	"example_chinese": "好姑娘",
+	"example_pinyin": "Hǎo gūniang",
+	"example_english": "Good girl"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcc8"
+	},
+	"id": "e69d5fac-ba64-46e4-8536-3e9575f08088",
+	"lesson_id": "7cf88f2e-f1d4-4836-8f9d-b590ae0d6593",
+	"lesson_number": 13,
+	"simplified": "明天",
+	"traditional": "明天",
+	"pinyin": "míngtiān",
+	"english": "tomorrow",
+	"part_of_speech": "noun",
+	"example_chinese": "明天见",
+	"example_pinyin": "Míngtiān jiàn",
+	"example_english": "See you tomorrow"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcc9"
+	},
+	"id": "7cfe173e-c84e-4bf8-815e-622d617c6039",
+	"lesson_id": "7cf88f2e-f1d4-4836-8f9d-b590ae0d6593",
+	"lesson_number": 13,
+	"simplified": "来",
+	"traditional": "來",
+	"pinyin": "lái",
+	"english": "to come",
+	"part_of_speech": "verb",
+	"example_chinese": "他来了",
+	"example_pinyin": "Tā lái le",
+	"example_english": "He came"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcca"
+	},
+	"id": "dec19693-cb08-49cf-a4ab-6c8d4dcb80dc",
+	"lesson_id": "7cf88f2e-f1d4-4836-8f9d-b590ae0d6593",
+	"lesson_number": 13,
+	"simplified": "吃",
+	"traditional": "吃",
+	"pinyin": "chī",
+	"english": "to eat",
+	"part_of_speech": "verb",
+	"example_chinese": "吃饭",
+	"example_pinyin": "Chī fàn",
+	"example_english": "Eat"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bccb"
+	},
+	"id": "3a2f22d6-1200-4ff5-881b-e603dd501587",
+	"lesson_id": "7cf88f2e-f1d4-4836-8f9d-b590ae0d6593",
+	"lesson_number": 13,
+	"simplified": "饭",
+	"traditional": "飯",
+	"pinyin": "fàn",
+	"english": "rice; meal",
+	"part_of_speech": "noun",
+	"example_chinese": "吃饭",
+	"example_pinyin": "Chī fàn",
+	"example_english": "Eat a meal"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bccd"
+	},
+	"id": "3c9718c1-56ff-4e86-b9ca-373edd13baea",
+	"lesson_id": "bd88f6fc-5c48-491c-b4a3-1362d7f4b28a",
+	"lesson_number": 14,
+	"simplified": "祝",
+	"traditional": "祝",
+	"pinyin": "zhù",
+	"english": "to wish",
+	"part_of_speech": "verb",
+	"example_chinese": "祝你好运",
+	"example_pinyin": "Zhù nǐ hǎoyùn",
+	"example_english": "Good luck"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcce"
+	},
+	"id": "70448d42-9e1d-433b-aeb0-c03779ef6b44",
+	"lesson_id": "bd88f6fc-5c48-491c-b4a3-1362d7f4b28a",
+	"lesson_number": 14,
+	"simplified": "圣诞",
+	"traditional": "聖誕",
+	"pinyin": "Shèngdàn",
+	"english": "Christmas",
+	"part_of_speech": "noun",
+	"example_chinese": "圣诞节",
+	"example_pinyin": "Shèngdàn jié",
+	"example_english": "Christmas Day"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bccf"
+	},
+	"id": "193dccc0-d95e-436e-8c83-74fba1e28ebc",
+	"lesson_id": "bd88f6fc-5c48-491c-b4a3-1362d7f4b28a",
+	"lesson_number": 14,
+	"simplified": "快乐",
+	"traditional": "快樂",
+	"pinyin": "kuàilè",
+	"english": "happy",
+	"part_of_speech": "adjective",
+	"example_chinese": "很快乐",
+	"example_pinyin": "Hěn kuàilè",
+	"example_english": "Very happy"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcd0"
+	},
+	"id": "65d1c5e4-3c1f-4937-bc7a-b69afe8bb20b",
+	"lesson_id": "bd88f6fc-5c48-491c-b4a3-1362d7f4b28a",
+	"lesson_number": 14,
+	"simplified": "给",
+	"traditional": "給",
+	"pinyin": "gěi",
+	"english": "to give; for",
+	"part_of_speech": "verb",
+	"example_chinese": "给我书",
+	"example_pinyin": "Gěi wǒ shū",
+	"example_english": "Give me a book"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcd1"
+	},
+	"id": "17ecf5e0-d6fa-470c-9a1a-39fc4571dbb8",
+	"lesson_id": "bd88f6fc-5c48-491c-b4a3-1362d7f4b28a",
+	"lesson_number": 14,
+	"simplified": "礼物",
+	"traditional": "禮物",
+	"pinyin": "lǐwù",
+	"english": "gift; present",
+	"part_of_speech": "noun",
+	"example_chinese": "生日礼物",
+	"example_pinyin": "Shēngrì lǐwù",
+	"example_english": "Birthday gift"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcd2"
+	},
+	"id": "d0fe37e6-2446-4901-b49e-7a80f4d68a76",
+	"lesson_id": "bd88f6fc-5c48-491c-b4a3-1362d7f4b28a",
+	"lesson_number": 14,
+	"simplified": "节",
+	"traditional": "節",
+	"pinyin": "jié",
+	"english": "festival; holiday",
+	"part_of_speech": "noun",
+	"example_chinese": "春节",
+	"example_pinyin": "Chūnjié",
+	"example_english": "Spring Festival"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcd3"
+	},
+	"id": "784cd5ff-c15e-4b5f-a3b0-1b7c3fdfe8d7",
+	"lesson_id": "bd88f6fc-5c48-491c-b4a3-1362d7f4b28a",
+	"lesson_number": 14,
+	"simplified": "新年",
+	"traditional": "新年",
+	"pinyin": "xīnnián",
+	"english": "new year",
+	"part_of_speech": "noun",
+	"example_chinese": "新年快乐",
+	"example_pinyin": "Xīnnián kuàilè",
+	"example_english": "Happy New Year"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcd5"
+	},
+	"id": "66f0c30a-a1ba-4098-9b47-8425ad20b92a",
+	"lesson_id": "aa5f9f58-3bc1-4c2e-8c50-8fca05677c39",
+	"lesson_number": 15,
+	"simplified": "银行",
+	"traditional": "銀行",
+	"pinyin": "yínháng",
+	"english": "bank",
+	"part_of_speech": "noun",
+	"example_chinese": "去银行",
+	"example_pinyin": "Qù yínháng",
+	"example_english": "Go to the bank"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcd6"
+	},
+	"id": "3ed29063-f7c8-4a64-b647-67813adbf133",
+	"lesson_id": "aa5f9f58-3bc1-4c2e-8c50-8fca05677c39",
+	"lesson_number": 15,
+	"simplified": "邮局",
+	"traditional": "郵局",
+	"pinyin": "yóujú",
+	"english": "post office",
+	"part_of_speech": "noun",
+	"example_chinese": "邮局开门",
+	"example_pinyin": "Yóujú kāimén",
+	"example_english": "Post office is open"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcd7"
+	},
+	"id": "86dabe35-ad35-4da1-b02a-d790b9b93733",
+	"lesson_id": "aa5f9f58-3bc1-4c2e-8c50-8fca05677c39",
+	"lesson_number": 15,
+	"simplified": "旁边",
+	"traditional": "旁邊",
+	"pinyin": "pángbiān",
+	"english": "beside; next to",
+	"part_of_speech": "noun",
+	"example_chinese": "我旁边",
+	"example_pinyin": "Wǒ pángbiān",
+	"example_english": "Beside me"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcd8"
+	},
+	"id": "0b93d4f7-5567-4758-87cc-fc0047414073",
+	"lesson_id": "aa5f9f58-3bc1-4c2e-8c50-8fca05677c39",
+	"lesson_number": 15,
+	"simplified": "远",
+	"traditional": "遠",
+	"pinyin": "yuǎn",
+	"english": "far",
+	"part_of_speech": "adjective",
+	"example_chinese": "很远",
+	"example_pinyin": "Hěn yuǎn",
+	"example_english": "Very far"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcd9"
+	},
+	"id": "d4a3c8b5-af41-4708-a268-91425a784010",
+	"lesson_id": "aa5f9f58-3bc1-4c2e-8c50-8fca05677c39",
+	"lesson_number": 15,
+	"simplified": "走",
+	"traditional": "走",
+	"pinyin": "zǒu",
+	"english": "to walk",
+	"part_of_speech": "verb",
+	"example_chinese": "走路",
+	"example_pinyin": "Zǒu lù",
+	"example_english": "Walk"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcda"
+	},
+	"id": "0ebcb85c-43bd-462e-9a80-4393a633d93e",
+	"lesson_id": "aa5f9f58-3bc1-4c2e-8c50-8fca05677c39",
+	"lesson_number": 15,
+	"simplified": "分钟",
+	"traditional": "分鐘",
+	"pinyin": "fēnzhōng",
+	"english": "minute",
+	"part_of_speech": "noun",
+	"example_chinese": "十分钟",
+	"example_pinyin": "Shí fēnzhōng",
+	"example_english": "Ten minutes"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcdb"
+	},
+	"id": "1af7a18a-5c7c-4dc2-b64c-972c07c20295",
+	"lesson_id": "aa5f9f58-3bc1-4c2e-8c50-8fca05677c39",
+	"lesson_number": 15,
+	"simplified": "到",
+	"traditional": "到",
+	"pinyin": "dào",
+	"english": "to arrive; to reach",
+	"part_of_speech": "verb",
+	"example_chinese": "到了",
+	"example_pinyin": "Dào le",
+	"example_english": "Arrived"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcdd"
+	},
+	"id": "5f6e1088-0ad0-4f19-9631-e2224858d4dc",
+	"lesson_id": "3126a471-006d-4eea-a02b-e86d4e996717",
+	"lesson_number": 16,
+	"simplified": "喝",
+	"traditional": "喝",
+	"pinyin": "hē",
+	"english": "to drink",
+	"part_of_speech": "verb",
+	"example_chinese": "喝水",
+	"example_pinyin": "Hē shuǐ",
+	"example_english": "Drink water"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcde"
+	},
+	"id": "9bfb947d-5819-4ac3-b0ff-a62cb0052a45",
+	"lesson_id": "3126a471-006d-4eea-a02b-e86d4e996717",
+	"lesson_number": 16,
+	"simplified": "要",
+	"traditional": "要",
+	"pinyin": "yào",
+	"english": "to want; will",
+	"part_of_speech": "verb",
+	"example_chinese": "我要茶",
+	"example_pinyin": "Wǒ yào chá",
+	"example_english": "I want tea"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcdf"
+	},
+	"id": "20105c02-6464-4595-8311-bcef47cd1751",
+	"lesson_id": "3126a471-006d-4eea-a02b-e86d4e996717",
+	"lesson_number": 16,
+	"simplified": "杯",
+	"traditional": "杯",
+	"pinyin": "bēi",
+	"english": "cup; measure word",
+	"part_of_speech": "measure word",
+	"example_chinese": "一杯水",
+	"example_pinyin": "Yì bēi shuǐ",
+	"example_english": "A cup of water"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bce0"
+	},
+	"id": "1f8400f9-5ee7-4d1f-9301-37c86c71bbfa",
+	"lesson_id": "3126a471-006d-4eea-a02b-e86d4e996717",
+	"lesson_number": 16,
+	"simplified": "茶",
+	"traditional": "茶",
+	"pinyin": "chá",
+	"english": "tea",
+	"part_of_speech": "noun",
+	"example_chinese": "喝茶",
+	"example_pinyin": "Hē chá",
+	"example_english": "Drink tea"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bce1"
+	},
+	"id": "91db170e-ea94-4291-9894-97e97ee2ea95",
+	"lesson_id": "3126a471-006d-4eea-a02b-e86d4e996717",
+	"lesson_number": 16,
+	"simplified": "水",
+	"traditional": "水",
+	"pinyin": "shuǐ",
+	"english": "water",
+	"part_of_speech": "noun",
+	"example_chinese": "一杯水",
+	"example_pinyin": "Yì bēi shuǐ",
+	"example_english": "A cup of water"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bce2"
+	},
+	"id": "b55c1fc3-70b8-4012-b32b-832af3b9280f",
+	"lesson_id": "3126a471-006d-4eea-a02b-e86d4e996717",
+	"lesson_number": 16,
+	"simplified": "咖啡",
+	"traditional": "咖啡",
+	"pinyin": "kāfēi",
+	"english": "coffee",
+	"part_of_speech": "noun",
+	"example_chinese": "喝咖啡",
+	"example_pinyin": "Hē kāfēi",
+	"example_english": "Drink coffee"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bce3"
+	},
+	"id": "4db902a8-8acc-42ab-b99e-369e55e81165",
+	"lesson_id": "3126a471-006d-4eea-a02b-e86d4e996717",
+	"lesson_number": 16,
+	"simplified": "等",
+	"traditional": "等",
+	"pinyin": "děng",
+	"english": "to wait",
+	"part_of_speech": "verb",
+	"example_chinese": "等一下",
+	"example_pinyin": "Děng yíxià",
+	"example_english": "Wait a moment"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bce5"
+	},
+	"id": "ba9822fa-abfe-40b4-bdc5-5c8253c1d024",
+	"lesson_id": "501517e7-1ca2-477b-ba4f-873ffc12e45b",
+	"lesson_number": 17,
+	"simplified": "件",
+	"traditional": "件",
+	"pinyin": "jiàn",
+	"english": "measure word (clothing)",
+	"part_of_speech": "measure word",
+	"example_chinese": "一件衣服",
+	"example_pinyin": "Yí jiàn yīfu",
+	"example_english": "A piece of clothing"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bce6"
+	},
+	"id": "123aaabd-7731-4f86-88a0-63802aa1fe0a",
+	"lesson_id": "501517e7-1ca2-477b-ba4f-873ffc12e45b",
+	"lesson_number": 17,
+	"simplified": "衣服",
+	"traditional": "衣服",
+	"pinyin": "yīfu",
+	"english": "clothes",
+	"part_of_speech": "noun",
+	"example_chinese": "买衣服",
+	"example_pinyin": "Mǎi yīfu",
+	"example_english": "Buy clothes"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bce7"
+	},
+	"id": "48f3dd85-ca7b-4f03-8245-35e9738332a0",
+	"lesson_id": "501517e7-1ca2-477b-ba4f-873ffc12e45b",
+	"lesson_number": 17,
+	"simplified": "多少",
+	"traditional": "多少",
+	"pinyin": "duōshǎo",
+	"english": "how much/many",
+	"part_of_speech": "pronoun",
+	"example_chinese": "多少钱?",
+	"example_pinyin": "Duōshǎo qián?",
+	"example_english": "How much?"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bce8"
+	},
+	"id": "eca15c0e-2a9d-4ae8-85cd-60c357fcaac5",
+	"lesson_id": "501517e7-1ca2-477b-ba4f-873ffc12e45b",
+	"lesson_number": 17,
+	"simplified": "百",
+	"traditional": "百",
+	"pinyin": "bǎi",
+	"english": "hundred",
+	"part_of_speech": "number",
+	"example_chinese": "一百",
+	"example_pinyin": "Yìbǎi",
+	"example_english": "One hundred"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bce9"
+	},
+	"id": "7b6b6be3-a3ba-47c5-9d9e-63bf73952e7d",
+	"lesson_id": "501517e7-1ca2-477b-ba4f-873ffc12e45b",
+	"lesson_number": 17,
+	"simplified": "块",
+	"traditional": "塊",
+	"pinyin": "kuài",
+	"english": "yuan (colloquial)",
+	"part_of_speech": "measure word",
+	"example_chinese": "十块钱",
+	"example_pinyin": "Shí kuài qián",
+	"example_english": "Ten yuan"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcea"
+	},
+	"id": "babe0509-419e-4712-a1d0-b577ab250cb4",
+	"lesson_id": "501517e7-1ca2-477b-ba4f-873ffc12e45b",
+	"lesson_number": 17,
+	"simplified": "太",
+	"traditional": "太",
+	"pinyin": "tài",
+	"english": "too; very",
+	"part_of_speech": "adverb",
+	"example_chinese": "太好了",
+	"example_pinyin": "Tài hǎo le",
+	"example_english": "Great!"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bceb"
+	},
+	"id": "7e067022-65e3-4076-b00c-1559a6f809fe",
+	"lesson_id": "501517e7-1ca2-477b-ba4f-873ffc12e45b",
+	"lesson_number": 17,
+	"simplified": "贵",
+	"traditional": "貴",
+	"pinyin": "guì",
+	"english": "expensive",
+	"part_of_speech": "adjective",
+	"example_chinese": "很贵",
+	"example_pinyin": "Hěn guì",
+	"example_english": "Very expensive"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcec"
+	},
+	"id": "7ea866a6-cb1b-4425-b0b5-6a1d199e43f7",
+	"lesson_id": "501517e7-1ca2-477b-ba4f-873ffc12e45b",
+	"lesson_number": 17,
+	"simplified": "便宜",
+	"traditional": "便宜",
+	"pinyin": "piányi",
+	"english": "cheap",
+	"part_of_speech": "adjective",
+	"example_chinese": "很便宜",
+	"example_pinyin": "Hěn piányi",
+	"example_english": "Very cheap"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcee"
+	},
+	"id": "e2bc924c-4839-494a-aca4-688f12263a57",
+	"lesson_id": "1f57e11a-e99d-497a-a630-f9923d00b24c",
+	"lesson_number": 18,
+	"simplified": "每天",
+	"traditional": "每天",
+	"pinyin": "měitiān",
+	"english": "every day",
+	"part_of_speech": "noun",
+	"example_chinese": "每天学习",
+	"example_pinyin": "Měitiān xuéxí",
+	"example_english": "Study every day"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcef"
+	},
+	"id": "ab5a47ef-1274-4678-9661-37fd8ed93ee5",
+	"lesson_id": "1f57e11a-e99d-497a-a630-f9923d00b24c",
+	"lesson_number": 18,
+	"simplified": "起床",
+	"traditional": "起床",
+	"pinyin": "qǐchuáng",
+	"english": "to get up",
+	"part_of_speech": "verb",
+	"example_chinese": "早起床",
+	"example_pinyin": "Zǎo qǐchuáng",
+	"example_english": "Get up early"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcf0"
+	},
+	"id": "f25998ee-d057-4896-a9dd-4fa957a3c6b6",
+	"lesson_id": "1f57e11a-e99d-497a-a630-f9923d00b24c",
+	"lesson_number": 18,
+	"simplified": "睡觉",
+	"traditional": "睡覺",
+	"pinyin": "shuìjiào",
+	"english": "to sleep",
+	"part_of_speech": "verb",
+	"example_chinese": "去睡觉",
+	"example_pinyin": "Qù shuìjiào",
+	"example_english": "Go to sleep"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcf1"
+	},
+	"id": "94affe0b-19cd-4765-b9e5-1a78f5714a57",
+	"lesson_id": "1f57e11a-e99d-497a-a630-f9923d00b24c",
+	"lesson_number": 18,
+	"simplified": "上班",
+	"traditional": "上班",
+	"pinyin": "shàngbān",
+	"english": "to go to work",
+	"part_of_speech": "verb",
+	"example_chinese": "去上班",
+	"example_pinyin": "Qù shàngbān",
+	"example_english": "Go to work"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcf2"
+	},
+	"id": "38d13a69-6c09-4375-a4b7-4a1bba635f71",
+	"lesson_id": "1f57e11a-e99d-497a-a630-f9923d00b24c",
+	"lesson_number": 18,
+	"simplified": "学习",
+	"traditional": "學習",
+	"pinyin": "xuéxí",
+	"english": "to study",
+	"part_of_speech": "verb",
+	"example_chinese": "学习汉语",
+	"example_pinyin": "Xuéxí Hànyǔ",
+	"example_english": "Study Chinese"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcf3"
+	},
+	"id": "a00fac49-0adc-40b8-a6f5-98b2abfe615e",
+	"lesson_id": "1f57e11a-e99d-497a-a630-f9923d00b24c",
+	"lesson_number": 18,
+	"simplified": "早上",
+	"traditional": "早上",
+	"pinyin": "zǎoshang",
+	"english": "morning",
+	"part_of_speech": "noun",
+	"example_chinese": "早上好",
+	"example_pinyin": "Zǎoshang hǎo",
+	"example_english": "Good morning"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcf4"
+	},
+	"id": "8fb65551-781c-42f7-a747-2092340db4bc",
+	"lesson_id": "1f57e11a-e99d-497a-a630-f9923d00b24c",
+	"lesson_number": 18,
+	"simplified": "晚上",
+	"traditional": "晚上",
+	"pinyin": "wǎnshang",
+	"english": "evening",
+	"part_of_speech": "noun",
+	"example_chinese": "晚上见",
+	"example_pinyin": "Wǎnshang jiàn",
+	"example_english": "See you tonight"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcf6"
+	},
+	"id": "e4d4cba7-e7f9-4937-b1a6-e3d4ba0181c9",
+	"lesson_id": "e63bec44-c047-49c9-816e-1e2f9376b054",
+	"lesson_number": 19,
+	"simplified": "比",
+	"traditional": "比",
+	"pinyin": "bǐ",
+	"english": "compared to",
+	"part_of_speech": "preposition",
+	"example_chinese": "我比你高",
+	"example_pinyin": "Wǒ bǐ nǐ gāo",
+	"example_english": "I'm taller than you"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcf7"
+	},
+	"id": "a6112c0a-390d-4c70-ac2a-47fc26009783",
+	"lesson_id": "e63bec44-c047-49c9-816e-1e2f9376b054",
+	"lesson_number": 19,
+	"simplified": "冷",
+	"traditional": "冷",
+	"pinyin": "lěng",
+	"english": "cold",
+	"part_of_speech": "adjective",
+	"example_chinese": "很冷",
+	"example_pinyin": "Hěn lěng",
+	"example_english": "Very cold"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcf8"
+	},
+	"id": "6c1c5a63-193a-4043-bca9-d6c41ef6023e",
+	"lesson_id": "e63bec44-c047-49c9-816e-1e2f9376b054",
+	"lesson_number": 19,
+	"simplified": "热",
+	"traditional": "熱",
+	"pinyin": "rè",
+	"english": "hot",
+	"part_of_speech": "adjective",
+	"example_chinese": "很热",
+	"example_pinyin": "Hěn rè",
+	"example_english": "Very hot"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcf9"
+	},
+	"id": "b42c97f4-3fde-4b95-97dd-695b109b9300",
+	"lesson_id": "e63bec44-c047-49c9-816e-1e2f9376b054",
+	"lesson_number": 19,
+	"simplified": "喜欢",
+	"traditional": "喜歡",
+	"pinyin": "xǐhuān",
+	"english": "to like",
+	"part_of_speech": "verb",
+	"example_chinese": "喜欢中国",
+	"example_pinyin": "Xǐhuān Zhōngguó",
+	"example_english": "Like China"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcfa"
+	},
+	"id": "91813321-7d66-4963-a20d-ec0ee5bc21f0",
+	"lesson_id": "e63bec44-c047-49c9-816e-1e2f9376b054",
+	"lesson_number": 19,
+	"simplified": "高",
+	"traditional": "高",
+	"pinyin": "gāo",
+	"english": "tall; high",
+	"part_of_speech": "adjective",
+	"example_chinese": "很高",
+	"example_pinyin": "Hěn gāo",
+	"example_english": "Very tall"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcfb"
+	},
+	"id": "8cf35fdc-8439-4a3b-a3ec-3f6e949e8c81",
+	"lesson_id": "e63bec44-c047-49c9-816e-1e2f9376b054",
+	"lesson_number": 19,
+	"simplified": "大",
+	"traditional": "大",
+	"pinyin": "dà",
+	"english": "big",
+	"part_of_speech": "adjective",
+	"example_chinese": "很大",
+	"example_pinyin": "Hěn dà",
+	"example_english": "Very big"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcfc"
+	},
+	"id": "f41158c8-51ab-42b6-a729-73301171c986",
+	"lesson_id": "e63bec44-c047-49c9-816e-1e2f9376b054",
+	"lesson_number": 19,
+	"simplified": "小",
+	"traditional": "小",
+	"pinyin": "xiǎo",
+	"english": "small",
+	"part_of_speech": "adjective",
+	"example_chinese": "很小",
+	"example_pinyin": "Hěn xiǎo",
+	"example_english": "Very small"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcfe"
+	},
+	"id": "8bc1fb9b-ee75-41ab-895e-645bf769f0a6",
+	"lesson_id": "7f371138-fc4e-4205-9cfc-3f69f36fc1e4",
+	"lesson_number": 20,
+	"simplified": "明年",
+	"traditional": "明年",
+	"pinyin": "míngnián",
+	"english": "next year",
+	"part_of_speech": "noun",
+	"example_chinese": "明年去中国",
+	"example_pinyin": "Míngnián qù Zhōngguó",
+	"example_english": "Go to China next year"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcff"
+	},
+	"id": "464af5dc-114a-4c75-a546-d38077d935a5",
+	"lesson_id": "7f371138-fc4e-4205-9cfc-3f69f36fc1e4",
+	"lesson_number": 20,
+	"simplified": "打算",
+	"traditional": "打算",
+	"pinyin": "dǎsuàn",
+	"english": "to plan",
+	"part_of_speech": "verb",
+	"example_chinese": "打算学习",
+	"example_pinyin": "Dǎsuàn xuéxí",
+	"example_english": "Plan to study"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd00"
+	},
+	"id": "8452b4d8-620d-4b18-a0f5-d12c3fcc242b",
+	"lesson_id": "7f371138-fc4e-4205-9cfc-3f69f36fc1e4",
+	"lesson_number": 20,
+	"simplified": "城市",
+	"traditional": "城市",
+	"pinyin": "chéngshì",
+	"english": "city",
+	"part_of_speech": "noun",
+	"example_chinese": "大城市",
+	"example_pinyin": "Dà chéngshì",
+	"example_english": "Big city"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd01"
+	},
+	"id": "11002548-d7f1-4361-a54b-39723851ada4",
+	"lesson_id": "7f371138-fc4e-4205-9cfc-3f69f36fc1e4",
+	"lesson_number": 20,
+	"simplified": "北京",
+	"traditional": "北京",
+	"pinyin": "Běijīng",
+	"english": "Beijing",
+	"part_of_speech": "noun",
+	"example_chinese": "去北京",
+	"example_pinyin": "Qù Běijīng",
+	"example_english": "Go to Beijing"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd02"
+	},
+	"id": "305447e8-d89b-43b6-8e97-550978ab4af9",
+	"lesson_id": "7f371138-fc4e-4205-9cfc-3f69f36fc1e4",
+	"lesson_number": 20,
+	"simplified": "一起",
+	"traditional": "一起",
+	"pinyin": "yìqǐ",
+	"english": "together",
+	"part_of_speech": "adverb",
+	"example_chinese": "一起去",
+	"example_pinyin": "Yìqǐ qù",
+	"example_english": "Go together"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd03"
+	},
+	"id": "af3b2656-d241-422d-81cd-719d1fb023d2",
+	"lesson_id": "7f371138-fc4e-4205-9cfc-3f69f36fc1e4",
+	"lesson_number": 20,
+	"simplified": "上海",
+	"traditional": "上海",
+	"pinyin": "Shànghǎi",
+	"english": "Shanghai",
+	"part_of_speech": "noun",
+	"example_chinese": "在上海",
+	"example_pinyin": "Zài Shànghǎi",
+	"example_english": "In Shanghai"
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd04"
+	},
+	"id": "6350dd20-2a41-42f3-8a00-dfffebac831c",
+	"lesson_id": "7f371138-fc4e-4205-9cfc-3f69f36fc1e4",
+	"lesson_number": 20,
+	"simplified": "回",
+	"traditional": "回",
+	"pinyin": "huí",
+	"english": "to return",
+	"part_of_speech": "verb",
+	"example_chinese": "回家",
+	"example_pinyin": "Huí jiā",
+	"example_english": "Go home"
+},
+{
+	"_id": {
+		"$oid": "6a12e497a20bc2e0ae4c8711"
+	},
+	"id": "b892b13a-886f-422f-a5fe-27ea8c9b04e8",
+	"lesson_id": null,
+	"lesson_number": null,
+	"simplified": "测试",
+	"traditional": "测试",
+	"pinyin": "cèshì",
+	"english": "test",
+	"part_of_speech": "custom",
+	"example_chinese": "",
+	"example_pinyin": "",
+	"example_english": "",
+	"created_by": "1ffa2b63-7e33-4a9f-b5dd-02c4f5b128e3",
+	"created_at": {
+		"$date": "2026-05-24T11:44:23.319Z"
+	}
+}]
+

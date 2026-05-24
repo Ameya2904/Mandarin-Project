@@ -1,0 +1,1064 @@
+[{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc63"
+	},
+	"id": "7fab3743-1cb7-4ece-82c2-896440c75061",
+	"lesson_number": 1,
+	"title": "你好 (Hello)",
+	"subtitle": "Greetings",
+	"description": "Learn basic Chinese greetings and simple introductions.",
+	"level": "Beginner",
+	"video_url": "https://www.youtube.com/playlist?list=PLB1B262B05A6992FD",
+	"dialogue": [
+		{
+			"speaker": "Lin Na",
+			"chinese": "你好!",
+			"pinyin": "Nǐ hǎo!",
+			"english": "Hello!"
+		},
+		{
+			"speaker": "Lu Yuping",
+			"chinese": "你好!",
+			"pinyin": "Nǐ hǎo!",
+			"english": "Hello!"
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "Greetings with 你好",
+			"explanation": "你好 (nǐ hǎo) is the most common Chinese greeting, used at any time of day. Literally 'you good'."
+		}
+	],
+	"vocabulary_ids": [
+		"b4a74077-9153-43ad-b596-2c70074aeeb2",
+		"e9d3bc80-d418-42b1-9023-f0bb2f3433f4",
+		"55296bda-86b2-4eca-85a4-b898775ac451",
+		"7ebed8c5-c183-46ec-b055-feb1c7d0c61f",
+		"7a12d369-86d9-4bdc-bebf-a8c8f4bd499f",
+		"3be278ba-367c-49b6-aa9a-514216eead6c"
+	],
+	"vocabulary_count": 6
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc6b"
+	},
+	"id": "808de5d8-219b-442e-a501-7965d1066f59",
+	"lesson_number": 2,
+	"title": "你忙吗 (Are You Busy?)",
+	"subtitle": "Asking About Wellbeing",
+	"description": "Ask how someone is doing and respond about your own state.",
+	"level": "Beginner",
+	"video_url": "https://www.youtube.com/playlist?list=PLB1B262B05A6992FD",
+	"dialogue": [
+		{
+			"speaker": "Lu Yuping",
+			"chinese": "你好,林娜。",
+			"pinyin": "Nǐ hǎo, Lín Nà.",
+			"english": "Hello, Lin Na."
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "你好,陆雨平。你忙吗?",
+			"pinyin": "Nǐ hǎo, Lù Yǔpíng. Nǐ máng ma?",
+			"english": "Hello, Lu Yuping. Are you busy?"
+		},
+		{
+			"speaker": "Lu Yuping",
+			"chinese": "我很忙。你呢?",
+			"pinyin": "Wǒ hěn máng. Nǐ ne?",
+			"english": "I'm very busy. And you?"
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "我不忙。",
+			"pinyin": "Wǒ bù máng.",
+			"english": "I'm not busy."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "Yes/No questions with 吗",
+			"explanation": "Add 吗 (ma) at the end of a statement to turn it into a yes/no question. Example: 你忙 (you busy) → 你忙吗? (Are you busy?)"
+		},
+		{
+			"title": "Negation with 不",
+			"explanation": "不 (bù) negates verbs and adjectives. Example: 我忙 (I am busy) → 我不忙 (I am not busy)."
+		}
+	],
+	"vocabulary_ids": [
+		"b708d443-3dcb-4f21-8215-839bd6f896ab",
+		"7ea8a82b-fac8-40b2-bc63-425e31f38d72",
+		"9cd08623-82e8-4f1b-82ad-a528de190e14",
+		"c48777ed-6914-444d-a0dc-8c352497413c",
+		"70be4b2b-0b47-4949-88a2-86a6050bb36a",
+		"95f3aece-1933-4727-b97a-ef0043131f7e",
+		"cbaa69a2-fec0-4a76-96dc-02450ee8bc26"
+	],
+	"vocabulary_count": 7
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc75"
+	},
+	"id": "26c66d44-c3cc-4871-a269-25a3f72dd07b",
+	"lesson_number": 3,
+	"title": "她是哪国人 (Where Is She From?)",
+	"subtitle": "Nationality and Identity",
+	"description": "Talk about people, nationalities, and ask 'who' questions.",
+	"level": "Beginner",
+	"video_url": "https://www.youtube.com/playlist?list=PL76C77D2229EAF542",
+	"dialogue": [
+		{
+			"speaker": "Lin Na",
+			"chinese": "陆雨平,那是谁?",
+			"pinyin": "Lù Yǔpíng, nà shì shéi?",
+			"english": "Lu Yuping, who is that?"
+		},
+		{
+			"speaker": "Lu Yuping",
+			"chinese": "那是我朋友。",
+			"pinyin": "Nà shì wǒ péngyǒu.",
+			"english": "That is my friend."
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "她是哪国人?",
+			"pinyin": "Tā shì nǎ guó rén?",
+			"english": "What nationality is she?"
+		},
+		{
+			"speaker": "Lu Yuping",
+			"chinese": "她是中国人。",
+			"pinyin": "Tā shì Zhōngguó rén.",
+			"english": "She is Chinese."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "是 (shì) — the verb 'to be'",
+			"explanation": "是 connects two nouns. Structure: A 是 B (A is B). Example: 他是中国人 (He is Chinese)."
+		},
+		{
+			"title": "Question word 哪 (nǎ)",
+			"explanation": "哪 means 'which' and forms questions: 哪国人 = 'which country person' = 'what nationality'."
+		}
+	],
+	"vocabulary_ids": [
+		"4ce07cf8-26b2-4d2f-9b18-601576eecb9f",
+		"f660779e-bd6d-4580-9eea-922f5b102257",
+		"896d03fa-3892-4567-8ac4-6d39f087953a",
+		"97fe9092-6e6b-4584-a989-30f4c57d6b2d",
+		"340bf209-29aa-4d95-9994-9b0fa308a9f7",
+		"cae11280-c470-41b3-ba34-c0d711fd538a",
+		"4a6a8e22-d58b-4b05-85c1-c9c29c4b8a5e",
+		"580725e9-6fef-43c2-ae13-ecf9427569e4",
+		"4375778f-3ac0-4686-8bba-0f79023cc300"
+	],
+	"vocabulary_count": 9
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc7e"
+	},
+	"id": "6c71917c-ea40-4f80-9a56-8da1d91428d6",
+	"lesson_number": 4,
+	"title": "认识你很高兴 (Nice to Meet You)",
+	"subtitle": "Introductions",
+	"description": "Introduce yourself, ask names, and express pleasure in meeting someone.",
+	"level": "Beginner",
+	"video_url": "https://www.youtube.com/playlist?list=PL9E5EA79F9466CB49",
+	"dialogue": [
+		{
+			"speaker": "Lin Na",
+			"chinese": "你叫什么名字?",
+			"pinyin": "Nǐ jiào shénme míngzì?",
+			"english": "What is your name?"
+		},
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "我叫马大为。你呢?",
+			"pinyin": "Wǒ jiào Mǎ Dàwéi. Nǐ ne?",
+			"english": "My name is Ma Dawei. And you?"
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "我叫林娜。认识你很高兴。",
+			"pinyin": "Wǒ jiào Lín Nà. Rènshí nǐ hěn gāoxìng.",
+			"english": "My name is Lin Na. Nice to meet you."
+		},
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "认识你我也很高兴。",
+			"pinyin": "Rènshí nǐ wǒ yě hěn gāoxìng.",
+			"english": "Nice to meet you too."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "叫 (jiào) — to be called",
+			"explanation": "叫 expresses one's name. 你叫什么名字? = What is your name? Response: 我叫... = I am called..."
+		},
+		{
+			"title": "什么 (shénme) — what",
+			"explanation": "什么 is a question word for 'what'. Place it where the answer would appear: 你叫什么? = You called what?"
+		}
+	],
+	"vocabulary_ids": [
+		"9b42e2ea-102b-4acc-8e9e-8b8e92842c5a",
+		"4e8667a7-33d2-43a7-a225-d4ffa97ff868",
+		"9f6d76bf-2001-4134-97ed-ee903eab2b38",
+		"0bbcc9cd-186d-4e52-8f9a-ccd2a3a2b234",
+		"0e5b247c-2173-4ab0-8ab0-90904d238b72",
+		"c983c0de-1411-4c21-8f13-585576c285f2",
+		"a7b061ee-9482-4ec7-b4a3-bf84d02aeef7",
+		"ce9961e5-546d-4d97-92f1-0d03d9a61dc8"
+	],
+	"vocabulary_count": 8
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc89"
+	},
+	"id": "2baf514a-32f0-4b79-b717-be1d86a348c7",
+	"lesson_number": 5,
+	"title": "餐厅在哪儿 (Where Is the Restaurant?)",
+	"subtitle": "Locations and Directions",
+	"description": "Ask and give directions, discuss locations of places.",
+	"level": "Beginner",
+	"video_url": "https://www.youtube.com/playlist?list=PL14D5D3A4D4A01B8A",
+	"dialogue": [
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "请问,餐厅在哪儿?",
+			"pinyin": "Qǐng wèn, cāntīng zài nǎr?",
+			"english": "Excuse me, where is the restaurant?"
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "餐厅在那儿。",
+			"pinyin": "Cāntīng zài nàr.",
+			"english": "The restaurant is over there."
+		},
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "谢谢!",
+			"pinyin": "Xièxie!",
+			"english": "Thank you!"
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "不客气。",
+			"pinyin": "Bú kèqì.",
+			"english": "You're welcome."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "在 (zài) — to be at/in",
+			"explanation": "在 indicates location. Structure: [Subject] + 在 + [Place]. Example: 我在家 (I am at home)."
+		},
+		{
+			"title": "哪儿 (nǎr) — where",
+			"explanation": "哪儿 asks for location. 餐厅在哪儿? = Where is the restaurant?"
+		}
+	],
+	"vocabulary_ids": [
+		"6da476f7-ddc0-4679-bcf2-dd28b58c9616",
+		"9ec62ca3-e8cb-40b7-9eb9-d1026ae85590",
+		"c669e027-e029-4414-8c4f-74f24c4b8635",
+		"9a8c8ce2-c0a3-4442-a47e-21dbf2f9965c",
+		"1b964571-92cf-464e-98b7-adde8e23b75c",
+		"d46722e2-3303-47ec-ab6d-0d17fa7c3a67",
+		"aa714eae-36c3-4edc-99d3-96c8919f6936",
+		"d7615cd2-773a-47b0-bd19-02d1783319fa",
+		"c39fe9c4-38fa-4182-b310-2a7c7c9df94b",
+		"eb5716bb-e34b-4824-b67d-511bd2451890"
+	],
+	"vocabulary_count": 10
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc92"
+	},
+	"id": "0a17fe96-4ff2-4e1b-9125-f748cccbf9e0",
+	"lesson_number": 6,
+	"title": "我们去游泳，好吗 (Let's Go Swimming)",
+	"subtitle": "Making Suggestions",
+	"description": "Suggest activities, ask for opinions, and accept invitations.",
+	"level": "Beginner",
+	"video_url": "",
+	"dialogue": [
+		{
+			"speaker": "Wang Xiaoyun",
+			"chinese": "今天天气真好。",
+			"pinyin": "Jīntiān tiānqì zhēn hǎo.",
+			"english": "The weather is really nice today."
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "是啊。我们去游泳，好吗?",
+			"pinyin": "Shì a. Wǒmen qù yóuyǒng, hǎo ma?",
+			"english": "Yes. Shall we go swimming?"
+		},
+		{
+			"speaker": "Wang Xiaoyun",
+			"chinese": "太好了!我们什么时候去?",
+			"pinyin": "Tài hǎo le! Wǒmen shénme shíhòu qù?",
+			"english": "Great! When shall we go?"
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "下午四点。",
+			"pinyin": "Xiàwǔ sì diǎn.",
+			"english": "Four o'clock in the afternoon."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "Suggestions with ...，好吗?",
+			"explanation": "Add ，好吗? after a statement to make a suggestion: 我们去看电影，好吗? (Shall we go to a movie?)"
+		},
+		{
+			"title": "Telling Time",
+			"explanation": "Use number + 点 for hours: 三点 (3 o'clock), 八点 (8 o'clock). 下午 = afternoon, 上午 = morning."
+		}
+	],
+	"vocabulary_ids": [
+		"e933c8c2-75c8-4c7b-ad7e-b8e422e3396a",
+		"1ef294a1-6533-455c-92e6-11e2a99d14e7",
+		"69d5b1e4-de51-4ec2-8bee-d5e39537a47c",
+		"3dbf72af-9ee2-4ce1-b861-059eb778b2b4",
+		"b8aecd2e-5589-410e-b194-dc7a4bef8d5f",
+		"a7a57a1f-a85d-4bc2-bc3b-87d11d4612a7",
+		"b2efd982-f6ad-4989-bacc-8ffe4ee0d3b3",
+		"3d6ae719-bc0a-4fd4-b6ad-e542da248893"
+	],
+	"vocabulary_count": 8
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bc98"
+	},
+	"id": "9db7d253-19df-4ffd-b7a7-1adb1eac8d36",
+	"lesson_number": 7,
+	"title": "你认识不认识他 (Do You Know Him?)",
+	"subtitle": "V-not-V Questions",
+	"description": "Form questions by repeating the verb with 不 between.",
+	"level": "Beginner",
+	"video_url": "",
+	"dialogue": [
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "林娜，你认识不认识他?",
+			"pinyin": "Lín Nà, nǐ rènshí bú rènshí tā?",
+			"english": "Lin Na, do you know him?"
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "我不认识他。他是谁?",
+			"pinyin": "Wǒ bú rènshí tā. Tā shì shéi?",
+			"english": "I don't know him. Who is he?"
+		},
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "他是我的同学，叫王小云。",
+			"pinyin": "Tā shì wǒ de tóngxué, jiào Wáng Xiǎoyún.",
+			"english": "He's my classmate, Wang Xiaoyun."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "V-not-V Questions",
+			"explanation": "Repeat the verb with 不 to make a question: 你认识不认识他? = 你认识他吗? (Do you know him?). 你忙不忙? = Are you busy?"
+		}
+	],
+	"vocabulary_ids": [
+		"5c9a4ed2-9aeb-4da4-9c04-b7e5d710b933",
+		"7570bbf4-33e7-406b-8642-16ae1e3099cf",
+		"9bf10b9f-d698-4835-90a0-f7c28330fe62",
+		"f3b1ed3c-3aa6-4c29-9589-ea177939fd7c",
+		"73f0c2e6-e7cd-4e83-8e27-a673577b7ca6"
+	],
+	"vocabulary_count": 5
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bca1"
+	},
+	"id": "e341186b-871b-46ba-8ae5-aa835ff7be35",
+	"lesson_number": 8,
+	"title": "你们家有几口人 (How Many in Your Family?)",
+	"subtitle": "Family & Numbers",
+	"description": "Discuss family members and use measure words for people.",
+	"level": "Beginner",
+	"video_url": "",
+	"dialogue": [
+		{
+			"speaker": "Wang Xiaoyun",
+			"chinese": "林娜，你们家有几口人?",
+			"pinyin": "Lín Nà, nǐmen jiā yǒu jǐ kǒu rén?",
+			"english": "Lin Na, how many people are in your family?"
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "我们家有四口人。爸爸、妈妈、哥哥和我。",
+			"pinyin": "Wǒmen jiā yǒu sì kǒu rén. Bàba, māma, gēge hé wǒ.",
+			"english": "We have four people: dad, mom, older brother, and me."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "有 (yǒu) — to have",
+			"explanation": "有 means 'to have' or 'there is/are'. Negation: 没有 (méi yǒu). Example: 我有一个哥哥 (I have an older brother)."
+		},
+		{
+			"title": "几 (jǐ) — how many (small numbers)",
+			"explanation": "几 asks 'how many' for small numbers (usually <10). 你有几本书? = How many books do you have?"
+		}
+	],
+	"vocabulary_ids": [
+		"8911051b-4f15-4385-8752-2262f43d1c74",
+		"0ded552f-c578-44b3-9c1f-4cfa052bc870",
+		"cc1d984b-cf0b-40c2-8b3c-8572a728aa6e",
+		"f8bd9f9e-679c-44e0-9045-9766f972c97b",
+		"8ba864b6-4c99-41d5-8b95-10b52ecf4f36",
+		"52f4da74-cd66-4674-a540-c93d2547084e",
+		"46bf1143-4cf7-4aa1-9326-aa31dd91dff1",
+		"f6be39ed-f35b-4eba-ac02-806120191250"
+	],
+	"vocabulary_count": 8
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcaa"
+	},
+	"id": "b41a5888-46a3-4d59-8e06-894facfefcf3",
+	"lesson_number": 9,
+	"title": "他今年二十岁 (He's Twenty This Year)",
+	"subtitle": "Numbers & Ages",
+	"description": "Talk about ages, birthdays, and use larger numbers.",
+	"level": "Beginner",
+	"video_url": "",
+	"dialogue": [
+		{
+			"speaker": "Lin Na",
+			"chinese": "马大为，你今年多大?",
+			"pinyin": "Mǎ Dàwéi, nǐ jīnnián duō dà?",
+			"english": "Ma Dawei, how old are you this year?"
+		},
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "我今年二十岁。你呢?",
+			"pinyin": "Wǒ jīnnián èrshí suì. Nǐ ne?",
+			"english": "I'm twenty this year. And you?"
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "我十九岁。",
+			"pinyin": "Wǒ shíjiǔ suì.",
+			"english": "I'm nineteen."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "Asking Age: 多大?",
+			"explanation": "你今年多大? = How old are you this year? (for adults). For children: 你几岁? Response: 我...岁."
+		},
+		{
+			"title": "Numbers 1-100",
+			"explanation": "一(1), 二(2), 三(3), 四(4), 五(5), 六(6), 七(7), 八(8), 九(9), 十(10). Combine: 二十(20), 二十一(21), 一百(100)."
+		}
+	],
+	"vocabulary_ids": [
+		"b32c9792-f49a-4b66-b3e0-6fbb6a5348e3",
+		"c2ac72f4-efd2-49ba-becf-1d0cfce8c667",
+		"981f768d-a301-4679-8987-871fd8f4edcf",
+		"f7231e8c-ff1a-4d17-8d8c-a0b189d70ce0",
+		"1f60f64e-b01c-4e21-aa0b-0a35bfb92b3a",
+		"06d3db3f-9b68-4810-b75e-c0838cef963e",
+		"4d072084-ef54-4d86-b3f5-08d84fc4fab1",
+		"fb99b464-6840-47ce-8309-f98d2eecd0f1"
+	],
+	"vocabulary_count": 8
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcb2"
+	},
+	"id": "2881ecce-efa8-4c57-abdb-11f4ecd2ec9b",
+	"lesson_number": 10,
+	"title": "我在这儿买光盘 (I'm Buying CDs Here)",
+	"subtitle": "Shopping & Activities",
+	"description": "Express what you are doing now using 在 + verb.",
+	"level": "Beginner",
+	"video_url": "",
+	"dialogue": [
+		{
+			"speaker": "Lin Na",
+			"chinese": "马大为，你在做什么?",
+			"pinyin": "Mǎ Dàwéi, nǐ zài zuò shénme?",
+			"english": "Ma Dawei, what are you doing?"
+		},
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "我在这儿买光盘。",
+			"pinyin": "Wǒ zài zhèr mǎi guāngpán.",
+			"english": "I'm buying CDs here."
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "你想买什么光盘?",
+			"pinyin": "Nǐ xiǎng mǎi shénme guāngpán?",
+			"english": "What kind of CDs do you want to buy?"
+		},
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "中文音乐。",
+			"pinyin": "Zhōngwén yīnyuè.",
+			"english": "Chinese music."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "在 + Verb (progressive)",
+			"explanation": "在 before a verb expresses an ongoing action: 我在吃饭 (I am eating). 你在做什么? = What are you doing?"
+		},
+		{
+			"title": "想 (xiǎng) — want to",
+			"explanation": "想 + verb expresses desire: 我想买书 (I want to buy a book). 你想去吗? = Do you want to go?"
+		}
+	],
+	"vocabulary_ids": [
+		"4d436fd1-3ef3-44fd-92a2-1533f1a67aab",
+		"4154d43e-f733-4be9-8961-f66765f34134",
+		"54d27e33-9668-4435-bc04-b036dd841263",
+		"291d5ab8-b32e-42a9-97c4-0a5525715c67",
+		"59b4d6f3-4df7-4699-87ab-1682efbce722",
+		"2f101c78-c8d7-4ce5-b27d-ca99eb8b3d47",
+		"6eccb6b3-3f17-478d-a6ca-7a6fcf47cdb5"
+	],
+	"vocabulary_count": 7
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcba"
+	},
+	"id": "ba6e955a-e980-4047-9641-2ee58debfa89",
+	"lesson_number": 11,
+	"title": "我会说一点儿汉语 (I Can Speak a Little Chinese)",
+	"subtitle": "Abilities & Languages",
+	"description": "Talk about what you can do using 会 and 能.",
+	"level": "Beginner",
+	"video_url": "",
+	"dialogue": [
+		{
+			"speaker": "Wang Xiaoyun",
+			"chinese": "你会说汉语吗?",
+			"pinyin": "Nǐ huì shuō Hànyǔ ma?",
+			"english": "Can you speak Chinese?"
+		},
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "我会说一点儿汉语。",
+			"pinyin": "Wǒ huì shuō yìdiǎnr Hànyǔ.",
+			"english": "I can speak a little Chinese."
+		},
+		{
+			"speaker": "Wang Xiaoyun",
+			"chinese": "你说得很好!",
+			"pinyin": "Nǐ shuō de hěn hǎo!",
+			"english": "You speak very well!"
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "会 (huì) — learned ability",
+			"explanation": "会 expresses learned skills: 我会游泳 (I can swim). Negation: 我不会..."
+		},
+		{
+			"title": "一点儿 (yìdiǎnr) — a little",
+			"explanation": "一点儿 means 'a little'. 我会说一点儿英语 = I can speak a little English."
+		}
+	],
+	"vocabulary_ids": [
+		"8bb4ba3e-5b28-4c55-b14e-22a444f2f4c1",
+		"4cc01865-f8d7-4d77-9428-c607d6fa1406",
+		"ef819122-7fba-45bf-a3a9-40d170fc6c98",
+		"5fd54bd8-a08b-4ac9-8561-69882422a6e3",
+		"a11cfaa5-b987-459f-9041-2e8e8d17afeb",
+		"5b4d2125-51a8-4111-9582-d9661cd3581b",
+		"f9c126c6-3ed0-484d-89e7-b8667c1fbc6a"
+	],
+	"vocabulary_count": 7
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcc3"
+	},
+	"id": "4189cec5-6468-46da-8911-d7110c2ed106",
+	"lesson_number": 12,
+	"title": "我全身都不舒服 (I'm Not Feeling Well)",
+	"subtitle": "Health & Body",
+	"description": "Describe how you feel and discuss being sick.",
+	"level": "Beginner",
+	"video_url": "",
+	"dialogue": [
+		{
+			"speaker": "Lin Na",
+			"chinese": "马大为，你怎么了?",
+			"pinyin": "Mǎ Dàwéi, nǐ zěnme le?",
+			"english": "Ma Dawei, what's wrong?"
+		},
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "我全身都不舒服。头疼，发烧。",
+			"pinyin": "Wǒ quánshēn dōu bù shūfu. Tóu téng, fāshāo.",
+			"english": "My whole body feels bad. My head hurts and I have a fever."
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "你应该去医院。",
+			"pinyin": "Nǐ yīnggāi qù yīyuàn.",
+			"english": "You should go to the hospital."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "怎么了? (zěnme le?)",
+			"explanation": "怎么了? asks 'what's wrong?' or 'what happened?'. Used to inquire about a problem."
+		},
+		{
+			"title": "应该 (yīnggāi) — should",
+			"explanation": "应该 + verb expresses obligation: 你应该休息 (You should rest)."
+		}
+	],
+	"vocabulary_ids": [
+		"0a9df3a0-f8d3-4230-9af8-9967090d5203",
+		"d412bfc5-9fee-4067-b658-ccf2cd965d8a",
+		"04f3344d-905f-45de-a79c-598bcf3868bd",
+		"f9e827a0-a0a6-4dcc-9ead-378814cd07c0",
+		"5891908b-459d-4eda-aa03-4a4dad859157",
+		"e2dad655-50d8-4dfe-97cf-87f4a7943efe",
+		"e6149abe-317d-4709-961a-4086547e9f9e",
+		"d1b1a94c-42ec-47d0-a167-f93eca616279"
+	],
+	"vocabulary_count": 8
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bccc"
+	},
+	"id": "7cf88f2e-f1d4-4836-8f9d-b590ae0d6593",
+	"lesson_number": 13,
+	"title": "我认识了一个漂亮的姑娘 (I Met a Beautiful Girl)",
+	"subtitle": "Past Actions with 了",
+	"description": "Talk about completed actions using the particle 了.",
+	"level": "Beginner",
+	"video_url": "",
+	"dialogue": [
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "昨天我认识了一个漂亮的姑娘。",
+			"pinyin": "Zuótiān wǒ rènshí le yí ge piàoliang de gūniang.",
+			"english": "Yesterday I met a beautiful girl."
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "真的吗?她是哪国人?",
+			"pinyin": "Zhēn de ma? Tā shì nǎ guó rén?",
+			"english": "Really? What nationality is she?"
+		},
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "她是中国人。她叫王小云。",
+			"pinyin": "Tā shì Zhōngguó rén. Tā jiào Wáng Xiǎoyún.",
+			"english": "She's Chinese. Her name is Wang Xiaoyun."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "了 (le) — completed action",
+			"explanation": "了 after a verb indicates a completed action: 我吃了饭 (I ate). Past time markers like 昨天 (yesterday) often appear with 了."
+		},
+		{
+			"title": "Adjective + 的 + Noun",
+			"explanation": "Use 的 to link adjectives to nouns: 漂亮的姑娘 (beautiful girl), 好的朋友 (good friend)."
+		}
+	],
+	"vocabulary_ids": [
+		"e26c930b-f54b-4340-b14e-161c595ac7ad",
+		"d33dc994-dd92-451b-90e5-0533471fbe5e",
+		"fcd75f3d-09a2-4b94-a4f3-2f0a690bc272",
+		"78dacc14-bc19-4d1d-86b1-6f69d59838be",
+		"e69d5fac-ba64-46e4-8536-3e9575f08088",
+		"7cfe173e-c84e-4bf8-815e-622d617c6039",
+		"dec19693-cb08-49cf-a4ab-6c8d4dcb80dc",
+		"3a2f22d6-1200-4ff5-881b-e603dd501587"
+	],
+	"vocabulary_count": 8
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcd4"
+	},
+	"id": "bd88f6fc-5c48-491c-b4a3-1362d7f4b28a",
+	"lesson_number": 14,
+	"title": "祝你圣诞快乐 (Merry Christmas)",
+	"subtitle": "Wishes & Celebrations",
+	"description": "Express good wishes and talk about holidays.",
+	"level": "Beginner",
+	"video_url": "",
+	"dialogue": [
+		{
+			"speaker": "Lin Na",
+			"chinese": "马大为，祝你圣诞快乐!",
+			"pinyin": "Mǎ Dàwéi, zhù nǐ Shèngdàn kuàilè!",
+			"english": "Ma Dawei, Merry Christmas!"
+		},
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "谢谢!也祝你圣诞快乐!",
+			"pinyin": "Xièxie! Yě zhù nǐ Shèngdàn kuàilè!",
+			"english": "Thank you! Merry Christmas to you too!"
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "这是给你的礼物。",
+			"pinyin": "Zhè shì gěi nǐ de lǐwù.",
+			"english": "This is a gift for you."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "祝 (zhù) — to wish",
+			"explanation": "祝 + Person + Wish expresses good wishes: 祝你生日快乐 (Happy birthday), 祝你健康 (Wishing you health)."
+		},
+		{
+			"title": "给 (gěi) — for; give",
+			"explanation": "给 + Person + 的 + Noun: 给你的礼物 (a gift for you). Also a verb: 我给他书 (I give him a book)."
+		}
+	],
+	"vocabulary_ids": [
+		"3c9718c1-56ff-4e86-b9ca-373edd13baea",
+		"70448d42-9e1d-433b-aeb0-c03779ef6b44",
+		"193dccc0-d95e-436e-8c83-74fba1e28ebc",
+		"65d1c5e4-3c1f-4937-bc7a-b69afe8bb20b",
+		"17ecf5e0-d6fa-470c-9a1a-39fc4571dbb8",
+		"d0fe37e6-2446-4901-b49e-7a80f4d68a76",
+		"784cd5ff-c15e-4b5f-a3b0-1b7c3fdfe8d7"
+	],
+	"vocabulary_count": 7
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcdc"
+	},
+	"id": "aa5f9f58-3bc1-4c2e-8c50-8fca05677c39",
+	"lesson_number": 15,
+	"title": "银行在哪儿 (Where Is the Bank?)",
+	"subtitle": "Getting Around Town",
+	"description": "Ask for directions to common city locations.",
+	"level": "Beginner",
+	"video_url": "",
+	"dialogue": [
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "请问，银行在哪儿?",
+			"pinyin": "Qǐng wèn, yínháng zài nǎr?",
+			"english": "Excuse me, where is the bank?"
+		},
+		{
+			"speaker": "Stranger",
+			"chinese": "银行在邮局旁边。",
+			"pinyin": "Yínháng zài yóujú pángbiān.",
+			"english": "The bank is next to the post office."
+		},
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "邮局远不远?",
+			"pinyin": "Yóujú yuǎn bu yuǎn?",
+			"english": "Is the post office far?"
+		},
+		{
+			"speaker": "Stranger",
+			"chinese": "不远，走五分钟就到。",
+			"pinyin": "Bù yuǎn, zǒu wǔ fēnzhōng jiù dào.",
+			"english": "Not far, five minutes' walk."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "Location words: 旁边, 前面, 后面",
+			"explanation": "旁边 (beside), 前面 (in front), 后面 (behind), 里面 (inside), 外面 (outside). A 在 B 旁边 = A is beside B."
+		}
+	],
+	"vocabulary_ids": [
+		"66f0c30a-a1ba-4098-9b47-8425ad20b92a",
+		"3ed29063-f7c8-4a64-b647-67813adbf133",
+		"86dabe35-ad35-4da1-b02a-d790b9b93733",
+		"0b93d4f7-5567-4758-87cc-fc0047414073",
+		"d4a3c8b5-af41-4708-a268-91425a784010",
+		"0ebcb85c-43bd-462e-9a80-4393a633d93e",
+		"1af7a18a-5c7c-4dc2-b64c-972c07c20295"
+	],
+	"vocabulary_count": 7
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bce4"
+	},
+	"id": "3126a471-006d-4eea-a02b-e86d4e996717",
+	"lesson_number": 16,
+	"title": "你想喝什么 (What Do You Want to Drink?)",
+	"subtitle": "Ordering Food & Drink",
+	"description": "Order at a restaurant and discuss preferences.",
+	"level": "Beginner",
+	"video_url": "",
+	"dialogue": [
+		{
+			"speaker": "Waiter",
+			"chinese": "你想喝什么?",
+			"pinyin": "Nǐ xiǎng hē shénme?",
+			"english": "What would you like to drink?"
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "我要一杯茶。",
+			"pinyin": "Wǒ yào yì bēi chá.",
+			"english": "I'd like a cup of tea."
+		},
+		{
+			"speaker": "Waiter",
+			"chinese": "好的，请稍等。",
+			"pinyin": "Hǎo de, qǐng shāo děng.",
+			"english": "OK, please wait a moment."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "要 (yào) — want; will",
+			"explanation": "要 expresses wanting or ordering: 我要茶 (I want tea). Also used as future: 我要去 (I will go)."
+		},
+		{
+			"title": "Measure words: 杯, 个, 本",
+			"explanation": "Chinese requires measure words between numbers and nouns: 一杯茶 (a cup of tea), 一个人 (one person), 一本书 (one book)."
+		}
+	],
+	"vocabulary_ids": [
+		"5f6e1088-0ad0-4f19-9631-e2224858d4dc",
+		"9bfb947d-5819-4ac3-b0ff-a62cb0052a45",
+		"20105c02-6464-4595-8311-bcef47cd1751",
+		"1f8400f9-5ee7-4d1f-9301-37c86c71bbfa",
+		"91db170e-ea94-4291-9894-97e97ee2ea95",
+		"b55c1fc3-70b8-4012-b32b-832af3b9280f",
+		"4db902a8-8acc-42ab-b99e-369e55e81165"
+	],
+	"vocabulary_count": 7
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bced"
+	},
+	"id": "501517e7-1ca2-477b-ba4f-873ffc12e45b",
+	"lesson_number": 17,
+	"title": "这件衣服多少钱 (How Much Is This?)",
+	"subtitle": "Shopping & Prices",
+	"description": "Ask about prices and shop for clothing.",
+	"level": "Beginner",
+	"video_url": "",
+	"dialogue": [
+		{
+			"speaker": "Lin Na",
+			"chinese": "这件衣服多少钱?",
+			"pinyin": "Zhè jiàn yīfu duōshǎo qián?",
+			"english": "How much is this piece of clothing?"
+		},
+		{
+			"speaker": "Clerk",
+			"chinese": "一百二十块。",
+			"pinyin": "Yìbǎi èrshí kuài.",
+			"english": "120 yuan."
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "太贵了。便宜一点儿吧。",
+			"pinyin": "Tài guì le. Piányi yìdiǎnr ba.",
+			"english": "Too expensive. A bit cheaper, please."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "多少 (duōshǎo) — how much; how many",
+			"explanation": "多少 asks for amounts (especially large): 多少钱? (how much money?), 多少人? (how many people?)"
+		},
+		{
+			"title": "太...了 — too ...",
+			"explanation": "太 + adjective + 了 expresses 'too...': 太贵了 (too expensive), 太好了 (great/too good)."
+		}
+	],
+	"vocabulary_ids": [
+		"ba9822fa-abfe-40b4-bdc5-5c8253c1d024",
+		"123aaabd-7731-4f86-88a0-63802aa1fe0a",
+		"48f3dd85-ca7b-4f03-8245-35e9738332a0",
+		"eca15c0e-2a9d-4ae8-85cd-60c357fcaac5",
+		"7b6b6be3-a3ba-47c5-9d9e-63bf73952e7d",
+		"babe0509-419e-4712-a1d0-b577ab250cb4",
+		"7e067022-65e3-4076-b00c-1559a6f809fe",
+		"7ea866a6-cb1b-4425-b0b5-6a1d199e43f7"
+	],
+	"vocabulary_count": 8
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcf5"
+	},
+	"id": "1f57e11a-e99d-497a-a630-f9923d00b24c",
+	"lesson_number": 18,
+	"title": "我每天七点起床 (I Get Up at 7 Every Day)",
+	"subtitle": "Daily Routines",
+	"description": "Describe your daily schedule and routines.",
+	"level": "Beginner",
+	"video_url": "",
+	"dialogue": [
+		{
+			"speaker": "Lin Na",
+			"chinese": "你每天几点起床?",
+			"pinyin": "Nǐ měitiān jǐ diǎn qǐchuáng?",
+			"english": "What time do you get up every day?"
+		},
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "我每天七点起床。你呢?",
+			"pinyin": "Wǒ měitiān qī diǎn qǐchuáng. Nǐ ne?",
+			"english": "I get up at 7 every day. And you?"
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "我八点起床。",
+			"pinyin": "Wǒ bā diǎn qǐchuáng.",
+			"english": "I get up at 8."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "每 (měi) — every",
+			"explanation": "每 + time expresses 'every': 每天 (every day), 每年 (every year), 每个星期 (every week)."
+		}
+	],
+	"vocabulary_ids": [
+		"e2bc924c-4839-494a-aca4-688f12263a57",
+		"ab5a47ef-1274-4678-9661-37fd8ed93ee5",
+		"f25998ee-d057-4896-a9dd-4fa957a3c6b6",
+		"94affe0b-19cd-4765-b9e5-1a78f5714a57",
+		"38d13a69-6c09-4375-a4b7-4a1bba635f71",
+		"a00fac49-0adc-40b8-a6f5-98b2abfe615e",
+		"8fb65551-781c-42f7-a747-2092340db4bc"
+	],
+	"vocabulary_count": 7
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bcfd"
+	},
+	"id": "e63bec44-c047-49c9-816e-1e2f9376b054",
+	"lesson_number": 19,
+	"title": "今天比昨天冷 (Today Is Colder Than Yesterday)",
+	"subtitle": "Comparisons",
+	"description": "Compare two things using 比.",
+	"level": "Beginner",
+	"video_url": "",
+	"dialogue": [
+		{
+			"speaker": "Lin Na",
+			"chinese": "今天比昨天冷。",
+			"pinyin": "Jīntiān bǐ zuótiān lěng.",
+			"english": "Today is colder than yesterday."
+		},
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "是啊。我喜欢热天。",
+			"pinyin": "Shì a. Wǒ xǐhuān rè tiān.",
+			"english": "Yes. I like hot days."
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "我也是。",
+			"pinyin": "Wǒ yě shì.",
+			"english": "Me too."
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "A 比 B + Adjective",
+			"explanation": "Use 比 to compare: 我比他高 (I am taller than him). 今天比昨天冷 = Today is colder than yesterday."
+		},
+		{
+			"title": "喜欢 (xǐhuān) — to like",
+			"explanation": "喜欢 + Noun/Verb: 我喜欢中国 (I like China), 我喜欢学汉语 (I like to study Chinese)."
+		}
+	],
+	"vocabulary_ids": [
+		"e4d4cba7-e7f9-4937-b1a6-e3d4ba0181c9",
+		"a6112c0a-390d-4c70-ac2a-47fc26009783",
+		"6c1c5a63-193a-4043-bca9-d6c41ef6023e",
+		"b42c97f4-3fde-4b95-97dd-695b109b9300",
+		"91813321-7d66-4963-a20d-ec0ee5bc21f0",
+		"8cf35fdc-8439-4a3b-a3ec-3f6e949e8c81",
+		"f41158c8-51ab-42b6-a729-73301171c986"
+	],
+	"vocabulary_count": 7
+},
+{
+	"_id": {
+		"$oid": "6a12dc5c0da77a76fb07bd05"
+	},
+	"id": "7f371138-fc4e-4205-9cfc-3f69f36fc1e4",
+	"lesson_number": 20,
+	"title": "我打算去中国 (I Plan to Go to China)",
+	"subtitle": "Plans & Future",
+	"description": "Talk about plans and future actions.",
+	"level": "Beginner",
+	"video_url": "",
+	"dialogue": [
+		{
+			"speaker": "Lin Na",
+			"chinese": "明年我打算去中国学习。",
+			"pinyin": "Míngnián wǒ dǎsuàn qù Zhōngguó xuéxí.",
+			"english": "Next year I plan to go study in China."
+		},
+		{
+			"speaker": "Ma Dawei",
+			"chinese": "真的吗?你要去哪个城市?",
+			"pinyin": "Zhēn de ma? Nǐ yào qù nǎ ge chéngshì?",
+			"english": "Really? Which city will you go to?"
+		},
+		{
+			"speaker": "Lin Na",
+			"chinese": "北京。你想一起来吗?",
+			"pinyin": "Běijīng. Nǐ xiǎng yìqǐ lái ma?",
+			"english": "Beijing. Do you want to come along?"
+		}
+	],
+	"grammar_notes": [
+		{
+			"title": "打算 (dǎsuàn) — to plan",
+			"explanation": "打算 + verb: 我打算学汉语 (I plan to study Chinese). Talks about intentions or plans."
+		},
+		{
+			"title": "一起 (yìqǐ) — together",
+			"explanation": "一起 + verb: 一起去 (go together), 我们一起吃饭 (Let's eat together)."
+		}
+	],
+	"vocabulary_ids": [
+		"8bc1fb9b-ee75-41ab-895e-645bf769f0a6",
+		"464af5dc-114a-4c75-a546-d38077d935a5",
+		"8452b4d8-620d-4b18-a0f5-d12c3fcc242b",
+		"11002548-d7f1-4361-a54b-39723851ada4",
+		"305447e8-d89b-43b6-8e97-550978ab4af9",
+		"af3b2656-d241-422d-81cd-719d1fb023d2",
+		"6350dd20-2a41-42f3-8a00-dfffebac831c"
+	],
+	"vocabulary_count": 7
+}]
+

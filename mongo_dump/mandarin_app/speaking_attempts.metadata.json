@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"d45dcf695ee24b19b9aac5a353f7045d","collectionName":"speaking_attempts","type":"collection"}

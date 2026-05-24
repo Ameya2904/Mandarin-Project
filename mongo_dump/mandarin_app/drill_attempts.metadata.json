@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"b9b3e7bbf21649c9981fcaf323bb344a","collectionName":"drill_attempts","type":"collection"}
