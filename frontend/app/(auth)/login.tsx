@@ -49,7 +49,7 @@ export default function LoginScreen() {
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
           <View style={styles.brandBlock}>
             <Text style={styles.brandHanzi}>学</Text>
-            <Text style={styles.brandTitle}>Mandarin</Text>
+            <Text style={styles.brandTitle}>SpacedChinese</Text>
             <Text style={styles.brandSubtitle}>
               Structured Mandarin training, from recognition to fluency.
             </Text>

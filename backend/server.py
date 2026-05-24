@@ -17,6 +17,8 @@ from typing import List, Optional
 from datetime import datetime, timedelta, timezone
 
 from seed_data import NPCR_LESSONS, SENTENCE_DRILLS
+from emergentintegrations.llm.openai.speech_to_text import OpenAISpeechToText
+import tempfile
 
 # ---------- Setup ----------
 ROOT_DIR = Path(__file__).parent
@@ -143,9 +145,15 @@ def user_to_public(doc: dict) -> UserPublic:
 # ---------- Seed Data on Startup ----------
 async def seed_lessons_and_vocab():
     existing = await db.lessons.count_documents({})
-    if existing > 0:
+    if existing == len(NPCR_LESSONS):
         logger.info(f"Lessons already seeded ({existing}). Skipping.")
         return
+
+    if existing != len(NPCR_LESSONS) and existing > 0:
+        logger.info(f"Lesson count changed ({existing} -> {len(NPCR_LESSONS)}). Reseeding lessons/vocab/drills (user data preserved).")
+        await db.lessons.delete_many({})
+        await db.vocabulary.delete_many({})
+        await db.drills.delete_many({})
 
     logger.info("Seeding NPCR lessons and vocabulary...")
     for lesson in NPCR_LESSONS:
@@ -550,6 +558,102 @@ async def get_stats(current_user: dict = Depends(get_current_user)):
         "speaking_attempts": speaking_attempts,
         "streak_count": current_user.get("streak_count", 0),
     }
+
+
+# ---------- Whisper Transcription ----------
+@api_router.post("/speaking/transcribe")
+async def transcribe_audio(
+    file: UploadFile = File(...),
+    target_chinese: str = "",
+    vocabulary_id: Optional[str] = None,
+    current_user: dict = Depends(get_current_user),
+):
+    """Accept an audio file (m4a/wav/webm), transcribe via OpenAI Whisper-1 (zh),
+    then compare to target_chinese (if provided) for pronunciation feedback."""
+    if not EMERGENT_LLM_KEY:
+        raise HTTPException(status_code=500, detail="LLM key not configured on server")
+
+    # Determine extension from filename / content-type
+    filename = file.filename or "audio.m4a"
+    suffix = "." + filename.rsplit(".", 1)[-1].lower() if "." in filename else ".m4a"
+    if suffix.lstrip(".") not in {"mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"}:
+        suffix = ".m4a"
+
+    contents = await file.read()
+    if len(contents) > 25 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Audio file too large (max 25MB)")
+    if len(contents) < 100:
+        raise HTTPException(status_code=400, detail="Audio file too small / empty")
+
+    # Save to a temp file because emergentintegrations whisper accepts paths/file handles with names
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+    tmp.write(contents)
+    tmp.close()
+
+    try:
+        stt = OpenAISpeechToText(api_key=EMERGENT_LLM_KEY)
+        with open(tmp.name, "rb") as f:
+            response = await stt.transcribe(
+                file=f,
+                model="whisper-1",
+                language="zh",
+                response_format="text",
+            )
+        # litellm's atranscription returns an object with a .text attribute or a string
+        if isinstance(response, str):
+            transcribed = response
+        else:
+            transcribed = getattr(response, "text", "") or str(response)
+    except Exception as e:
+        logger.exception("Whisper transcription failed")
+        raise HTTPException(status_code=502, detail=f"Transcription failed: {str(e)}")
+    finally:
+        try:
+            os.remove(tmp.name)
+        except OSError:
+            pass
+
+    transcribed = (transcribed or "").strip()
+
+    # If a target was provided, compute comparison
+    result = {"transcribed_text": transcribed}
+    if target_chinese:
+        target_norm = normalize_chinese(target_chinese)
+        spoken_norm = normalize_chinese(transcribed)
+        target_chars = list(target_norm)
+        correct_chars = sum(1 for c in spoken_norm if c in target_chars)
+        score = round((correct_chars / max(len(target_chars), 1)) * 100) if target_chars else 0
+        exact_match = target_norm == spoken_norm and len(target_norm) > 0
+
+        if exact_match:
+            feedback = "Perfect pronunciation! 完美!"
+        elif score >= 80:
+            feedback = "Great pronunciation! Almost there."
+        elif score >= 50:
+            feedback = "Good attempt. Some characters were off."
+        else:
+            feedback = "Try again. Listen and speak more clearly."
+
+        await db.speaking_attempts.insert_one({
+            "id": str(uuid.uuid4()),
+            "user_id": current_user["id"],
+            "target_chinese": target_chinese,
+            "spoken_text": transcribed,
+            "score": score,
+            "exact_match": exact_match,
+            "vocabulary_id": vocabulary_id,
+            "source": "whisper",
+            "timestamp": datetime.now(timezone.utc),
+        })
+
+        result.update({
+            "correct": exact_match,
+            "score": score,
+            "feedback": feedback,
+            "target_text": target_chinese,
+        })
+
+    return result
 
 
 # ---------- Health ----------

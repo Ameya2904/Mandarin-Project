@@ -69,10 +69,21 @@ class TestLessons:
         r = api.get(f"{BASE_URL}/api/lessons", headers=auth_headers)
         assert r.status_code == 200
         lessons = r.json()
-        assert len(lessons) == 5
+        assert len(lessons) == 20, f"Expected 20 lessons, got {len(lessons)}"
         assert all("progress" in lesson for lesson in lessons)
         assert all("vocabulary_count" in lesson for lesson in lessons)
-        assert lessons[0]["lesson_number"] == 1
+        assert all(lesson["vocabulary_count"] > 0 for lesson in lessons)
+        assert all("dialogue" in lesson and len(lesson["dialogue"]) > 0 for lesson in lessons)
+        assert all("grammar_notes" in lesson and len(lesson["grammar_notes"]) > 0 for lesson in lessons)
+        numbers = [l["lesson_number"] for l in lessons]
+        assert numbers == list(range(1, 21))
+        titles = [l["title"] for l in lessons]
+        assert len(set(titles)) == 20  # unique titles
+        # Verify lesson 6 and 20 by title
+        l6 = next(l for l in lessons if l["lesson_number"] == 6)
+        assert "游泳" in l6["title"]
+        l20 = next(l for l in lessons if l["lesson_number"] == 20)
+        assert "中国" in l20["title"]
 
     def test_get_lesson_detail(self, api, auth_headers):
         r = api.get(f"{BASE_URL}/api/lessons", headers=auth_headers)
@@ -149,11 +160,22 @@ class TestFlashcardsSRS:
 # ---------- Drills ----------
 class TestDrills:
     def test_list_drills(self, api, auth_headers):
-        r = api.get(f"{BASE_URL}/api/drills", headers=auth_headers)
+        r = api.get(f"{BASE_URL}/api/drills?limit=100", headers=auth_headers)
+        assert r.status_code == 200
+        drills = r.json()
+        assert len(drills) >= 29, f"Expected >=29 drills, got {len(drills)}"
+        assert "prompt_chinese" in drills[0]
+        # Coverage of lessons 1-20
+        lesson_nums = {d["lesson_number"] for d in drills}
+        for n in range(1, 21):
+            assert n in lesson_nums, f"No drill for lesson {n}"
+
+    def test_filter_drills_by_lesson(self, api, auth_headers):
+        r = api.get(f"{BASE_URL}/api/drills?lesson_number=15", headers=auth_headers)
         assert r.status_code == 200
         drills = r.json()
         assert len(drills) > 0
-        assert "prompt_chinese" in drills[0]
+        assert all(d["lesson_number"] == 15 for d in drills)
 
     def test_drill_attempt(self, api, auth_headers):
         r = api.get(f"{BASE_URL}/api/drills?limit=1", headers=auth_headers)

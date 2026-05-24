@@ -166,4 +166,51 @@ export const api = {
       '/speaking/evaluate',
       { method: 'POST', body: JSON.stringify({ target_chinese, spoken_text, vocabulary_id }) }
     ),
+
+  transcribeAudio: async (
+    audioUri: string,
+    target_chinese: string,
+    vocabulary_id?: string,
+  ): Promise<{
+    transcribed_text: string;
+    correct?: boolean;
+    score?: number;
+    feedback?: string;
+    target_text?: string;
+  }> => {
+    const token = await getToken();
+    const form = new FormData();
+    const filename = audioUri.split('/').pop() || 'audio.m4a';
+    const ext = (filename.split('.').pop() || 'm4a').toLowerCase();
+    const typeMap: Record<string, string> = {
+      m4a: 'audio/m4a',
+      mp4: 'audio/mp4',
+      wav: 'audio/wav',
+      webm: 'audio/webm',
+      mp3: 'audio/mpeg',
+    };
+    const mime = typeMap[ext] || 'audio/m4a';
+
+    // Web: convert blob URL → Blob → File
+    if (audioUri.startsWith('blob:') || audioUri.startsWith('data:')) {
+      const blob = await (await fetch(audioUri)).blob();
+      const file = new File([blob], filename, { type: mime });
+      form.append('file', file);
+    } else {
+      // Native: append as { uri, name, type }
+      form.append('file', { uri: audioUri, name: filename, type: mime } as any);
+    }
+
+    const url = `${BASE_URL}/api/speaking/transcribe?target_chinese=${encodeURIComponent(target_chinese)}${vocabulary_id ? `&vocabulary_id=${vocabulary_id}` : ''}`;
+    const headers: Record<string, string> = { Accept: 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const res = await fetch(url, { method: 'POST', body: form as any, headers });
+    const text = await res.text();
+    const data = text ? JSON.parse(text) : {};
+    if (!res.ok) {
+      throw new Error(data?.detail || `Transcription failed (${res.status})`);
+    }
+    return data;
+  },
 };
