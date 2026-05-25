@@ -140,18 +140,27 @@ export default function LessonDetailScreen() {
         {lesson.dialogue && lesson.dialogue.length > 0 && (
           <>
             <Text style={styles.sectionTitle}>Dialogue · 对话</Text>
-            <View style={styles.dialogueCard}>
-              {lesson.dialogue.map((line, i) => (
-                <View key={i} style={styles.dialogueRow}>
-                  <Text style={styles.dialogueSpeaker}>{line.speaker}</Text>
-                  <Text style={styles.dialogueHanzi}>{line.chinese}</Text>
-                  <Text style={[styles.dialoguePinyin, { color: getToneColor(line.pinyin) }]}>
-                    {line.pinyin}
-                  </Text>
-                  <Text style={styles.dialogueEnglish}>{line.english}</Text>
+            {[1, 2].map((part) => {
+              const lines = lesson.dialogue!.filter((l: any) => l.part === part);
+              if (lines.length === 0) return null;
+              return (
+                <View key={part} style={styles.dialoguePart}>
+                  <Text style={styles.partLabel}>Part {part}</Text>
+                  <View style={styles.dialogueCard}>
+                    {lines.map((line: any, i: number) => (
+                      <View key={i} style={[styles.dialogueRow, i === lines.length - 1 && styles.lastDialogueRow]}>
+                        <Text style={styles.dialogueSpeaker}>{line.speaker}</Text>
+                        <Text style={styles.dialogueHanzi}>{line.chinese}</Text>
+                        <Text style={[styles.dialoguePinyin, { color: getToneColor(line.pinyin) }]}>
+                          {line.pinyin}
+                        </Text>
+                        <Text style={styles.dialogueEnglish}>{line.english}</Text>
+                      </View>
+                    ))}
+                  </View>
                 </View>
-              ))}
-            </View>
+              );
+            })}
           </>
         )}
 
@@ -224,8 +233,11 @@ const styles = StyleSheet.create({
   ctaDisabled: { opacity: 0.5 },
   ctaText: { color: '#fff', fontWeight: '600', fontSize: fontSize.base },
   sectionTitle: { fontSize: fontSize.base, color: colors.textSecondary, fontWeight: '500', marginTop: spacing.xl, marginBottom: spacing.md, letterSpacing: 0.5, textTransform: 'uppercase' },
+  dialoguePart: { marginBottom: spacing.md },
+  partLabel: { fontSize: fontSize.xs, color: colors.textTertiary, fontWeight: '600', letterSpacing: 1, textTransform: 'uppercase', marginBottom: spacing.sm },
   dialogueCard: { backgroundColor: colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.md, gap: spacing.md },
   dialogueRow: { paddingBottom: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.border },
+  lastDialogueRow: { paddingBottom: 0, borderBottomWidth: 0 },
   dialogueSpeaker: { fontSize: fontSize.xs, color: colors.textTertiary, fontWeight: '500', marginBottom: 4 },
   dialogueHanzi: { fontSize: fontSize.xl, color: colors.textPrimary, marginBottom: 4 },
   dialoguePinyin: { fontSize: fontSize.base },

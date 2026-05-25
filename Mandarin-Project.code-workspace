@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "Mandarin-Project",
+			"path": "."
+		},
+		{
+			"name": "mongo_dump",
+			"path": "../../Downloads/Mandarin-Project-data_dump/Mandarin-Project-data_dump/mongo_dump"
+		}
+	],
+	"settings": {}
+}

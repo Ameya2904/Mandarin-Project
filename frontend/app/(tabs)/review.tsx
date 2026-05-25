@@ -350,12 +350,30 @@ function ReadingCard({ card, onAnswered }: { card: Card; onAnswered: (id: string
   );
 }
 
+type CharResult = {
+  target: string;
+  recognized: string;
+  match: boolean;
+  quality: number;
+  notes: string;
+};
+
+type WritingResult = {
+  score: number;
+  identity_score: number;
+  quality_score: number;
+  feedback: string;
+  characters: CharResult[];
+  recognized: string;
+  passed: boolean;
+};
+
 // ----- Writing mode -----
 function WritingCard({ card, onAnswered }: { card: Card; onAnswered: (id: string, ok: boolean, m: Mode) => void }) {
   const vocab = card.vocabulary;
   const canvasRef = useRef<HandwritingCanvasHandle>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [result, setResult] = useState<null | { correct: boolean; score: number; feedback: string; recognized: string }>(null);
+  const [result, setResult] = useState<WritingResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async () => {
@@ -368,13 +386,26 @@ function WritingCard({ card, onAnswered }: { card: Card; onAnswered: (id: string
     try {
       const base64 = await canvasRef.current.captureBase64();
       const r = await api.recognizeHandwriting(base64, vocab.simplified, vocab.id);
-      setResult({ correct: r.correct, score: r.score, feedback: r.feedback, recognized: r.recognized_text });
+      // composite >= 80 AND at least 2/3 of characters correct
+      const passed = r.score >= 80 && r.identity_score >= 67;
+      setResult({
+        score: r.score,
+        identity_score: r.identity_score,
+        quality_score: r.quality_score,
+        feedback: r.feedback,
+        characters: r.characters,
+        recognized: r.recognized_text,
+        passed,
+      });
     } catch (e: any) {
       setError(e?.message || 'Recognition failed');
     } finally {
       setSubmitting(false);
     }
   };
+
+  const qualityBarColor = (q: number) =>
+    q >= 80 ? colors.success : q >= 50 ? colors.warning : colors.error;
 
   return (
     <ScrollView contentContainerStyle={styles.cardScroll}>
@@ -395,27 +426,63 @@ function WritingCard({ card, onAnswered }: { card: Card; onAnswered: (id: string
         )}
 
         {result && (
-          <View
-            testID="review-writing-feedback"
-            style={[styles.feedback, result.correct ? styles.feedbackCorrect : styles.feedbackIncorrect]}
-          >
-            <View style={styles.feedbackHeader}>
-              <Ionicons
-                name={result.correct ? 'checkmark-circle' : 'information-circle'}
-                size={22}
-                color={result.correct ? colors.success : colors.warning}
-              />
-              <Text style={[styles.feedbackTitle, { color: result.correct ? colors.success : colors.warning, flex: 1 }]}>
-                {result.feedback}
-              </Text>
-            </View>
-            <Text style={styles.compareLabel}>Target</Text>
-            <Text style={styles.compareHanzi}>{vocab.simplified}</Text>
-            <Text style={styles.compareLabel}>AI read</Text>
-            <Text style={styles.compareHanzi} testID="review-writing-recognized">
-              {result.recognized || '(unreadable)'}
+          <View testID="review-writing-feedback" style={styles.writingFeedback}>
+            {/* Per-character tiles */}
+            {result.characters.length > 0 ? (
+              <View style={styles.charTileRow}>
+                {result.characters.map((c, i) => (
+                  <View
+                    key={i}
+                    style={[
+                      styles.charTile,
+                      c.match ? styles.charTileGood : c.recognized ? styles.charTileBad : styles.charTileBlank,
+                    ]}
+                  >
+                    <Text style={styles.charTargetLabel}>{c.target}</Text>
+                    <Text style={styles.charRecognized}>{c.recognized || '—'}</Text>
+                    <View style={styles.qualityBar}>
+                      <View
+                        style={[
+                          styles.qualityFill,
+                          { width: `${c.quality}%` as any, backgroundColor: qualityBarColor(c.quality) },
+                        ]}
+                      />
+                    </View>
+                    <Text style={styles.qualityPct}>{c.quality}%</Text>
+                    {c.notes ? <Text style={styles.charNote}>{c.notes}</Text> : null}
+                  </View>
+                ))}
+              </View>
+            ) : (
+              /* Legacy fallback: no per-char data */
+              <>
+                <Text style={styles.compareLabel}>Target</Text>
+                <Text style={styles.compareHanzi}>{vocab.simplified}</Text>
+                <Text style={styles.compareLabel}>AI read</Text>
+                <Text style={styles.compareHanzi} testID="review-writing-recognized">
+                  {result.recognized || '(unreadable)'}
+                </Text>
+              </>
+            )}
+
+            {/* Score row */}
+            <Text style={styles.subScore}>
+              Identity {result.identity_score}% · Quality {result.quality_score}%
             </Text>
-            <Text style={styles.scoreText}>Match score: {result.score}%</Text>
+
+            {/* Overall notes */}
+            {result.feedback ? (
+              <View style={styles.overallNotes}>
+                <Ionicons
+                  name={result.passed ? 'checkmark-circle' : 'information-circle'}
+                  size={18}
+                  color={result.passed ? colors.success : colors.warning}
+                />
+                <Text style={[styles.overallNotesText, { color: result.passed ? colors.success : colors.warning }]}>
+                  {result.feedback}
+                </Text>
+              </View>
+            ) : null}
           </View>
         )}
       </View>
@@ -429,15 +496,20 @@ function WritingCard({ card, onAnswered }: { card: Card; onAnswered: (id: string
               onPress={() => onAnswered(vocab.id, false, 'writing')}
             >
               <Ionicons name="close" size={22} color={colors.error} />
-              <Text style={[styles.actionLabel, { color: colors.error }]}>Mark incorrect</Text>
+              <Text style={[styles.actionLabel, { color: colors.error }]}>Incorrect</Text>
             </TouchableOpacity>
             <TouchableOpacity
               testID="review-mark-correct"
-              style={[styles.actionBtn, styles.correctBtn]}
+              style={[
+                styles.actionBtn,
+                result.passed ? styles.correctBtn : styles.correctBtnMuted,
+              ]}
               onPress={() => onAnswered(vocab.id, true, 'writing')}
             >
               <Ionicons name="checkmark" size={22} color={colors.success} />
-              <Text style={[styles.actionLabel, { color: colors.success }]}>Continue</Text>
+              <Text style={[styles.actionLabel, { color: colors.success }]}>
+                {result.passed ? 'Correct' : 'Mark correct anyway'}
+              </Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -671,6 +743,30 @@ const styles = StyleSheet.create({
   compareLabel: { fontSize: 10, color: colors.textTertiary, textTransform: 'uppercase', letterSpacing: 1, marginTop: spacing.sm },
   compareHanzi: { fontSize: fontSize.xl, color: colors.textPrimary, marginTop: 2 },
   scoreText: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: spacing.sm },
+  // Writing feedback
+  writingFeedback: { marginTop: spacing.md, gap: spacing.sm },
+  charTileRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, justifyContent: 'center' },
+  charTile: {
+    width: 88,
+    borderRadius: radius.lg,
+    borderWidth: 1.5,
+    padding: spacing.sm,
+    alignItems: 'center',
+    gap: 4,
+  },
+  charTileGood: { backgroundColor: colors.successLight, borderColor: colors.success },
+  charTileBad: { backgroundColor: colors.errorLight, borderColor: colors.error },
+  charTileBlank: { backgroundColor: colors.surfaceAlt, borderColor: colors.borderStrong },
+  charTargetLabel: { fontSize: 10, color: colors.textTertiary, textTransform: 'uppercase', letterSpacing: 0.5 },
+  charRecognized: { fontSize: fontSize.xxl, color: colors.textPrimary, fontWeight: '500' },
+  qualityBar: { width: '100%', height: 4, backgroundColor: colors.border, borderRadius: radius.full, overflow: 'hidden', marginTop: 2 },
+  qualityFill: { height: '100%', borderRadius: radius.full },
+  qualityPct: { fontSize: 10, color: colors.textSecondary, fontWeight: '600' },
+  charNote: { fontSize: 10, color: colors.textSecondary, textAlign: 'center', lineHeight: 14 },
+  subScore: { fontSize: fontSize.sm, color: colors.textSecondary, textAlign: 'center', fontWeight: '500', marginTop: spacing.xs },
+  overallNotes: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.xs, backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: spacing.sm },
+  overallNotesText: { flex: 1, fontSize: fontSize.sm, fontWeight: '500', lineHeight: 20 },
+  correctBtnMuted: { backgroundColor: colors.surfaceAlt, borderWidth: 1, borderColor: colors.success },
   settingsBtn: { backgroundColor: colors.primary, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: radius.sm, alignSelf: 'flex-start', marginTop: spacing.sm, minHeight: 36, justifyContent: 'center' },
   settingsBtnText: { color: '#fff', fontWeight: '600', fontSize: fontSize.sm },
   footer: { padding: spacing.lg },

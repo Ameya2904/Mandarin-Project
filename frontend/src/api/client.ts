@@ -198,7 +198,16 @@ export const api = {
     request<{
       correct: boolean;
       score: number;
+      identity_score: number;
+      quality_score: number;
       feedback: string;
+      characters: {
+        target: string;
+        recognized: string;
+        match: boolean;
+        quality: number;
+        notes: string;
+      }[];
       recognized_text: string;
       target_text: string;
     }>('/writing/recognize', {

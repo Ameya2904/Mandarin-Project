@@ -19,6 +19,7 @@ from datetime import datetime, timedelta, timezone
 from seed_data import NPCR_LESSONS, SENTENCE_DRILLS
 from openai import AsyncOpenAI
 import tempfile
+import json
 
 # ---------- Setup ----------
 ROOT_DIR = Path(__file__).parent
@@ -476,12 +477,27 @@ async def submit_review(payload: FlashcardReviewRequest, current_user: dict = De
 
 # ---------- Drill Endpoints ----------
 @api_router.get("/drills")
-async def list_drills(lesson_number: Optional[int] = None, limit: int = 20, current_user: dict = Depends(get_current_user)):
+async def list_drills(
+    lesson_number: Optional[int] = None,
+    part: Optional[int] = None,
+    limit: int = 500,
+    current_user: dict = Depends(get_current_user),
+):
+    import random
     query = {}
     if lesson_number is not None:
         query["lesson_number"] = lesson_number
-    drills = await db.drills.find(query, {"_id": 0}).limit(limit).to_list(limit)
-    return drills
+    if part is not None:
+        query["part"] = part
+    drills = await db.drills.find(query, {"_id": 0}).to_list(2000)
+
+    expanded = []
+    for d in drills:
+        n = max(1, int(d.get("repeat_count", 1)))
+        for _ in range(n):
+            expanded.append(d)
+    random.shuffle(expanded)
+    return expanded[:limit]
 
 
 @api_router.post("/drills/attempt")
@@ -868,60 +884,39 @@ async def vocabulary_library(
 
 
 # ---------- Writing / Handwriting Recognition ----------
-@api_router.post("/writing/recognize")
-async def recognize_handwriting(payload: WritingRecognizeRequest, current_user: dict = Depends(get_current_user)):
-    """Recognize handwritten Chinese characters using GPT-4o-mini vision via Emergent key.
-    Compares to target_chinese and returns a score + feedback."""
-    if not OPENAI_API_KEY:
-        raise HTTPException(status_code=500, detail="OpenAI API key not configured")
 
-    image_b64 = payload.image_base64
-    if image_b64.startswith("data:"):
-        _, _, image_b64 = image_b64.partition(",")
-    if not image_b64 or len(image_b64) < 100:
-        raise HTTPException(status_code=400, detail="Image is empty or invalid")
+_HANDWRITING_SYSTEM = (
+    "You are a Chinese handwriting evaluator.\n"
+    "Given a handwritten image and a target string, output ONLY this JSON "
+    "(no markdown fences, no extra commentary):\n"
+    '{\n'
+    '  "characters": [\n'
+    '    {\n'
+    '      "target": "<expected char>",\n'
+    '      "recognized": "<what you actually see at that position; empty string if blank>",\n'
+    '      "match": true|false,\n'
+    '      "quality": 0-100,\n'
+    '      "notes": "<= 12 words, e.g. \'wrong radical\' or \'missing horizontal stroke\'>"\n'
+    '    }\n'
+    '  ],\n'
+    '  "overall_notes": "<= 18 words"\n'
+    '}\n'
+    "Rules:\n"
+    "- characters array must have exactly N entries where N = len(target), in order.\n"
+    "- quality scores legibility/strokes/proportions regardless of whether the character is correct.\n"
+    "- If a position is blank, set recognized to empty string and quality to 0.\n"
+    "- If the user wrote in the wrong order, mark match=false and put what was at that position.\n"
+    "- Do NOT echo target characters for positions where the writing is wrong or blank."
+)
 
-    try:
-        oai = AsyncOpenAI(api_key=OPENAI_API_KEY)
-        response = await oai.chat.completions.create(
-            model="gpt-4o-mini",
-            max_tokens=64,
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are a Chinese handwriting recognizer. The user has handwritten Chinese characters on a digital canvas. "
-                        "Read the handwriting and return ONLY the recognized simplified Chinese characters, nothing else — no pinyin, "
-                        "no English, no punctuation, no explanation. If illegible, return an empty string."
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": f"Read the handwritten Chinese characters in this image. Expected (for context only, do not echo if wrong): {payload.target_chinese}. Return only what you actually see written.",
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": {"url": f"data:image/png;base64,{image_b64}"},
-                        },
-                    ],
-                },
-            ],
-        )
-        recognized = (response.choices[0].message.content or "").strip().replace("\n", "").replace(" ", "")
-    except Exception as e:
-        logger.exception("Handwriting recognition failed")
-        raise HTTPException(status_code=502, detail=f"Recognition failed: {str(e)[:200]}")
 
-    target_norm = normalize_chinese(payload.target_chinese)
+def _legacy_score(target_norm: str, recognized: str):
+    """Bag-of-characters fallback used when structured JSON parse fails."""
     rec_norm = normalize_chinese(recognized)
     target_chars = list(target_norm)
     correct_chars = sum(1 for c in rec_norm if c in target_chars)
     score = round((correct_chars / max(len(target_chars), 1)) * 100) if target_chars else 0
     exact_match = target_norm == rec_norm and len(target_norm) > 0
-
     if exact_match:
         feedback = "Perfect characters! 完美!"
     elif score >= 80:
@@ -932,13 +927,112 @@ async def recognize_handwriting(payload: WritingRecognizeRequest, current_user: 
         feedback = "Try writing more clearly. Check each character."
     else:
         feedback = "Could not read the handwriting. Try again."
+    return score, exact_match, feedback, rec_norm
+
+
+@api_router.post("/writing/recognize")
+async def recognize_handwriting(payload: WritingRecognizeRequest, current_user: dict = Depends(get_current_user)):
+    """Recognize handwritten Chinese characters using GPT-4o-mini vision.
+    Returns per-character identity + quality scores and actionable notes."""
+    if not OPENAI_API_KEY:
+        raise HTTPException(status_code=500, detail="OpenAI API key not configured")
+
+    image_b64 = payload.image_base64
+    if image_b64.startswith("data:"):
+        _, _, image_b64 = image_b64.partition(",")
+    if not image_b64 or len(image_b64) < 100:
+        raise HTTPException(status_code=400, detail="Image is empty or invalid")
+
+    target_norm = normalize_chinese(payload.target_chinese)
+    n_target = len(target_norm)
+
+    try:
+        oai = AsyncOpenAI(api_key=OPENAI_API_KEY)
+        response = await oai.chat.completions.create(
+            model="gpt-4o-mini",
+            max_tokens=400,
+            messages=[
+                {"role": "system", "content": _HANDWRITING_SYSTEM},
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": (
+                                f"Target string ({n_target} character{'s' if n_target != 1 else ''}): "
+                                f"{target_norm}. Evaluate the handwriting in this image."
+                            ),
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:image/png;base64,{image_b64}"},
+                        },
+                    ],
+                },
+            ],
+        )
+        raw = (response.choices[0].message.content or "").strip()
+    except Exception as e:
+        logger.exception("Handwriting recognition failed")
+        raise HTTPException(status_code=502, detail=f"Recognition failed: {str(e)[:200]}")
+
+    # --- Parse structured JSON ---
+    chars = []
+    overall_notes = ""
+    use_legacy = False
+    try:
+        clean = raw.lstrip("```json").lstrip("```").rstrip("```").strip()
+        data = json.loads(clean)
+        chars = data.get("characters", [])
+        overall_notes = data.get("overall_notes", "")
+        if len(chars) != n_target:
+            raise ValueError(f"Expected {n_target} chars, got {len(chars)}")
+    except Exception as parse_err:
+        logger.warning("Handwriting JSON parse failed (%s), using legacy fallback", parse_err)
+        use_legacy = True
+
+    if use_legacy:
+        # Fall back: treat raw as a plain recognized string
+        score, exact_match, feedback, rec_norm = _legacy_score(target_norm, raw)
+        await db.writing_attempts.insert_one({
+            "id": str(uuid.uuid4()),
+            "user_id": current_user["id"],
+            "target_chinese": payload.target_chinese,
+            "recognized_text": rec_norm,
+            "score": score,
+            "identity_score": score,
+            "quality_score": score,
+            "exact_match": exact_match,
+            "vocabulary_id": payload.vocabulary_id,
+            "timestamp": datetime.now(timezone.utc),
+        })
+        return {
+            "correct": exact_match,
+            "score": score,
+            "identity_score": score,
+            "quality_score": score,
+            "feedback": feedback,
+            "characters": [],
+            "recognized_text": rec_norm,
+            "target_text": payload.target_chinese,
+        }
+
+    # --- Position-aware composite scoring ---
+    identity_correct = sum(1 for c in chars if c.get("match"))
+    identity_score = round(identity_correct / max(len(chars), 1) * 100)
+    quality_score = round(sum(c.get("quality", 0) for c in chars) / max(len(chars), 1))
+    composite = round(0.6 * identity_score + 0.4 * quality_score)
+    exact_match = identity_correct == len(chars) == n_target and n_target > 0
+    recognized_text = "".join(c.get("recognized", "") for c in chars)
 
     await db.writing_attempts.insert_one({
         "id": str(uuid.uuid4()),
         "user_id": current_user["id"],
         "target_chinese": payload.target_chinese,
-        "recognized_text": recognized,
-        "score": score,
+        "recognized_text": recognized_text,
+        "score": composite,
+        "identity_score": identity_score,
+        "quality_score": quality_score,
         "exact_match": exact_match,
         "vocabulary_id": payload.vocabulary_id,
         "timestamp": datetime.now(timezone.utc),
@@ -946,9 +1040,12 @@ async def recognize_handwriting(payload: WritingRecognizeRequest, current_user: 
 
     return {
         "correct": exact_match,
-        "score": score,
-        "feedback": feedback,
-        "recognized_text": recognized,
+        "score": composite,
+        "identity_score": identity_score,
+        "quality_score": quality_score,
+        "feedback": overall_notes,
+        "characters": chars,
+        "recognized_text": recognized_text,
         "target_text": payload.target_chinese,
     }
 
