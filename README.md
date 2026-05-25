@@ -1,1 +1,207 @@
-# Here are your Instructions
+# Mandarin Learning App
+
+A focused mobile app for serious Mandarin learners built on the **New Practical Chinese Reader (NPCR)** curriculum. Designed to move students from passive recognition to active speaking and sentence construction.
+
+---
+
+## Features
+
+- **NPCR Lessons 1–14** — Full dialogues (Part 1 & Part 2), vocabulary lists, and grammar notes for each lesson
+- **Spaced Repetition Flashcards** — 6-stage SRS system (1d → 2d → 1w → 1m → 3m → 1y) with correct/incorrect progression
+- **Sentence Drills** — Substitution and transformation drills tied to each lesson
+- **Speaking Practice** — Browse all dialogue sentences organized by lesson folder; tap to practice pronunciation
+- **Progress Tracking** — Streak, retention rate, mastered word count, weak words
+- **Home Dashboard** — Daily progress, due reviews, quick action tiles
+- **JWT Auth** — Signup/login with bcrypt password hashing; 30-day sessions
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Expo (React Native) + Expo Router + TypeScript |
+| Backend | FastAPI + Motor (async MongoDB driver) |
+| Database | MongoDB |
+| Auth | JWT (PyJWT) + bcrypt |
+| AI / Speech | OpenAI API (Whisper + GPT) |
+
+---
+
+## Project Structure
+
+```
+Mandarin-Project/
+├── backend/
+│   ├── server.py          # FastAPI app — all routes and business logic
+│   ├── seed_data.py       # NPCR lesson content (dialogues, vocab, drills)
+│   ├── requirements.txt
+│   ├── .env               # Environment variables (not committed)
+│   └── tests/
+│       ├── conftest.py
+│       ├── test_backend.py
+│       ├── test_deck_and_writing.py
+│       └── test_whisper.py
+├── frontend/
+│   ├── app/
+│   │   ├── (tabs)/
+│   │   │   ├── index.tsx        # Home dashboard
+│   │   │   ├── lessons.tsx      # Lesson list
+│   │   │   ├── speak.tsx        # Speaking practice (lesson folders)
+│   │   │   └── profile.tsx      # Profile & settings
+│   │   ├── lesson/[id].tsx      # Lesson detail (dialogue, grammar, vocab)
+│   │   ├── drill.tsx            # Sentence drill session
+│   │   ├── speak-practice.tsx   # Single sentence practice screen
+│   │   ├── library.tsx          # Flashcard library
+│   │   └── add-word.tsx         # Add custom word to deck
+│   ├── src/
+│   │   ├── api/client.ts        # Typed API client
+│   │   ├── components/          # Shared UI components
+│   │   ├── contexts/            # Auth context
+│   │   ├── hooks/               # Custom hooks
+│   │   └── theme.ts             # Colors, spacing, typography
+│   └── package.json
+└── mongo_dump/                  # MongoDB backup (BSON + JSON)
+```
+
+---
+
+## Prerequisites
+
+- **Python 3.11+**
+- **Node.js 18+** and **Yarn**
+- **MongoDB** running locally on port 27017
+- **Expo Go** app on your phone (or an Android/iOS simulator)
+
+---
+
+## Setup
+
+### 1. Backend
+
+```bash
+cd backend
+
+# Create and activate virtual environment
+python -m venv venv
+venv\Scripts\activate        # Windows
+# source venv/bin/activate   # macOS/Linux
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Create .env file
+cp .env.example .env         # or create manually (see Environment Variables below)
+```
+
+### 2. Frontend
+
+```bash
+cd frontend
+yarn install
+```
+
+---
+
+## Environment Variables
+
+### `backend/.env`
+
+```env
+MONGO_URL="mongodb://localhost:27017"
+DB_NAME="mandarin_app"
+JWT_SECRET_KEY="your-secret-key-here"
+JWT_ALGORITHM="HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES=43200
+OPENAI_API_KEY="sk-your-openai-key-here"
+```
+
+### `frontend/.env`
+
+```env
+EXPO_PUBLIC_BACKEND_URL=http://YOUR_LOCAL_IP:8000
+```
+
+> Use your machine's local network IP (e.g. `192.168.1.x`), not `localhost`, so the phone can reach the backend over Wi-Fi.
+
+---
+
+## Running the App
+
+### Start the backend
+
+```bash
+cd backend
+venv\Scripts\activate
+uvicorn server:app --reload
+```
+
+The API will be available at `http://localhost:8000`. The server automatically seeds all 14 NPCR lessons on first run.
+
+### Start the frontend
+
+```bash
+cd frontend
+yarn start
+```
+
+Scan the QR code with Expo Go on your phone.
+
+---
+
+## Database
+
+MongoDB database name: `mandarin_app`
+
+| Collection | Contents |
+|---|---|
+| `lessons` | NPCR lesson content (dialogue, grammar, vocab metadata) |
+| `vocabulary` | Individual vocabulary entries per lesson |
+| `drills` | Sentence drills with substitution/transformation patterns |
+| `users` | User accounts (hashed passwords, settings) |
+| `flashcards` | Per-user SRS card state (stage, next review date) |
+| `review_history` | Log of every flashcard review |
+| `user_deck` | Mapping of user → vocabulary words added to deck |
+| `drill_attempts` | Log of drill session results |
+| `speaking_attempts` | Log of speaking practice results |
+
+### Re-seeding
+
+The server skips seeding if 14 lessons already exist. To force a reseed (e.g. after updating `seed_data.py`):
+
+```bash
+mongosh mandarin_app --eval "db.lessons.deleteMany({}); db.vocabulary.deleteMany({}); db.drills.deleteMany({})"
+```
+
+Then restart the server. User data (flashcards, accounts, history) is unaffected.
+
+### Restore from backup
+
+```bash
+mongorestore --db mandarin_app mongo_dump/mandarin_app/
+```
+
+---
+
+## API Overview
+
+All routes are prefixed with `/api` and require a `Bearer` token except auth endpoints.
+
+| Method | Route | Description |
+|---|---|---|
+| POST | `/api/auth/signup` | Create account |
+| POST | `/api/auth/login` | Login, returns JWT |
+| GET | `/api/lessons` | List all lessons with progress |
+| GET | `/api/lessons/{id}` | Lesson detail with full vocabulary |
+| GET | `/api/flashcards/due` | Cards due for review today |
+| POST | `/api/flashcards/review` | Submit a review result |
+| GET | `/api/drills` | List drills (filterable by lesson/part) |
+| POST | `/api/drills/attempt` | Submit a drill answer |
+| POST | `/api/speaking/evaluate` | Evaluate spoken sentence (OpenAI) |
+| GET | `/api/progress` | User stats (streak, retention, mastered) |
+
+---
+
+## Design Philosophy
+
+Calm, focused, and educational. No gamification overload. The palette uses organic/earthy tones — primary green `#4A7C59`, off-white background `#FDFCF9` — with large, readable hanzi throughout.
