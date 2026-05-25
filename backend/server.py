@@ -478,12 +478,31 @@ async def submit_review(payload: FlashcardReviewRequest, current_user: dict = De
 
 # ---------- Drill Endpoints ----------
 @api_router.get("/drills")
-async def list_drills(lesson_number: Optional[int] = None, limit: int = 20, current_user: dict = Depends(get_current_user)):
+async def list_drills(
+    lesson_number: Optional[int] = None,
+    part: Optional[int] = None,
+    limit: int = 500,
+    current_user: dict = Depends(get_current_user),
+):
+    """List drills. Each drill record may have a `repeat_count` (default 6).
+    The endpoint expands every drill into `repeat_count` shuffled copies so
+    learners practise each variant multiple times in a drilling session.
+    """
+    import random
     query = {}
     if lesson_number is not None:
         query["lesson_number"] = lesson_number
-    drills = await db.drills.find(query, {"_id": 0}).limit(limit).to_list(limit)
-    return drills
+    if part is not None:
+        query["part"] = part
+    drills = await db.drills.find(query, {"_id": 0}).to_list(2000)
+
+    expanded = []
+    for d in drills:
+        n = max(1, int(d.get("repeat_count", 1)))
+        for _ in range(n):
+            expanded.append(d)
+    random.shuffle(expanded)
+    return expanded[:limit]
 
 
 @api_router.post("/drills/attempt")
