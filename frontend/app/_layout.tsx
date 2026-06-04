@@ -13,21 +13,19 @@ SplashScreen.preventAutoHideAsync();
 
 function ProtectedRoutes() {
   const { user, loading } = useAuth();
-  const segments = useSegments();
+  const segments = useSegments() as string[];
   const router = useRouter();
 
   useEffect(() => {
     if (loading) return;
 
     const inAuthGroup = segments[0] === '(auth)';
-    const inTabsGroup = segments[0] === '(tabs)';
+    const atRoot = segments.length === 0;
 
     if (!user && !inAuthGroup) {
       router.replace('/(auth)/login');
-    } else if (user && (inAuthGroup || segments.length === 0 || (!inTabsGroup && !inAuthGroup && segments[0] !== 'lesson' && segments[0] !== 'drill' && segments[0] !== 'speak-practice'))) {
-      if (inAuthGroup || segments.length === 0) {
-        router.replace('/(tabs)');
-      }
+    } else if (user && (inAuthGroup || atRoot)) {
+      router.replace('/(tabs)');
     }
   }, [user, loading, segments]);
 

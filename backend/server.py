@@ -20,6 +20,24 @@ from seed_data import NPCR_LESSONS, SENTENCE_DRILLS
 from openai import AsyncOpenAI
 import tempfile
 import json
+import asyncio
+import base64 as b64lib
+import io
+import numpy as np
+from PIL import Image
+import easyocr
+from pypinyin import lazy_pinyin, Style
+import re
+import nltk
+
+# Ensure WordNet corpus is available for synonym checking
+try:
+    from nltk.corpus import wordnet as wn
+    wn.synsets('call')  # probe to trigger LookupError if data missing
+except LookupError:
+    nltk.download('wordnet', quiet=True)
+    nltk.download('omw-1.4', quiet=True)
+    from nltk.corpus import wordnet as wn
 
 # ---------- Setup ----------
 ROOT_DIR = Path(__file__).parent
@@ -43,6 +61,16 @@ SRS_INTERVALS = {1: 1, 2: 2, 3: 7, 4: 30, 5: 90, 6: 365}
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# Lazy-initialized EasyOCR reader (loads ~100MB models on first use)
+_ocr_reader: easyocr.Reader | None = None
+
+def _get_ocr_reader() -> easyocr.Reader:
+    global _ocr_reader
+    if _ocr_reader is None:
+        logger.info("Initializing EasyOCR reader (first use)...")
+        _ocr_reader = easyocr.Reader(['ch_sim'], gpu=False)
+    return _ocr_reader
 
 
 # ---------- Pydantic Models ----------
@@ -97,6 +125,7 @@ class FlashcardReviewRequest(BaseModel):
     was_correct: bool
     response_time_ms: Optional[int] = None
     mode: Optional[str] = "reading"  # reading | writing | speaking
+    skip_srs: bool = False  # log history only, don't advance SRS stage
 
 
 class DrillAttemptRequest(BaseModel):
@@ -104,6 +133,11 @@ class DrillAttemptRequest(BaseModel):
     user_answer: str
     was_correct: bool
     response_time_ms: Optional[int] = None
+
+
+class SemanticMatchRequest(BaseModel):
+    answer: str
+    target: str
 
 
 class SpeakingAttemptRequest(BaseModel):
@@ -410,6 +444,72 @@ async def get_new_flashcards(lesson_id: Optional[str] = None, limit: int = 10, c
     return vocab_list
 
 
+@api_router.get("/flashcards/schedule")
+async def get_review_schedule(days: int = 14, current_user: dict = Depends(get_current_user)):
+    """Return how many cards are due on each upcoming day (next `days` days)."""
+    user_id = current_user["id"]
+    now = datetime.now(timezone.utc)
+    end = now + timedelta(days=days)
+
+    cards = await db.flashcards.find(
+        {"user_id": user_id, "next_review_at": {"$gte": now, "$lte": end}},
+        {"_id": 0, "next_review_at": 1},
+    ).to_list(5000)
+
+    from collections import defaultdict
+    counts: dict = defaultdict(int)
+    for card in cards:
+        date_key = card["next_review_at"].strftime("%Y-%m-%d")
+        counts[date_key] += 1
+
+    schedule = []
+    for i in range(days):
+        date = (now + timedelta(days=i + 1)).date()
+        date_key = date.strftime("%Y-%m-%d")
+        if date_key in counts:
+            schedule.append({"date": date_key, "count": counts[date_key]})
+
+    return schedule
+
+
+# ---------- Semantic matching helpers ----------
+
+def _normalize_en(s: str) -> str:
+    s = (s or '').strip().lower()
+    s = re.sub(r'[.;]+$', '', s)
+    s = re.sub(r'^(to |a |an |the )', '', s)
+    return s.strip()
+
+
+def _word_synonyms(word: str) -> set:
+    synonyms = set()
+    for synset in wn.synsets(word):
+        for lemma in synset.lemmas():
+            synonyms.add(lemma.name().lower().replace('_', ' '))
+    return synonyms
+
+
+def _semantic_words_match(w1: str, w2: str) -> bool:
+    if w1 == w2:
+        return True
+    syns1 = _word_synonyms(w1)
+    syns2 = _word_synonyms(w2)
+    return w2 in syns1 or w1 in syns2
+
+
+@api_router.post("/vocabulary/semantic-match")
+async def check_semantic_match(payload: SemanticMatchRequest, current_user: dict = Depends(get_current_user)):
+    answer_clean = _normalize_en(payload.answer)
+    parts = re.split(r'[;,/]|\bor\b', payload.target)
+    target_parts = [_normalize_en(p) for p in parts if p.strip()]
+
+    for part in target_parts:
+        if _semantic_words_match(answer_clean, part):
+            return {"match": True}
+
+    return {"match": False}
+
+
 @api_router.post("/flashcards/review")
 async def submit_review(payload: FlashcardReviewRequest, current_user: dict = Depends(get_current_user)):
     user_id = current_user["id"]
@@ -420,6 +520,28 @@ async def submit_review(payload: FlashcardReviewRequest, current_user: dict = De
         raise HTTPException(status_code=404, detail="Vocabulary not found")
 
     existing = await db.flashcards.find_one({"user_id": user_id, "vocabulary_id": payload.vocabulary_id})
+
+    if payload.skip_srs:
+        # Log to review history only — don't touch SRS stage
+        card_id = existing["id"] if existing else None
+        if card_id:
+            await db.review_history.insert_one({
+                "id": str(uuid.uuid4()),
+                "user_id": user_id,
+                "vocabulary_id": payload.vocabulary_id,
+                "flashcard_id": card_id,
+                "was_correct": payload.was_correct,
+                "response_time_ms": payload.response_time_ms,
+                "mode": payload.mode or "reading",
+                "timestamp": now,
+            })
+        current_stage = existing["current_stage"] if existing else None
+        next_review = existing["next_review_at"] if existing else None
+        return {
+            "success": True,
+            "new_stage": current_stage,
+            "next_review_at": next_review.isoformat() if next_review else None,
+        }
 
     if existing:
         if payload.was_correct:
@@ -521,6 +643,89 @@ def normalize_chinese(text: str) -> str:
     return re.sub(r'[\s\W_，。!?,.!?]', '', text or '')
 
 
+def pinyin_syllables(text: str) -> list[str]:
+    """Tone-numbered pinyin syllables, e.g. '你好' -> ['ni3', 'hao3']."""
+    return [s.lower() for s in lazy_pinyin(text, style=Style.TONE3)]
+
+
+def _strip_tone(syllable: str) -> str:
+    """Drop the trailing tone digit from a TONE3 syllable ('hao3' -> 'hao')."""
+    return syllable.rstrip("012345")
+
+
+def pinyin_display(text: str) -> str:
+    """Space-separated pinyin with tone marks, for showing back to the learner."""
+    return " ".join(lazy_pinyin(text, style=Style.TONE))
+
+
+def score_pronunciation(target: str, spoken: str) -> dict:
+    """Score spoken pinyin against the target at the syllable level.
+
+    Full credit for a syllable whose sound *and* tone match the target; half
+    credit when the syllable (sound) is right but the tone is wrong. This is
+    order-independent (a bag/multiset match) so a single dropped or swapped
+    syllable doesn't cascade into everything after it counting as wrong.
+    """
+    from collections import Counter
+
+    target_syls = pinyin_syllables(target)
+    spoken_syls = pinyin_syllables(spoken)
+    total = len(target_syls)
+    if total == 0:
+        return {"score": 0, "correct": False, "syllables_right": 0,
+                "tones_wrong": 0, "total": 0}
+
+    pool = Counter(spoken_syls)
+
+    # Pass 1: exact syllable + tone match.
+    full = 0
+    unmatched: list[str] = []
+    for syl in target_syls:
+        if pool.get(syl, 0) > 0:
+            pool[syl] -= 1
+            full += 1
+        else:
+            unmatched.append(syl)
+
+    # Pass 2: same base sound but wrong tone -> partial credit.
+    base_pool: Counter = Counter()
+    for syl, cnt in pool.items():
+        if cnt > 0:
+            base_pool[_strip_tone(syl)] += cnt
+    tone_wrong = 0
+    for syl in unmatched:
+        base = _strip_tone(syl)
+        if base_pool.get(base, 0) > 0:
+            base_pool[base] -= 1
+            tone_wrong += 1
+
+    credit = full + 0.5 * tone_wrong
+    score = round(credit / total * 100)
+    correct = full == total and len(spoken_syls) == total
+    return {
+        "score": score,
+        "correct": correct,
+        "syllables_right": full + tone_wrong,
+        "tones_wrong": tone_wrong,
+        "total": total,
+    }
+
+
+def _pronunciation_feedback(p: dict) -> str:
+    """Human feedback string for a score_pronunciation result."""
+    if p["correct"]:
+        return "Perfect pronunciation! 完美!"
+    if p["total"] and p["syllables_right"] == p["total"] and p["tones_wrong"] > 0:
+        return "All the right sounds — but check your tones! 🎵"
+    if p["tones_wrong"] > 0:
+        return "Some sounds are right, but watch your tones."
+    if p["score"] >= 80:
+        return "Great pronunciation! Almost there."
+    if p["score"] >= 50:
+        return "Good attempt. Some syllables were off."
+    return "Try again. Listen and speak more clearly."
+
+
 @api_router.post("/speaking/evaluate")
 async def evaluate_speaking(payload: SpeakingAttemptRequest, current_user: dict = Depends(get_current_user)):
     """Compare spoken text against target sentence."""
@@ -530,22 +735,11 @@ async def evaluate_speaking(payload: SpeakingAttemptRequest, current_user: dict 
     if not spoken_normalized:
         return {"correct": False, "score": 0, "feedback": "No speech detected. Try again.", "spoken_text": payload.spoken_text}
 
-    # Character-level overlap
-    target_chars = list(target_normalized)
-    spoken_chars = list(spoken_normalized)
-
-    correct_chars = sum(1 for c in spoken_chars if c in target_chars)
-    score = round((correct_chars / max(len(target_chars), 1)) * 100)
-    exact_match = target_normalized == spoken_normalized
-
-    if exact_match:
-        feedback = "Perfect! 完美!"
-    elif score >= 80:
-        feedback = "Great pronunciation! Almost there."
-    elif score >= 50:
-        feedback = "Good attempt. Some characters were off."
-    else:
-        feedback = "Try again. Listen carefully to the target."
+    # Syllable-level pinyin scoring with partial credit for tone errors.
+    p = score_pronunciation(target_normalized, spoken_normalized)
+    score = p["score"]
+    exact_match = p["correct"]
+    feedback = _pronunciation_feedback(p)
 
     await db.speaking_attempts.insert_one({
         "id": str(uuid.uuid4()),
@@ -564,6 +758,11 @@ async def evaluate_speaking(payload: SpeakingAttemptRequest, current_user: dict 
         "feedback": feedback,
         "spoken_text": payload.spoken_text,
         "target_text": payload.target_chinese,
+        "target_pinyin": pinyin_display(target_normalized),
+        "spoken_pinyin": pinyin_display(spoken_normalized),
+        "tones_wrong": p["tones_wrong"],
+        "syllables_right": p["syllables_right"],
+        "syllable_count": p["total"],
     }
 
 
@@ -678,6 +877,7 @@ async def transcribe_audio(
                 file=f,
                 language="zh",
                 response_format="text",
+                prompt="普通话，简体中文。",
             )
         if not isinstance(transcribed, str):
             transcribed = getattr(transcribed, "text", "") or str(transcribed)
@@ -697,19 +897,16 @@ async def transcribe_audio(
     if target_chinese:
         target_norm = normalize_chinese(target_chinese)
         spoken_norm = normalize_chinese(transcribed)
-        target_chars = list(target_norm)
-        correct_chars = sum(1 for c in spoken_norm if c in target_chars)
-        score = round((correct_chars / max(len(target_chars), 1)) * 100) if target_chars else 0
-        exact_match = target_norm == spoken_norm and len(target_norm) > 0
 
-        if exact_match:
-            feedback = "Perfect pronunciation! 完美!"
-        elif score >= 80:
-            feedback = "Great pronunciation! Almost there."
-        elif score >= 50:
-            feedback = "Good attempt. Some characters were off."
-        else:
-            feedback = "Try again. Listen and speak more clearly."
+        # Syllable-level pinyin scoring: full credit when sound + tone match,
+        # half credit when the syllable is right but the tone is wrong. This
+        # also handles homophones (same pinyin, different characters).
+        p = score_pronunciation(target_norm, spoken_norm)
+        score = p["score"]
+        exact_match = p["correct"]
+        feedback = _pronunciation_feedback(p)
+        target_pinyin = pinyin_display(target_norm)
+        spoken_pinyin = pinyin_display(spoken_norm) if spoken_norm else ""
 
         await db.speaking_attempts.insert_one({
             "id": str(uuid.uuid4()),
@@ -728,6 +925,11 @@ async def transcribe_audio(
             "score": score,
             "feedback": feedback,
             "target_text": target_chinese,
+            "target_pinyin": target_pinyin,
+            "spoken_pinyin": spoken_pinyin,
+            "tones_wrong": p["tones_wrong"],
+            "syllables_right": p["syllables_right"],
+            "syllable_count": p["total"],
         })
 
     return result
@@ -885,58 +1087,18 @@ async def vocabulary_library(
 
 # ---------- Writing / Handwriting Recognition ----------
 
-_HANDWRITING_SYSTEM = (
-    "You are a Chinese handwriting evaluator.\n"
-    "Given a handwritten image and a target string, output ONLY this JSON "
-    "(no markdown fences, no extra commentary):\n"
-    '{\n'
-    '  "characters": [\n'
-    '    {\n'
-    '      "target": "<expected char>",\n'
-    '      "recognized": "<what you actually see at that position; empty string if blank>",\n'
-    '      "match": true|false,\n'
-    '      "quality": 0-100,\n'
-    '      "notes": "<= 12 words, e.g. \'wrong radical\' or \'missing horizontal stroke\'>"\n'
-    '    }\n'
-    '  ],\n'
-    '  "overall_notes": "<= 18 words"\n'
-    '}\n'
-    "Rules:\n"
-    "- characters array must have exactly N entries where N = len(target), in order.\n"
-    "- quality scores legibility/strokes/proportions regardless of whether the character is correct.\n"
-    "- If a position is blank, set recognized to empty string and quality to 0.\n"
-    "- If the user wrote in the wrong order, mark match=false and put what was at that position.\n"
-    "- Do NOT echo target characters for positions where the writing is wrong or blank."
-)
-
-
-def _legacy_score(target_norm: str, recognized: str):
-    """Bag-of-characters fallback used when structured JSON parse fails."""
-    rec_norm = normalize_chinese(recognized)
+def _ocr_score(target_norm: str, recognized_norm: str) -> tuple[int, bool]:
+    """Score recognized text against target using bag-of-characters matching."""
     target_chars = list(target_norm)
-    correct_chars = sum(1 for c in rec_norm if c in target_chars)
+    correct_chars = sum(1 for c in recognized_norm if c in target_chars)
     score = round((correct_chars / max(len(target_chars), 1)) * 100) if target_chars else 0
-    exact_match = target_norm == rec_norm and len(target_norm) > 0
-    if exact_match:
-        feedback = "Perfect characters! 完美!"
-    elif score >= 80:
-        feedback = "Nearly there — check stroke order and proportions."
-    elif score >= 50:
-        feedback = "Some characters were off. Compare carefully."
-    elif rec_norm:
-        feedback = "Try writing more clearly. Check each character."
-    else:
-        feedback = "Could not read the handwriting. Try again."
-    return score, exact_match, feedback, rec_norm
+    exact_match = target_norm == recognized_norm and len(target_norm) > 0
+    return score, exact_match
 
 
 @api_router.post("/writing/recognize")
 async def recognize_handwriting(payload: WritingRecognizeRequest, current_user: dict = Depends(get_current_user)):
-    """Recognize handwritten Chinese characters using GPT-4o-mini vision.
-    Returns per-character identity + quality scores and actionable notes."""
-    if not OPENAI_API_KEY:
-        raise HTTPException(status_code=500, detail="OpenAI API key not configured")
-
+    """Recognize handwritten Chinese characters using EasyOCR."""
     image_b64 = payload.image_base64
     if image_b64.startswith("data:"):
         _, _, image_b64 = image_b64.partition(",")
@@ -944,95 +1106,32 @@ async def recognize_handwriting(payload: WritingRecognizeRequest, current_user: 
         raise HTTPException(status_code=400, detail="Image is empty or invalid")
 
     target_norm = normalize_chinese(payload.target_chinese)
-    n_target = len(target_norm)
 
     try:
-        oai = AsyncOpenAI(api_key=OPENAI_API_KEY)
-        response = await oai.chat.completions.create(
-            model="gpt-4o-mini",
-            max_tokens=400,
-            messages=[
-                {"role": "system", "content": _HANDWRITING_SYSTEM},
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": (
-                                f"Target string ({n_target} character{'s' if n_target != 1 else ''}): "
-                                f"{target_norm}. Evaluate the handwriting in this image."
-                            ),
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": {"url": f"data:image/png;base64,{image_b64}"},
-                        },
-                    ],
-                },
-            ],
+        image_bytes = b64lib.b64decode(image_b64)
+        image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        img_array = np.array(image)
+        reader = _get_ocr_reader()
+        loop = asyncio.get_event_loop()
+        ocr_results = await loop.run_in_executor(
+            None, lambda: reader.readtext(img_array, detail=0, paragraph=True)
         )
-        raw = (response.choices[0].message.content or "").strip()
-    except Exception as e:
-        logger.exception("Handwriting recognition failed")
-        raise HTTPException(status_code=502, detail=f"Recognition failed: {str(e)[:200]}")
+        recognized_raw = "".join(ocr_results)
+        recognized_norm = normalize_chinese(recognized_raw)
+    except Exception:
+        logger.exception("OCR recognition failed")
+        raise HTTPException(status_code=502, detail="OCR recognition failed")
 
-    # --- Parse structured JSON ---
-    chars = []
-    overall_notes = ""
-    use_legacy = False
-    try:
-        clean = raw.lstrip("```json").lstrip("```").rstrip("```").strip()
-        data = json.loads(clean)
-        chars = data.get("characters", [])
-        overall_notes = data.get("overall_notes", "")
-        if len(chars) != n_target:
-            raise ValueError(f"Expected {n_target} chars, got {len(chars)}")
-    except Exception as parse_err:
-        logger.warning("Handwriting JSON parse failed (%s), using legacy fallback", parse_err)
-        use_legacy = True
-
-    if use_legacy:
-        # Fall back: treat raw as a plain recognized string
-        score, exact_match, feedback, rec_norm = _legacy_score(target_norm, raw)
-        await db.writing_attempts.insert_one({
-            "id": str(uuid.uuid4()),
-            "user_id": current_user["id"],
-            "target_chinese": payload.target_chinese,
-            "recognized_text": rec_norm,
-            "score": score,
-            "identity_score": score,
-            "quality_score": score,
-            "exact_match": exact_match,
-            "vocabulary_id": payload.vocabulary_id,
-            "timestamp": datetime.now(timezone.utc),
-        })
-        return {
-            "correct": exact_match,
-            "score": score,
-            "identity_score": score,
-            "quality_score": score,
-            "feedback": feedback,
-            "characters": [],
-            "recognized_text": rec_norm,
-            "target_text": payload.target_chinese,
-        }
-
-    # --- Position-aware composite scoring ---
-    identity_correct = sum(1 for c in chars if c.get("match"))
-    identity_score = round(identity_correct / max(len(chars), 1) * 100)
-    quality_score = round(sum(c.get("quality", 0) for c in chars) / max(len(chars), 1))
-    composite = round(0.6 * identity_score + 0.4 * quality_score)
-    exact_match = identity_correct == len(chars) == n_target and n_target > 0
-    recognized_text = "".join(c.get("recognized", "") for c in chars)
+    score, exact_match = _ocr_score(target_norm, recognized_norm)
 
     await db.writing_attempts.insert_one({
         "id": str(uuid.uuid4()),
         "user_id": current_user["id"],
         "target_chinese": payload.target_chinese,
-        "recognized_text": recognized_text,
-        "score": composite,
-        "identity_score": identity_score,
-        "quality_score": quality_score,
+        "recognized_text": recognized_norm,
+        "score": score,
+        "identity_score": score,
+        "quality_score": 0,
         "exact_match": exact_match,
         "vocabulary_id": payload.vocabulary_id,
         "timestamp": datetime.now(timezone.utc),
@@ -1040,12 +1139,12 @@ async def recognize_handwriting(payload: WritingRecognizeRequest, current_user: 
 
     return {
         "correct": exact_match,
-        "score": composite,
-        "identity_score": identity_score,
-        "quality_score": quality_score,
-        "feedback": overall_notes,
-        "characters": chars,
-        "recognized_text": recognized_text,
+        "score": score,
+        "identity_score": score,
+        "quality_score": 0,
+        "feedback": "",
+        "characters": [],
+        "recognized_text": recognized_norm,
         "target_text": payload.target_chinese,
     }
 

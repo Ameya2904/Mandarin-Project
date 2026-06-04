@@ -144,15 +144,15 @@ export const api = {
   lessons: () => request<Lesson[]>('/lessons'),
   lesson: (id: string) => request<Lesson>(`/lessons/${id}`),
 
+  semanticMatch: (answer: string, target: string) =>
+    request<{ match: boolean }>('/vocabulary/semantic-match', {
+      method: 'POST',
+      body: JSON.stringify({ answer, target }),
+    }),
+
   dueFlashcards: (limit = 20) => request<Flashcard[]>(`/flashcards/due?limit=${limit}`),
   newFlashcards: (limit = 10, lessonId?: string) =>
     request<Vocabulary[]>(`/flashcards/new?limit=${limit}${lessonId ? `&lesson_id=${lessonId}` : ''}`),
-  reviewFlashcard: (vocabulary_id: string, was_correct: boolean, response_time_ms?: number) =>
-    request<{ success: boolean; new_stage: number; next_review_at: string }>('/flashcards/review', {
-      method: 'POST',
-      body: JSON.stringify({ vocabulary_id, was_correct, response_time_ms }),
-    }),
-
   drills: (lessonNumber?: number) =>
     request<Drill[]>(`/drills${lessonNumber !== undefined ? `?lesson_number=${lessonNumber}` : ''}`),
   drillAttempt: (drill_id: string, user_answer: string, was_correct: boolean, response_time_ms?: number) =>
@@ -215,24 +215,22 @@ export const api = {
       body: JSON.stringify({ image_base64, target_chinese, vocabulary_id }),
     }),
 
+  reviewSchedule: (days = 14) =>
+    request<{ date: string; count: number }[]>(`/flashcards/schedule?days=${days}`),
+
   reviewFlashcardWithMode: (
     vocabulary_id: string,
     was_correct: boolean,
     mode: 'reading' | 'writing' | 'speaking',
     response_time_ms?: number,
+    skip_srs?: boolean,
   ) =>
     request<{ success: boolean; new_stage: number; next_review_at: string }>(
       '/flashcards/review',
       {
         method: 'POST',
-        body: JSON.stringify({ vocabulary_id, was_correct, mode, response_time_ms }),
+        body: JSON.stringify({ vocabulary_id, was_correct, mode, response_time_ms, skip_srs }),
       },
-    ),
-
-  evaluateSpeaking: (target_chinese: string, spoken_text: string, vocabulary_id?: string) =>
-    request<{ correct: boolean; score: number; feedback: string; spoken_text: string; target_text: string }>(
-      '/speaking/evaluate',
-      { method: 'POST', body: JSON.stringify({ target_chinese, spoken_text, vocabulary_id }) }
     ),
 
   transcribeAudio: async (
@@ -245,6 +243,11 @@ export const api = {
     score?: number;
     feedback?: string;
     target_text?: string;
+    target_pinyin?: string;
+    spoken_pinyin?: string;
+    tones_wrong?: number;
+    syllables_right?: number;
+    syllable_count?: number;
   }> => {
     const token = await getToken();
     const form = new FormData();

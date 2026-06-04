@@ -28,10 +28,24 @@ type Stats = {
   streak_count: number;
 };
 
+type ScheduleEntry = { date: string; count: number };
+
+function formatScheduleDate(dateStr: string): string {
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  const d = new Date(dateStr + 'T12:00:00');
+  if (d.toDateString() === tomorrow.toDateString()) return 'Tomorrow';
+  const diffDays = Math.round((d.getTime() - today.getTime()) / 86_400_000);
+  if (diffDays < 7) return d.toLocaleDateString(undefined, { weekday: 'long' });
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, logout, refreshUser } = useAuth();
   const [stats, setStats] = useState<Stats | null>(null);
+  const [schedule, setSchedule] = useState<ScheduleEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [draftGoal, setDraftGoal] = useState('20');
@@ -39,8 +53,9 @@ export default function ProfileScreen() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await api.stats();
+      const [data, sched] = await Promise.all([api.stats(), api.reviewSchedule(14)]);
       setStats(data);
+      setSchedule(sched);
       setDraftGoal(String(user?.daily_goal || 20));
     } catch (e) {
       setStats(null);
@@ -133,6 +148,26 @@ export default function ProfileScreen() {
                 <Text style={styles.statLabel}>Reviews</Text>
               </View>
             </View>
+
+            {/* Upcoming reviews */}
+            {schedule.length > 0 && (
+              <>
+                <Text style={styles.sectionTitle}>Upcoming Reviews</Text>
+                <View style={styles.scheduleCard} testID="profile-schedule">
+                  {schedule.map((entry, i) => (
+                    <View
+                      key={entry.date}
+                      style={[styles.scheduleRow, i < schedule.length - 1 && styles.scheduleRowBorder]}
+                    >
+                      <Text style={styles.scheduleDate}>{formatScheduleDate(entry.date)}</Text>
+                      <View style={styles.scheduleBadge}>
+                        <Text style={styles.scheduleBadgeText}>{entry.count}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </>
+            )}
 
             {/* Weak words */}
             {stats?.weak_words && stats.weak_words.length > 0 && (
@@ -311,4 +346,16 @@ const styles = StyleSheet.create({
     minHeight: 48,
   },
   logoutText: { color: colors.error, fontSize: fontSize.base, fontWeight: '600' },
+  scheduleCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    overflow: 'hidden',
+  },
+  scheduleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: spacing.md, minHeight: 48 },
+  scheduleRowBorder: { borderBottomWidth: 1, borderBottomColor: colors.border },
+  scheduleDate: { fontSize: fontSize.base, color: colors.textPrimary },
+  scheduleBadge: { backgroundColor: colors.primaryLight, borderRadius: radius.full, paddingHorizontal: spacing.md, paddingVertical: 4, minWidth: 36, alignItems: 'center' },
+  scheduleBadgeText: { color: colors.primary, fontWeight: '600', fontSize: fontSize.sm },
 });

@@ -27,6 +27,11 @@ type Result = {
   score?: number;
   feedback?: string;
   target_text?: string;
+  target_pinyin?: string;
+  spoken_pinyin?: string;
+  tones_wrong?: number;
+  syllables_right?: number;
+  syllable_count?: number;
 };
 
 export default function SpeakPracticeScreen() {
@@ -262,13 +267,27 @@ export default function SpeakPracticeScreen() {
                 <Text style={styles.scoreText}>Match score: {result.score}%</Text>
               </>
             )}
+            {!result.correct && result.tones_wrong ? (
+              <Text style={styles.toneNote} testID="speak-tone-note">
+                {result.tones_wrong} {result.tones_wrong === 1 ? 'syllable has' : 'syllables have'} the
+                right sound but the wrong tone — partial credit given.
+              </Text>
+            ) : null}
             <View style={styles.compareBlock}>
               <Text style={styles.compareLabel}>Target</Text>
               <Text style={styles.compareHanzi}>{target}</Text>
+              <Text style={[styles.comparePinyin, { color: getToneColor(result.target_pinyin || pinyin) }]}>
+                {result.target_pinyin || pinyin}
+              </Text>
               <Text style={styles.compareLabel}>Whisper heard</Text>
               <Text style={styles.compareHanzi} testID="speak-transcribed-text">
                 {result.transcribed_text || '(silence)'}
               </Text>
+              {result.spoken_pinyin ? (
+                <Text style={[styles.comparePinyin, { color: getToneColor(result.spoken_pinyin) }]}>
+                  {result.spoken_pinyin}
+                </Text>
+              ) : null}
             </View>
           </View>
         )}
@@ -373,6 +392,8 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   compareHanzi: { fontSize: fontSize.xl, color: colors.textPrimary, marginTop: 2 },
+  comparePinyin: { fontSize: fontSize.sm, fontWeight: '500', marginTop: 2 },
+  toneNote: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: spacing.sm, fontStyle: 'italic' },
   footer: { padding: spacing.lg },
   recordWrap: { alignItems: 'center', gap: spacing.sm },
   recordBtn: {

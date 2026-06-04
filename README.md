@@ -8,8 +8,11 @@ A focused mobile app for serious Mandarin learners built on the **New Practical 
 
 - **NPCR Lessons 1–14** — Full dialogues (Part 1 & Part 2), vocabulary lists, and grammar notes for each lesson
 - **Spaced Repetition Flashcards** — 6-stage SRS system (1d → 2d → 1w → 1m → 3m → 1y) with correct/incorrect progression
+- **Reading / Writing / Speaking review modes** — Each due card can be reviewed by recall, handwriting, or pronunciation
 - **Sentence Drills** — Substitution and transformation drills tied to each lesson
-- **Speaking Practice** — Browse all dialogue sentences organized by lesson folder; tap to practice pronunciation
+- **Speaking Practice** — Browse all dialogue sentences organized by lesson folder; tap to practice pronunciation (OpenAI Whisper transcription + syllable/tone pinyin scoring)
+- **Handwriting Recognition** — Draw characters on a canvas; scored on-device via EasyOCR
+- **Vocabulary Library & Custom Words** — Browse NPCR vocab, search, and add your own custom words to your deck
 - **Progress Tracking** — Streak, retention rate, mastered word count, weak words
 - **Home Dashboard** — Daily progress, due reviews, quick action tiles
 - **JWT Auth** — Signup/login with bcrypt password hashing; 30-day sessions
@@ -24,7 +27,9 @@ A focused mobile app for serious Mandarin learners built on the **New Practical 
 | Backend | FastAPI + Motor (async MongoDB driver) |
 | Database | MongoDB |
 | Auth | JWT (PyJWT) + bcrypt |
-| AI / Speech | OpenAI API (Whisper + GPT) |
+| Speech | OpenAI Whisper API (transcription) + pypinyin (tone scoring) |
+| Handwriting | EasyOCR (on-device Chinese OCR) |
+| Semantic matching | NLTK WordNet (English synonym checking) |
 
 ---
 
@@ -36,32 +41,32 @@ Mandarin-Project/
 │   ├── server.py          # FastAPI app — all routes and business logic
 │   ├── seed_data.py       # NPCR lesson content (dialogues, vocab, drills)
 │   ├── requirements.txt
-│   ├── .env               # Environment variables (not committed)
-│   └── tests/
-│       ├── conftest.py
-│       ├── test_backend.py
-│       ├── test_deck_and_writing.py
-│       └── test_whisper.py
+│   ├── .env.example       # Template for backend env vars
+│   └── .env               # Environment variables (not committed)
 ├── frontend/
 │   ├── app/
+│   │   ├── (auth)/              # Login / signup screens
 │   │   ├── (tabs)/
 │   │   │   ├── index.tsx        # Home dashboard
 │   │   │   ├── lessons.tsx      # Lesson list
+│   │   │   ├── review.tsx       # SRS review (reading/writing/speaking modes)
 │   │   │   ├── speak.tsx        # Speaking practice (lesson folders)
 │   │   │   └── profile.tsx      # Profile & settings
 │   │   ├── lesson/[id].tsx      # Lesson detail (dialogue, grammar, vocab)
 │   │   ├── drill.tsx            # Sentence drill session
 │   │   ├── speak-practice.tsx   # Single sentence practice screen
-│   │   ├── library.tsx          # Flashcard library
+│   │   ├── library.tsx          # Vocabulary library
 │   │   └── add-word.tsx         # Add custom word to deck
 │   ├── src/
 │   │   ├── api/client.ts        # Typed API client
-│   │   ├── components/          # Shared UI components
+│   │   ├── components/          # Shared UI components (HandwritingCanvas)
 │   │   ├── contexts/            # Auth context
 │   │   ├── hooks/               # Custom hooks
+│   │   ├── utils/storage/       # Cross-platform secure storage
 │   │   └── theme.ts             # Colors, spacing, typography
+│   ├── .env.example
 │   └── package.json
-└── mongo_dump/                  # MongoDB backup (BSON + JSON)
+└── mongo_dump/                  # Local MongoDB backup (git-ignored, not committed)
 ```
 
 ---
@@ -191,14 +196,23 @@ All routes are prefixed with `/api` and require a `Bearer` token except auth end
 |---|---|---|
 | POST | `/api/auth/signup` | Create account |
 | POST | `/api/auth/login` | Login, returns JWT |
+| GET / PUT | `/api/auth/me` | Get / update current user settings |
 | GET | `/api/lessons` | List all lessons with progress |
 | GET | `/api/lessons/{id}` | Lesson detail with full vocabulary |
 | GET | `/api/flashcards/due` | Cards due for review today |
-| POST | `/api/flashcards/review` | Submit a review result |
+| GET | `/api/flashcards/new` | New (unreviewed) cards from the deck |
+| GET | `/api/flashcards/schedule` | Upcoming review counts per day |
+| POST | `/api/flashcards/review` | Submit a review result (reading/writing/speaking) |
 | GET | `/api/drills` | List drills (filterable by lesson/part) |
 | POST | `/api/drills/attempt` | Submit a drill answer |
-| POST | `/api/speaking/evaluate` | Evaluate spoken sentence (OpenAI) |
-| GET | `/api/progress` | User stats (streak, retention, mastered) |
+| GET / POST / DELETE | `/api/deck` | List / add / remove deck words |
+| GET | `/api/vocabulary/library` | Browse + search NPCR and custom vocab |
+| POST / DELETE | `/api/vocabulary/custom` | Create / delete custom vocabulary |
+| POST | `/api/vocabulary/semantic-match` | English synonym match (WordNet) |
+| POST | `/api/speaking/transcribe` | Transcribe audio (Whisper) + pronunciation score |
+| POST | `/api/writing/recognize` | Score handwritten characters (EasyOCR) |
+| GET | `/api/progress/dashboard` | Daily dashboard counts |
+| GET | `/api/progress/stats` | User stats (streak, retention, weak words) |
 
 ---
 

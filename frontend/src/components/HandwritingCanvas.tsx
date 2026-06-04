@@ -86,7 +86,31 @@ const HandwritingCanvas = forwardRef<HandwritingCanvasHandle, Props>(
     );
 
     return (
-      <View testID={testID} style={[styles.wrap, { height }]}>
+      <View testID={testID} style={styles.wrap}>
+        <View style={styles.toolbar}>
+          <TouchableOpacity
+            testID="handwriting-undo-button"
+            style={styles.toolBtn}
+            onPress={() => setPaths((p) => p.slice(0, -1))}
+            disabled={paths.length === 0}
+          >
+            <Ionicons name="arrow-undo" size={18} color={paths.length === 0 ? colors.textTertiary : colors.textPrimary} />
+            <Text style={[styles.toolText, paths.length === 0 && { color: colors.textTertiary }]}>Undo</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            testID="handwriting-clear-button"
+            style={styles.toolBtn}
+            onPress={() => {
+              setPaths([]);
+              setCurrentPath('');
+            }}
+            disabled={paths.length === 0 && !currentPath}
+          >
+            <Ionicons name="trash-outline" size={18} color={paths.length === 0 ? colors.textTertiary : colors.textPrimary} />
+            <Text style={[styles.toolText, paths.length === 0 && { color: colors.textTertiary }]}>Clear</Text>
+          </TouchableOpacity>
+        </View>
+
         <View
           ref={viewShotRef}
           collapsable={false}
@@ -131,30 +155,6 @@ const HandwritingCanvas = forwardRef<HandwritingCanvasHandle, Props>(
             </View>
           )}
         </View>
-
-        <View style={styles.toolbar}>
-          <TouchableOpacity
-            testID="handwriting-undo-button"
-            style={styles.toolBtn}
-            onPress={() => setPaths((p) => p.slice(0, -1))}
-            disabled={paths.length === 0}
-          >
-            <Ionicons name="arrow-undo" size={18} color={paths.length === 0 ? colors.textTertiary : colors.textPrimary} />
-            <Text style={[styles.toolText, paths.length === 0 && { color: colors.textTertiary }]}>Undo</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            testID="handwriting-clear-button"
-            style={styles.toolBtn}
-            onPress={() => {
-              setPaths([]);
-              setCurrentPath('');
-            }}
-            disabled={paths.length === 0 && !currentPath}
-          >
-            <Ionicons name="trash-outline" size={18} color={paths.length === 0 ? colors.textTertiary : colors.textPrimary} />
-            <Text style={[styles.toolText, paths.length === 0 && { color: colors.textTertiary }]}>Clear</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     );
   },
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   toolbar: {
     flexDirection: 'row',
     gap: spacing.md,
-    marginTop: spacing.sm,
+    marginBottom: spacing.sm,
     justifyContent: 'flex-end',
   },
   toolBtn: {

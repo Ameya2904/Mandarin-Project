@@ -86,7 +86,7 @@ export default function HomeScreen() {
         {/* Daily progress card */}
         <View style={styles.progressCard} testID="home-daily-progress-card">
           <View style={styles.progressHeader}>
-            <Text style={styles.progressLabel}>Today's Progress</Text>
+            <Text style={styles.progressLabel}>Today&apos;s Progress</Text>
             <Text style={styles.progressCount}>
               {reviewsToday} / {goal}
             </Text>

@@ -30,6 +30,8 @@ type Card = {
   vocabulary: Vocabulary;
   current_stage: number | null;
   mode: Mode;
+  round: number;   // 0 | 1 | 2
+  isFinal: boolean; // true when this is the card's 3rd and last mode in the session
 };
 
 const STAGE_LABELS: Record<number, string> = {
@@ -48,6 +50,52 @@ const MODE_META: Record<Mode, { label: string; icon: keyof typeof Ionicons.glyph
 };
 
 const MODES: Mode[] = ['reading', 'writing', 'speaking'];
+
+function shuffleArray<T>(arr: T[]): T[] {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function buildMultiModeQueue(dueCards: Flashcard[], newVocab: Vocabulary[]): Card[] {
+  const entries = [
+    ...dueCards.map((c) => ({ vocabulary: c.vocabulary, current_stage: c.current_stage })),
+    ...newVocab.map((v) => ({ vocabulary: v, current_stage: null })),
+  ];
+  if (entries.length === 0) return [];
+
+  // For each card assign 3 shuffled modes, one per round
+  const rounds: Card[][] = [[], [], []];
+  entries.forEach((entry) => {
+    const modes = shuffleArray([...MODES] as Mode[]);
+    modes.forEach((mode, roundIdx) => {
+      rounds[roundIdx].push({
+        vocabulary: entry.vocabulary,
+        current_stage: entry.current_stage,
+        mode,
+        round: roundIdx,
+        isFinal: roundIdx === 2,
+      });
+    });
+  });
+
+  // Shuffle within each round so same card doesn't follow itself across rounds
+  rounds.forEach((r) => shuffleArray(r));
+  return [...rounds[0], ...rounds[1], ...rounds[2]];
+}
+
+function formatNextReview(isoDate: string): string {
+  const diffDays = Math.round((new Date(isoDate).getTime() - Date.now()) / 86_400_000);
+  if (diffDays <= 1) return 'tomorrow';
+  if (diffDays < 7) return `in ${diffDays} days`;
+  if (diffDays < 14) return 'in 1 week';
+  if (diffDays < 30) return `in ${Math.round(diffDays / 7)} weeks`;
+  if (diffDays < 60) return 'in 1 month';
+  if (diffDays < 365) return `in ${Math.round(diffDays / 30)} months`;
+  return 'in 1 year';
+}
 
 function normalize(text: string): string {
   return (text || '').trim().toLowerCase();
@@ -69,12 +117,16 @@ export default function ReviewScreen() {
   const [sessionStats, setSessionStats] = useState({ correct: 0, total: 0 });
   const [done, setDone] = useState(false);
   const [hasDeck, setHasDeck] = useState(true);
+  const [cardModeResults, setCardModeResults] = useState<Record<string, Array<{ mode: Mode; correct: boolean }>>>({});
+  const [reviewSummary, setReviewSummary] = useState<Array<{ vocabulary: Vocabulary; new_stage: number; next_review_at: string }>>([]);
 
   const loadQueue = useCallback(async () => {
     setLoading(true);
     setDone(false);
     setIndex(0);
     setSessionStats({ correct: 0, total: 0 });
+    setCardModeResults({});
+    setReviewSummary([]);
     try {
       const [due, fresh, deck] = await Promise.all([
         api.dueFlashcards(20),
@@ -82,17 +134,7 @@ export default function ReviewScreen() {
         api.deck().catch(() => []),
       ]);
       setHasDeck(deck.length > 0);
-      const dueCards: Card[] = due.map((c: Flashcard) => ({
-        vocabulary: c.vocabulary,
-        current_stage: c.current_stage,
-        mode: MODES[Math.floor(Math.random() * MODES.length)],
-      }));
-      const newCards: Card[] = fresh.map((v: Vocabulary) => ({
-        vocabulary: v,
-        current_stage: null,
-        mode: MODES[Math.floor(Math.random() * MODES.length)],
-      }));
-      setQueue([...dueCards, ...newCards]);
+      setQueue(buildMultiModeQueue(due as Flashcard[], fresh as Vocabulary[]));
     } catch (e) {
       setQueue([]);
     } finally {
@@ -107,11 +149,33 @@ export default function ReviewScreen() {
   );
 
   const handleAnswered = async (vocabId: string, wasCorrect: boolean, mode: Mode) => {
+    const card = queue[index];
+
+    // Accumulate per-card mode results
+    const prev = cardModeResults[vocabId] ?? [];
+    const updatedResults = [...prev, { mode, correct: wasCorrect }];
+    setCardModeResults((r) => ({ ...r, [vocabId]: updatedResults }));
+
     try {
-      await api.reviewFlashcardWithMode(vocabId, wasCorrect, mode);
+      if (card.isFinal) {
+        // All 3 modes done — aggregate (≥2/3 correct = correct) and advance SRS once
+        const correctCount = updatedResults.filter((r) => r.correct).length;
+        const aggregateCorrect = correctCount >= 2;
+        const res = await api.reviewFlashcardWithMode(vocabId, aggregateCorrect, mode);
+        if (res?.new_stage != null && res?.next_review_at) {
+          setReviewSummary((s) => [
+            ...s,
+            { vocabulary: card.vocabulary, new_stage: res.new_stage, next_review_at: res.next_review_at },
+          ]);
+        }
+      } else {
+        // Not the final mode — log history only, don't touch SRS
+        await api.reviewFlashcardWithMode(vocabId, wasCorrect, mode, undefined, true);
+      }
     } catch {
-      // ignore
+      // ignore network errors
     }
+
     setSessionStats((s) => ({
       correct: s.correct + (wasCorrect ? 1 : 0),
       total: s.total + 1,
@@ -183,27 +247,47 @@ export default function ReviewScreen() {
   if (done) {
     return (
       <SafeAreaView style={styles.safe} edges={['top']}>
-        <View style={styles.emptyContainer}>
+        <ScrollView contentContainerStyle={styles.doneScroll}>
           <Text style={styles.emptyHanzi}>完成</Text>
           <Text style={styles.emptyTitle}>Session complete</Text>
           <Text style={styles.emptySub} testID="review-session-summary">
-            {sessionStats.correct} / {sessionStats.total} correct
+            {sessionStats.correct} / {sessionStats.total} correct across all modes
           </Text>
+
+          {reviewSummary.length > 0 && (
+            <View style={styles.summarySection}>
+              <Text style={styles.summaryHeader}>Next Reviews</Text>
+              {reviewSummary.map((item, i) => (
+                <View key={i} style={styles.summaryRow}>
+                  <Text style={styles.summaryHanzi}>{item.vocabulary.simplified}</Text>
+                  <View style={styles.summaryRight}>
+                    <Text style={styles.summaryEnglish}>{item.vocabulary.english}</Text>
+                    <Text style={styles.summaryStage}>
+                      {STAGE_LABELS[item.new_stage] ?? `Stage ${item.new_stage}`}
+                      {' · '}
+                      {formatNextReview(item.next_review_at)}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          )}
+
           <TouchableOpacity
             testID="review-back-to-home-button"
-            style={styles.emptyBtn}
+            style={[styles.emptyBtn, styles.doneBtn]}
             onPress={() => router.replace('/(tabs)')}
           >
             <Text style={styles.emptyBtnText}>Back to Home</Text>
           </TouchableOpacity>
           <TouchableOpacity
             testID="review-do-more-button"
-            style={[styles.emptyBtn, styles.emptyBtnSecondary]}
+            style={[styles.emptyBtn, styles.emptyBtnSecondary, styles.doneBtn]}
             onPress={loadQueue}
           >
             <Text style={[styles.emptyBtnText, styles.emptyBtnTextSecondary]}>Review More</Text>
           </TouchableOpacity>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }
@@ -263,10 +347,22 @@ function ReadingCard({ card, onAnswered }: { card: Card; onAnswered: (id: string
   const vocab = card.vocabulary;
   const [answer, setAnswer] = useState('');
   const [result, setResult] = useState<null | { correct: boolean }>(null);
+  const [checking, setChecking] = useState(false);
 
-  const handleCheck = () => {
-    const ok = englishMatches(answer, vocab.english);
-    setResult({ correct: ok });
+  const handleCheck = async () => {
+    if (englishMatches(answer, vocab.english)) {
+      setResult({ correct: true });
+      return;
+    }
+    setChecking(true);
+    try {
+      const { match } = await api.semanticMatch(answer, vocab.english);
+      setResult({ correct: match });
+    } catch {
+      setResult({ correct: false });
+    } finally {
+      setChecking(false);
+    }
   };
 
   return (
@@ -338,11 +434,15 @@ function ReadingCard({ card, onAnswered }: { card: Card; onAnswered: (id: string
         ) : (
           <TouchableOpacity
             testID="review-reading-check"
-            style={[styles.primaryBtn, !answer && styles.btnDisabled]}
+            style={[styles.primaryBtn, (!answer || checking) && styles.btnDisabled]}
             onPress={handleCheck}
-            disabled={!answer}
+            disabled={!answer || checking}
           >
-            <Text style={styles.primaryBtnText}>Check</Text>
+            {checking ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.primaryBtnText}>Check</Text>
+            )}
           </TouchableOpacity>
         )}
       </View>
@@ -427,7 +527,6 @@ function WritingCard({ card, onAnswered }: { card: Card; onAnswered: (id: string
 
         {result && (
           <View testID="review-writing-feedback" style={styles.writingFeedback}>
-            {/* Per-character tiles */}
             {result.characters.length > 0 ? (
               <View style={styles.charTileRow}>
                 {result.characters.map((c, i) => (
@@ -454,7 +553,6 @@ function WritingCard({ card, onAnswered }: { card: Card; onAnswered: (id: string
                 ))}
               </View>
             ) : (
-              /* Legacy fallback: no per-char data */
               <>
                 <Text style={styles.compareLabel}>Target</Text>
                 <Text style={styles.compareHanzi}>{vocab.simplified}</Text>
@@ -465,12 +563,10 @@ function WritingCard({ card, onAnswered }: { card: Card; onAnswered: (id: string
               </>
             )}
 
-            {/* Score row */}
             <Text style={styles.subScore}>
               Identity {result.identity_score}% · Quality {result.quality_score}%
             </Text>
 
-            {/* Overall notes */}
             {result.feedback ? (
               <View style={styles.overallNotes}>
                 <Ionicons
@@ -538,7 +634,7 @@ function SpeakingCard({ card, onAnswered }: { card: Card; onAnswered: (id: strin
   const [permission, setPermission] = useState<'undetermined' | 'granted' | 'denied' | 'blocked'>('undetermined');
   const [recording, setRecording] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [result, setResult] = useState<null | { correct: boolean; score: number; feedback: string; transcribed: string }>(null);
+  const [result, setResult] = useState<null | { correct: boolean; score: number; feedback: string; transcribed: string; spokenPinyin: string; targetPinyin: string; tonesWrong: number }>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -600,6 +696,9 @@ function SpeakingCard({ card, onAnswered }: { card: Card; onAnswered: (id: strin
         score: data.score ?? 0,
         feedback: data.feedback || 'Transcription complete',
         transcribed: data.transcribed_text || '',
+        spokenPinyin: data.spoken_pinyin || '',
+        targetPinyin: data.target_pinyin || '',
+        tonesWrong: data.tones_wrong ?? 0,
       });
     } catch (e: any) {
       setErrorMsg(e?.message || 'Transcription failed');
@@ -650,9 +749,26 @@ function SpeakingCard({ card, onAnswered }: { card: Card; onAnswered: (id: strin
             </View>
             <Text style={styles.compareLabel}>Target</Text>
             <Text style={styles.compareHanzi}>{vocab.simplified}</Text>
-            <Text style={styles.compareLabel}>Whisper heard</Text>
+            {result.targetPinyin ? (
+              <Text style={styles.pinyinSmall}>{result.targetPinyin}</Text>
+            ) : null}
+            <Text style={styles.compareLabel}>AI heard</Text>
             <Text style={styles.compareHanzi}>{result.transcribed || '(silence)'}</Text>
+            {result.spokenPinyin ? (
+              <Text style={[
+                styles.pinyinSmall,
+                { color: result.spokenPinyin === result.targetPinyin ? colors.success : colors.error },
+              ]}>
+                {result.spokenPinyin}
+              </Text>
+            ) : null}
             <Text style={styles.scoreText}>Match score: {result.score}%</Text>
+            {!result.correct && result.tonesWrong ? (
+              <Text style={styles.toneNote} testID="review-speaking-tone-note">
+                {result.tonesWrong} {result.tonesWrong === 1 ? 'syllable has' : 'syllables have'} the
+                right sound but the wrong tone — partial credit given.
+              </Text>
+            ) : null}
           </View>
         )}
       </View>
@@ -743,6 +859,7 @@ const styles = StyleSheet.create({
   compareLabel: { fontSize: 10, color: colors.textTertiary, textTransform: 'uppercase', letterSpacing: 1, marginTop: spacing.sm },
   compareHanzi: { fontSize: fontSize.xl, color: colors.textPrimary, marginTop: 2 },
   scoreText: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: spacing.sm },
+  toneNote: { fontSize: fontSize.sm, color: colors.textSecondary, fontStyle: 'italic', marginTop: spacing.sm, textAlign: 'center' },
   // Writing feedback
   writingFeedback: { marginTop: spacing.md, gap: spacing.sm },
   charTileRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, justifyContent: 'center' },
@@ -787,4 +904,14 @@ const styles = StyleSheet.create({
   emptyBtnSecondary: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.primary, marginTop: spacing.md },
   emptyBtnText: { color: '#fff', fontSize: fontSize.base, fontWeight: '600' },
   emptyBtnTextSecondary: { color: colors.primary },
+  // Done / summary screen
+  doneScroll: { alignItems: 'center', paddingVertical: spacing.xxl, paddingHorizontal: spacing.lg },
+  doneBtn: { alignSelf: 'stretch', marginTop: spacing.md },
+  summarySection: { alignSelf: 'stretch', marginTop: spacing.xl },
+  summaryHeader: { fontSize: fontSize.sm, color: colors.textTertiary, textTransform: 'uppercase', letterSpacing: 1, fontWeight: '600', marginBottom: spacing.sm },
+  summaryRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, backgroundColor: colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.md, marginBottom: spacing.sm },
+  summaryHanzi: { fontSize: fontSize.xl, color: colors.textPrimary, fontWeight: '500', minWidth: 44, textAlign: 'center' },
+  summaryRight: { flex: 1, gap: 2 },
+  summaryEnglish: { fontSize: fontSize.base, color: colors.textPrimary },
+  summaryStage: { fontSize: fontSize.xs, color: colors.textTertiary },
 });
