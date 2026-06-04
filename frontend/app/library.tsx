@@ -96,6 +96,32 @@ export default function LibraryScreen() {
     }
   };
 
+  const deleteCustom = async (id: string) => {
+    try {
+      await api.deleteCustomVocab(id);
+      setItems((prev) => prev.filter((it) => it.id !== id));
+      setSelected((s) => {
+        const next = new Set(s);
+        next.delete(id);
+        return next;
+      });
+    } catch (e: any) {
+      Alert.alert('Error', e?.message || 'Could not delete word');
+    }
+  };
+
+  const handleDelete = (item: LibraryItem) => {
+    const message = `Delete "${item.simplified}"? This removes it from your library and deck permanently.`;
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined' && window.confirm(message)) deleteCustom(item.id);
+      return;
+    }
+    Alert.alert('Delete word', message, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: () => deleteCustom(item.id) },
+    ]);
+  };
+
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <Stack.Screen options={{ headerShown: false }} />
@@ -193,6 +219,16 @@ export default function LibraryScreen() {
                     )}
                   </View>
                 </View>
+                {item.is_custom && (
+                  <TouchableOpacity
+                    testID={`library-delete-${item.simplified}`}
+                    onPress={() => handleDelete(item)}
+                    style={styles.deleteBtn}
+                    hitSlop={8}
+                  >
+                    <Ionicons name="trash-outline" size={20} color={colors.error} />
+                  </TouchableOpacity>
+                )}
                 {item.in_deck ? (
                   <TouchableOpacity
                     testID={`library-remove-${item.simplified}`}
@@ -280,6 +316,7 @@ const styles = StyleSheet.create({
   metaPill: { backgroundColor: colors.surfaceAlt, paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: radius.sm },
   metaPillText: { fontSize: 10, color: colors.textSecondary, fontWeight: '600', textTransform: 'uppercase' },
   addBtn: { width: 36, height: 36, borderRadius: radius.full, backgroundColor: colors.primaryLight, alignItems: 'center', justifyContent: 'center' },
+  deleteBtn: { width: 36, height: 36, borderRadius: radius.full, backgroundColor: colors.errorLight, alignItems: 'center', justifyContent: 'center' },
   deckBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: radius.full, backgroundColor: colors.successLight, minHeight: 32 },
   deckBadgeText: { fontSize: fontSize.xs, color: colors.success, fontWeight: '600' },
   bulkBar: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: spacing.lg, backgroundColor: colors.surface, borderTopWidth: 1, borderTopColor: colors.border, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
