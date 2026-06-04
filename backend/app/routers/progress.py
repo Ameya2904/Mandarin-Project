@@ -1,0 +1,84 @@
+"""Progress dashboard and stats endpoints."""
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, Depends
+
+from ..auth import get_current_user
+from ..db import db
+
+router = APIRouter(prefix="/progress", tags=["progress"])
+
+
+@router.get("/dashboard")
+async def get_dashboard(current_user: dict = Depends(get_current_user)):
+    user_id = current_user["id"]
+    now = datetime.now(timezone.utc)
+    today_start = datetime.combine(now.date(), datetime.min.time()).replace(tzinfo=timezone.utc)
+
+    due_count = await db.flashcards.count_documents({"user_id": user_id, "next_review_at": {"$lte": now}})
+    total_cards = await db.flashcards.count_documents({"user_id": user_id})
+    mastered = await db.flashcards.count_documents({"user_id": user_id, "current_stage": {"$gte": 4}})
+
+    reviews_today = await db.review_history.count_documents(
+        {"user_id": user_id, "timestamp": {"$gte": today_start}}
+    )
+    correct_today = await db.review_history.count_documents(
+        {"user_id": user_id, "timestamp": {"$gte": today_start}, "was_correct": True}
+    )
+
+    new_count = await db.vocabulary.count_documents({}) - total_cards
+    daily_goal = current_user.get("daily_goal", 20)
+
+    return {
+        "due_count": due_count,
+        "new_count": max(new_count, 0),
+        "total_cards": total_cards,
+        "mastered_count": mastered,
+        "reviews_today": reviews_today,
+        "correct_today": correct_today,
+        "daily_goal": daily_goal,
+        "streak_count": current_user.get("streak_count", 0),
+        "progress_percent": min(round((reviews_today / max(daily_goal, 1)) * 100), 100),
+    }
+
+
+@router.get("/stats")
+async def get_stats(current_user: dict = Depends(get_current_user)):
+    user_id = current_user["id"]
+
+    total_reviews = await db.review_history.count_documents({"user_id": user_id})
+    correct_reviews = await db.review_history.count_documents({"user_id": user_id, "was_correct": True})
+    retention = round((correct_reviews / total_reviews) * 100) if total_reviews > 0 else 0
+
+    mastered = await db.flashcards.count_documents({"user_id": user_id, "current_stage": {"$gte": 4}})
+    learning = await db.flashcards.count_documents({"user_id": user_id, "current_stage": {"$lt": 4}})
+
+    # Weak words: incorrect_count > correct_count and at least 2 attempts
+    weak_cards = await db.flashcards.find(
+        {"user_id": user_id, "$expr": {"$gt": ["$incorrect_count", "$correct_count"]}},
+        {"_id": 0},
+    ).limit(10).to_list(10)
+    weak_words = []
+    for card in weak_cards:
+        vocab = await db.vocabulary.find_one({"id": card["vocabulary_id"]}, {"_id": 0})
+        if vocab:
+            weak_words.append({
+                "simplified": vocab["simplified"],
+                "pinyin": vocab["pinyin"],
+                "english": vocab["english"],
+                "correct": card.get("correct_count", 0),
+                "incorrect": card.get("incorrect_count", 0),
+            })
+
+    speaking_attempts = await db.speaking_attempts.count_documents({"user_id": user_id})
+
+    return {
+        "total_reviews": total_reviews,
+        "correct_reviews": correct_reviews,
+        "retention_rate": retention,
+        "mastered_count": mastered,
+        "learning_count": learning,
+        "weak_words": weak_words,
+        "speaking_attempts": speaking_attempts,
+        "streak_count": current_user.get("streak_count", 0),
+    }

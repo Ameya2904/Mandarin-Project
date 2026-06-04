@@ -38,8 +38,16 @@ A focused mobile app for serious Mandarin learners built on the **New Practical 
 ```
 Mandarin-Project/
 ├── backend/
-│   ├── server.py          # FastAPI app — all routes and business logic
-│   ├── seed_data.py       # NPCR lesson content (dialogues, vocab, drills)
+│   ├── app/
+│   │   ├── main.py          # FastAPI app: CORS, startup, router wiring
+│   │   ├── config.py        # Env loading + constants (SRS intervals, JWT)
+│   │   ├── db.py            # Mongo client, indexes, seeding/migration
+│   │   ├── models.py        # Pydantic request/response models
+│   │   ├── auth.py          # Password hashing, JWT, current-user dependency
+│   │   ├── scoring.py       # Chinese normalize + pinyin pronunciation scoring
+│   │   ├── semantic.py      # WordNet English synonym matching
+│   │   ├── seed_data.py     # NPCR lesson content (dialogues, vocab, drills)
+│   │   └── routers/         # One module per resource (auth, lessons, …)
 │   ├── requirements.txt
 │   ├── .env.example       # Template for backend env vars
 │   └── .env               # Environment variables (not committed)
@@ -138,7 +146,7 @@ EXPO_PUBLIC_BACKEND_URL=http://YOUR_LOCAL_IP:8000
 ```bash
 cd backend
 venv\Scripts\activate
-uvicorn server:app --reload
+uvicorn app.main:app --reload
 ```
 
 The API will be available at `http://localhost:8000`. The server automatically seeds all 14 NPCR lessons on first run.
@@ -172,7 +180,7 @@ MongoDB database name: `mandarin_app`
 
 ### Re-seeding
 
-The server skips seeding if 14 lessons already exist. To force a reseed (e.g. after updating `seed_data.py`):
+The server skips seeding if 14 lessons already exist. To force a reseed (e.g. after updating `app/seed_data.py`):
 
 ```bash
 mongosh mandarin_app --eval "db.lessons.deleteMany({}); db.vocabulary.deleteMany({}); db.drills.deleteMany({})"
