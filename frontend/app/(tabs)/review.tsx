@@ -109,7 +109,9 @@ export default function ReviewScreen() {
     return (
       <SafeAreaView style={styles.safe} edges={['top']}>
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyHanzi}>空</Text>
+          <View style={styles.emptyBadge}>
+            <Text style={styles.emptyHanzi}>空</Text>
+          </View>
           <Text style={styles.emptyTitle}>Your deck is empty</Text>
           <Text style={styles.emptySub}>
             Add words from the NPCR library or create your own to start practicing.
@@ -137,7 +139,9 @@ export default function ReviewScreen() {
     return (
       <SafeAreaView style={styles.safe} edges={['top']}>
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyHanzi}>休息</Text>
+          <View style={styles.emptyBadge}>
+            <Text style={styles.emptyHanzi}>休息</Text>
+          </View>
           <Text style={styles.emptyTitle}>All caught up</Text>
           <Text style={styles.emptySub}>No cards due. Visit Library to add more vocabulary.</Text>
           <TouchableOpacity
@@ -156,7 +160,9 @@ export default function ReviewScreen() {
     return (
       <SafeAreaView style={styles.safe} edges={['top']}>
         <ScrollView contentContainerStyle={styles.doneScroll}>
-          <Text style={styles.emptyHanzi}>完成</Text>
+          <View style={styles.emptyBadge}>
+            <Text style={styles.emptyHanzi}>完成</Text>
+          </View>
           <Text style={styles.emptyTitle}>Session complete</Text>
           <Text style={styles.emptySub} testID="review-session-summary">
             {sessionStats.correct} / {sessionStats.total} correct across all modes

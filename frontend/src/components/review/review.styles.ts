@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { colors, spacing, radius, fontSize } from '@/src/theme';
+import { colors, spacing, radius, fontSize, shadows, accents } from '@/src/theme';
 
 export const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
   modeDesc: { fontSize: fontSize.xs, color: colors.textSecondary, marginTop: 2 },
   stageLabel: { fontSize: 10, color: colors.textTertiary, textTransform: 'uppercase', letterSpacing: 1, fontWeight: '500' },
   cardScroll: { flexGrow: 1, padding: spacing.lg },
-  card: { backgroundColor: colors.surface, borderRadius: radius.xl, borderWidth: 1, borderColor: colors.border, padding: spacing.lg, gap: spacing.sm },
+  card: { backgroundColor: colors.surface, borderRadius: radius.xl, padding: spacing.lg, gap: spacing.sm, ...shadows.md },
   hanzi: { fontSize: fontSize.hanziLg, color: colors.textPrimary, fontWeight: '500', textAlign: 'center' },
   englishPrompt: { fontSize: fontSize.xxl, color: colors.textPrimary, fontWeight: '400', textAlign: 'center', marginTop: spacing.sm },
   pinyinSmall: { fontSize: fontSize.sm, color: colors.textTertiary, textAlign: 'center' },
@@ -80,11 +80,20 @@ export const styles = StyleSheet.create({
   incorrectBtn: { backgroundColor: colors.errorLight, borderWidth: 1, borderColor: colors.error },
   actionLabel: { fontSize: fontSize.sm, fontWeight: '600' },
   emptyContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
-  emptyHanzi: { fontSize: 88, color: colors.primary, fontWeight: '300', marginBottom: spacing.md },
-  emptyTitle: { fontSize: fontSize.xxl, color: colors.textPrimary, fontWeight: '500' },
+  emptyBadge: {
+    width: 160,
+    height: 160,
+    borderRadius: radius.full,
+    backgroundColor: accents.green.soft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
+  },
+  emptyHanzi: { fontSize: 58, color: colors.primary, fontWeight: '700', textAlign: 'center' },
+  emptyTitle: { fontSize: fontSize.xxl, color: colors.textPrimary, fontWeight: '700' },
   emptySub: { fontSize: fontSize.base, color: colors.textSecondary, textAlign: 'center', marginTop: spacing.md, paddingHorizontal: spacing.xl, lineHeight: 22 },
-  emptyBtn: { backgroundColor: colors.primary, paddingHorizontal: spacing.xl, paddingVertical: 14, borderRadius: radius.full, marginTop: spacing.xl, minHeight: 48, justifyContent: 'center' },
-  emptyBtnSecondary: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.primary, marginTop: spacing.md },
+  emptyBtn: { backgroundColor: colors.primary, paddingHorizontal: spacing.xl, paddingVertical: 14, borderRadius: radius.full, marginTop: spacing.xl, minHeight: 48, justifyContent: 'center', ...shadows.glow(accents.green.base) },
+  emptyBtnSecondary: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: colors.primary, marginTop: spacing.md, shadowOpacity: 0, elevation: 0 },
   emptyBtnText: { color: '#fff', fontSize: fontSize.base, fontWeight: '600' },
   emptyBtnTextSecondary: { color: colors.primary },
   // Done / summary screen
@@ -92,7 +101,7 @@ export const styles = StyleSheet.create({
   doneBtn: { alignSelf: 'stretch', marginTop: spacing.md },
   summarySection: { alignSelf: 'stretch', marginTop: spacing.xl },
   summaryHeader: { fontSize: fontSize.sm, color: colors.textTertiary, textTransform: 'uppercase', letterSpacing: 1, fontWeight: '600', marginBottom: spacing.sm },
-  summaryRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, backgroundColor: colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.md, marginBottom: spacing.sm },
+  summaryRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.md, marginBottom: spacing.sm, ...shadows.sm },
   summaryHanzi: { fontSize: fontSize.xl, color: colors.textPrimary, fontWeight: '500', minWidth: 44, textAlign: 'center' },
   summaryRight: { flex: 1, gap: 2 },
   summaryEnglish: { fontSize: fontSize.base, color: colors.textPrimary },

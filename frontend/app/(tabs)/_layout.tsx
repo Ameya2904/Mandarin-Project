@@ -17,13 +17,16 @@ export default function TabsLayout() {
         },
         tabBarStyle: {
           backgroundColor: colors.surface,
-          borderTopColor: colors.border,
-          borderTopWidth: 1,
+          borderTopWidth: 0,
           height: Platform.OS === 'ios' ? 88 : 68,
           paddingTop: 8,
           paddingBottom: Platform.OS === 'ios' ? 28 : 10,
-          elevation: 0,
-          shadowOpacity: 0,
+          // Floating bar with a soft upward shadow.
+          shadowColor: '#1B1D1C',
+          shadowOffset: { width: 0, height: -3 },
+          shadowOpacity: 0.08,
+          shadowRadius: 12,
+          elevation: 12,
         },
       }}
     >

@@ -13,7 +13,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, radius, fontSize } from '@/src/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { colors, spacing, radius, fontSize, shadows, accents, gradients } from '@/src/theme';
 import { api } from '@/src/api/client';
 import { useAuth } from '@/src/contexts/AuthContext';
 
@@ -111,11 +112,16 @@ export default function ProfileScreen() {
       <ScrollView contentContainerStyle={styles.scroll}>
         {/* User card */}
         <View style={styles.userCard} testID="profile-user-card">
-          <View style={styles.avatar}>
+          <LinearGradient
+            colors={gradients.hero}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.avatar}
+          >
             <Text style={styles.avatarText}>
               {user?.name?.[0]?.toUpperCase() || '?'}
             </Text>
-          </View>
+          </LinearGradient>
           <Text style={styles.userName}>{user?.name}</Text>
           <Text style={styles.userEmail}>{user?.email}</Text>
         </View>
@@ -127,26 +133,10 @@ export default function ProfileScreen() {
             {/* Stats grid */}
             <Text style={styles.sectionTitle}>Your Progress</Text>
             <View style={styles.statsGrid}>
-              <View style={styles.statBox} testID="profile-stat-streak">
-                <Ionicons name="flame" size={24} color={colors.warning} />
-                <Text style={styles.statValue}>{stats?.streak_count || 0}</Text>
-                <Text style={styles.statLabel}>Day Streak</Text>
-              </View>
-              <View style={styles.statBox} testID="profile-stat-mastered">
-                <Ionicons name="ribbon-outline" size={24} color={colors.primary} />
-                <Text style={styles.statValue}>{stats?.mastered_count || 0}</Text>
-                <Text style={styles.statLabel}>Mastered</Text>
-              </View>
-              <View style={styles.statBox} testID="profile-stat-retention">
-                <Ionicons name="trending-up-outline" size={24} color={colors.success} />
-                <Text style={styles.statValue}>{stats?.retention_rate || 0}%</Text>
-                <Text style={styles.statLabel}>Retention</Text>
-              </View>
-              <View style={styles.statBox} testID="profile-stat-reviews">
-                <Ionicons name="repeat" size={24} color={colors.tone4} />
-                <Text style={styles.statValue}>{stats?.total_reviews || 0}</Text>
-                <Text style={styles.statLabel}>Reviews</Text>
-              </View>
+              <StatBox testID="profile-stat-streak" icon="flame" accent="amber" value={stats?.streak_count || 0} label="Day Streak" />
+              <StatBox testID="profile-stat-mastered" icon="ribbon" accent="violet" value={stats?.mastered_count || 0} label="Mastered" />
+              <StatBox testID="profile-stat-retention" icon="trending-up" accent="green" value={`${stats?.retention_rate || 0}%`} label="Retention" />
+              <StatBox testID="profile-stat-reviews" icon="repeat" accent="blue" value={stats?.total_reviews || 0} label="Reviews" />
             </View>
 
             {/* Upcoming reviews */}
@@ -243,27 +233,51 @@ export default function ProfileScreen() {
   );
 }
 
+function StatBox({
+  testID,
+  icon,
+  accent,
+  value,
+  label,
+}: {
+  testID: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  accent: keyof typeof accents;
+  value: string | number;
+  label: string;
+}) {
+  return (
+    <View style={styles.statBox} testID={testID}>
+      <View style={[styles.statChip, { backgroundColor: accents[accent].soft }]}>
+        <Ionicons name={icon} size={22} color={accents[accent].base} />
+      </View>
+      <Text style={[styles.statValue, { color: accents[accent].base }]}>{value}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   flex: { flex: 1 },
   scroll: { padding: spacing.lg, paddingBottom: spacing.xxl },
   userCard: { alignItems: 'center', padding: spacing.lg },
   avatar: {
-    width: 80,
-    height: 80,
+    width: 84,
+    height: 84,
     borderRadius: radius.full,
-    backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.md,
+    ...shadows.glow(accents.teal.base),
   },
-  avatarText: { fontSize: 36, color: colors.primary, fontWeight: '500' },
-  userName: { fontSize: fontSize.xxl, color: colors.textPrimary, fontWeight: '500' },
+  avatarText: { fontSize: 38, color: '#fff', fontWeight: '700' },
+  userName: { fontSize: fontSize.xxl, color: colors.textPrimary, fontWeight: '700' },
   userEmail: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: 4 },
   sectionTitle: {
     fontSize: fontSize.base,
     color: colors.textSecondary,
-    fontWeight: '500',
+    fontWeight: '700',
     marginTop: spacing.xl,
     marginBottom: spacing.md,
     letterSpacing: 0.5,
@@ -274,20 +288,25 @@ const styles = StyleSheet.create({
     width: '47%',
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
     padding: spacing.md,
     alignItems: 'flex-start',
-    minHeight: 100,
+    minHeight: 110,
+    ...shadows.sm,
   },
-  statValue: { fontSize: fontSize.display, color: colors.textPrimary, fontWeight: '500', marginTop: spacing.sm },
+  statChip: {
+    width: 40,
+    height: 40,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statValue: { fontSize: fontSize.display, fontWeight: '700', marginTop: spacing.sm },
   statLabel: { fontSize: fontSize.sm, color: colors.textSecondary },
   weakList: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
     overflow: 'hidden',
+    ...shadows.sm,
   },
   weakRow: {
     flexDirection: 'row',
@@ -304,9 +323,8 @@ const styles = StyleSheet.create({
   settingsCard: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
     overflow: 'hidden',
+    ...shadows.sm,
   },
   settingRow: { flexDirection: 'row', alignItems: 'center', padding: spacing.md, gap: spacing.md, minHeight: 56 },
   settingLabel: { fontSize: fontSize.base, color: colors.textPrimary, fontWeight: '500' },
@@ -349,9 +367,8 @@ const styles = StyleSheet.create({
   scheduleCard: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
     overflow: 'hidden',
+    ...shadows.sm,
   },
   scheduleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: spacing.md, minHeight: 48 },
   scheduleRowBorder: { borderBottomWidth: 1, borderBottomColor: colors.border },

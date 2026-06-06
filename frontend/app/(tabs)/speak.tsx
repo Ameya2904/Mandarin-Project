@@ -10,7 +10,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, radius, fontSize, getToneColor } from '@/src/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { colors, spacing, radius, fontSize, getToneColor, shadows, accents, accentCycle, gradients } from '@/src/theme';
 import { api, Lesson } from '@/src/api/client';
 
 type Sentence = {
@@ -110,17 +111,18 @@ export default function SpeakScreen() {
           stickySectionHeadersEnabled={false}
           renderSectionHeader={({ section }) => {
             const isOpen = expanded.has(section.lesson_number);
+            const accent = accents[accentCycle[(section.lesson_number - 1) % accentCycle.length]];
             return (
               <TouchableOpacity
                 style={styles.folderHeader}
                 onPress={() => toggle(section.lesson_number)}
                 activeOpacity={0.7}
               >
-                <View style={styles.folderIconWrap}>
+                <View style={[styles.folderIconWrap, { backgroundColor: accent.soft }]}>
                   <Ionicons
-                    name={isOpen ? 'folder-open-outline' : 'folder-outline'}
+                    name={isOpen ? 'folder-open' : 'folder'}
                     size={20}
-                    color={colors.primary}
+                    color={accent.base}
                   />
                 </View>
                 <View style={styles.folderMeta}>
@@ -140,10 +142,11 @@ export default function SpeakScreen() {
           }}
           renderItem={({ item, index, section }) => {
             const isLast = index === section.data.length - 1;
+            const accent = accents[accentCycle[(section.lesson_number - 1) % accentCycle.length]];
             return (
               <TouchableOpacity
                 testID={`speak-sentence-${item.chinese}`}
-                style={[styles.sentenceCard, isLast && styles.sentenceCardLast]}
+                style={[styles.sentenceCard, { borderLeftColor: accent.base }, isLast && styles.sentenceCardLast]}
                 onPress={() =>
                   router.push({
                     pathname: '/speak-practice',
@@ -163,9 +166,14 @@ export default function SpeakScreen() {
                     </Text>
                     <Text style={styles.sentenceEnglish}>{item.english}</Text>
                   </View>
-                  <View style={styles.micButton}>
+                  <LinearGradient
+                    colors={gradients.hero}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.micButton}
+                  >
                     <Ionicons name="mic" size={22} color="#fff" />
-                  </View>
+                  </LinearGradient>
                 </View>
               </TouchableOpacity>
             );
@@ -184,7 +192,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   loading: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   header: { padding: spacing.lg, paddingBottom: spacing.md },
-  title: { fontSize: fontSize.display, color: colors.textPrimary, fontWeight: '400', letterSpacing: -0.5 },
+  title: { fontSize: fontSize.display, color: colors.textPrimary, fontWeight: '700', letterSpacing: -0.5 },
   subtitle: { fontSize: fontSize.base, color: colors.textSecondary, marginTop: 4 },
   list: { padding: spacing.lg, paddingTop: 0, paddingBottom: spacing.xxl },
 
@@ -194,17 +202,15 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
     padding: spacing.md,
     marginBottom: spacing.xs,
     minHeight: 56,
+    ...shadows.sm,
   },
   folderIconWrap: {
     width: 36,
     height: 36,
     borderRadius: radius.md,
-    backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -226,8 +232,7 @@ const styles = StyleSheet.create({
 
   sentenceCard: {
     backgroundColor: colors.surface,
-    borderLeftWidth: 2,
-    borderLeftColor: colors.primaryLight,
+    borderLeftWidth: 3,
     borderRightWidth: 1,
     borderRightColor: colors.border,
     borderBottomWidth: 1,
