@@ -83,6 +83,10 @@ export default function SpeakingCard({ card, onAnswered }: { card: Card; onAnswe
         setErrorMsg('No audio captured.');
         return;
       }
+      // expo-audio's stop() can resolve before the file is fully flushed to
+      // disk. Give it a brief moment so the upload can read a complete file;
+      // the API layer also retries on a dropped read as a safety net.
+      await new Promise((r) => setTimeout(r, 250));
       setUploading(true);
       const data = await api.transcribeAudio(uri, vocab.simplified, vocab.id);
       setResult({

@@ -26,7 +26,18 @@ async def get_dashboard(current_user: dict = Depends(get_current_user)):
         {"user_id": user_id, "timestamp": {"$gte": today_start}, "was_correct": True}
     )
 
-    new_count = await db.vocabulary.count_documents({}) - total_cards
+    # "New" = words the user has added to their deck but never reviewed yet
+    # (no flashcard exists). Counting all vocabulary in the DB would include
+    # words that aren't even in this user's deck.
+    deck_entries = await db.user_deck.find(
+        {"user_id": user_id}, {"vocabulary_id": 1, "_id": 0}
+    ).to_list(10000)
+    deck_ids = {e["vocabulary_id"] for e in deck_entries}
+    existing = await db.flashcards.find(
+        {"user_id": user_id}, {"vocabulary_id": 1, "_id": 0}
+    ).to_list(10000)
+    existing_ids = {e["vocabulary_id"] for e in existing}
+    new_count = len(deck_ids - existing_ids)
     daily_goal = current_user.get("daily_goal", 20)
 
     return {

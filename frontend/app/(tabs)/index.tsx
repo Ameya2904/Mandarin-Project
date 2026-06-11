@@ -82,7 +82,7 @@ export default function HomeScreen() {
   }
 
   const tiles: Tile[] = [
-    { testID: 'home-tile-flashcards', icon: 'albums', title: 'Flashcards', sub: `${dueCount} due`, accent: 'green', route: '/(tabs)/review' },
+    { testID: 'home-tile-flashcards', icon: 'albums', title: 'Flashcards', sub: `${dueCount + newCount} due`, accent: 'green', route: '/(tabs)/review' },
     { testID: 'home-tile-drills', icon: 'construct', title: 'Drills', sub: 'Build sentences', accent: 'blue', route: '/drill' },
     { testID: 'home-tile-library', icon: 'library', title: 'Library', sub: 'Browse & add words', accent: 'violet', route: '/library' },
     { testID: 'home-tile-add-word', icon: 'add-circle', title: 'Add Word', sub: 'Custom vocab', accent: 'amber', route: '/add-word' },

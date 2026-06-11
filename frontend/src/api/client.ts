@@ -291,12 +291,44 @@ export const api = {
     const headers: Record<string, string> = { Accept: 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    const res = await fetch(url, { method: 'POST', body: form as any, headers });
-    const text = await res.text();
-    const data = text ? JSON.parse(text) : {};
-    if (!res.ok) {
-      throw new Error(data?.detail || `Transcription failed (${res.status})`);
+    // The recording file can be momentarily unreadable right after stop(),
+    // which makes RN reject the upload with "Network request failed" before it
+    // even reaches the server. Retry a few times with a short delay so the
+    // now-flushed file uploads cleanly. Real server errors (4xx/5xx) are not
+    // retried. TIMEOUT_MS guards against a genuinely hung request.
+    const TIMEOUT_MS = 30000;
+    const MAX_ATTEMPTS = 3;
+    const RETRY_DELAY_MS = 400;
+    let lastErr: unknown;
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          body: form as any,
+          headers,
+          signal: controller.signal,
+        });
+        const text = await res.text();
+        const data = text ? JSON.parse(text) : {};
+        if (!res.ok) {
+          // A real server error (e.g. 4xx/5xx) — don't retry, surface it.
+          throw new Error(data?.detail || `Transcription failed (${res.status})`);
+        }
+        return data;
+      } catch (err: any) {
+        lastErr = err;
+        // Only retry transient network/abort failures, not server errors.
+        const isNetwork =
+          err?.name === 'AbortError' ||
+          /network request failed|network error/i.test(err?.message || '');
+        if (!isNetwork || attempt === MAX_ATTEMPTS) throw err;
+        await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+      } finally {
+        clearTimeout(timer);
+      }
     }
-    return data;
+    throw lastErr;
   },
 };

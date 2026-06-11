@@ -1,5 +1,4 @@
 """Sentence-drill endpoints."""
-import random
 import uuid
 from datetime import datetime, timezone
 from typing import Optional
@@ -11,6 +10,9 @@ from ..db import db
 from ..models import DrillAttemptRequest
 
 router = APIRouter(prefix="/drills", tags=["drills"])
+
+# Each drill is practised this many times in a row before moving on.
+REPEAT_PER_DRILL = 3
 
 
 @router.get("")
@@ -25,14 +27,15 @@ async def list_drills(
         query["lesson_number"] = lesson_number
     if part is not None:
         query["part"] = part
+    # Keep the seed's natural ordering so variants of the same pattern stay
+    # grouped together (a guided "flow" rather than a random jumble), and
+    # repeat each drill back-to-back so the learner drills it before moving on.
     drills = await db.drills.find(query, {"_id": 0}).to_list(2000)
 
     expanded = []
     for d in drills:
-        n = max(1, int(d.get("repeat_count", 1)))
-        for _ in range(n):
+        for _ in range(REPEAT_PER_DRILL):
             expanded.append(d)
-    random.shuffle(expanded)
     return expanded[:limit]
 
 

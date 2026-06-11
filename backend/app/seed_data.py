@@ -3,9 +3,9 @@
 Source: NPCR 1-14.docx provided by the user (full dialogue extraction).
 Each lesson is split into Part 1 and Part 2 (matches the textbook structure).
 
-Drills are stored as individual substitution variants. Each variant has
-`repeat_count` so the API can expand it (the learner sees each variant
-6 times for spaced repetition / drilling).
+Drills are stored as individual substitution variants. The API repeats
+each variant several times in a row so the learner drills it before
+moving on (see REPEAT_PER_DRILL in routers/drills.py).
 """
 
 # ---------- Helper to build substitution-drill variants ----------
@@ -801,7 +801,7 @@ NPCR_LESSONS = [
 # =====================================================================
 # SUBSTITUTION DRILLS — Lessons 1 to 14
 # Each lesson has 3-5 drill templates per part. Each template has 4-5
-# substitution variants. Every variant is repeated 6 times by the API.
+# substitution variants. The API repeats each variant a few times in a row.
 # =====================================================================
 
 SENTENCE_DRILLS = []
