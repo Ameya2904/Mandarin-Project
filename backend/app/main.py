@@ -7,6 +7,7 @@ import logging
 from fastapi import APIRouter, FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
+from . import asr
 from .db import client, create_indexes, migrate_legacy_decks, seed_lessons_and_vocab
 from .routers import (
     auth,
@@ -55,6 +56,7 @@ async def on_startup():
     await create_indexes()
     await seed_lessons_and_vocab()
     await migrate_legacy_decks()
+    asr.warm_up()  # load the ASR model now so the first request isn't slow
 
 
 @app.on_event("shutdown")

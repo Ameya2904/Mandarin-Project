@@ -378,7 +378,7 @@ export default function DrillScreen() {
             <Text style={[styles.comparePinyin, { color: getToneColor(current.expected_pinyin) }]}>
               {current.expected_pinyin}
             </Text>
-            <Text style={styles.compareLabel}>Whisper heard</Text>
+            <Text style={styles.compareLabel}>Heard</Text>
             <Text style={styles.compareHanzi}>{result.transcribed || '(silence)'}</Text>
             {result.spokenPinyin ? (
               <Text style={[styles.comparePinyin, { color: getToneColor(result.spokenPinyin) }]}>

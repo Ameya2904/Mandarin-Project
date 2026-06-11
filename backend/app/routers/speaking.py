@@ -1,4 +1,4 @@
-"""Speaking practice: Whisper transcription + pronunciation scoring."""
+"""Speaking practice: FunASR transcription + pronunciation scoring."""
 import logging
 import os
 import tempfile
@@ -7,10 +7,10 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
-from openai import AsyncOpenAI
+from fastapi.concurrency import run_in_threadpool
 
+from .. import asr
 from ..auth import get_current_user
-from ..config import OPENAI_API_KEY
 from ..db import db
 from ..scoring import (
     normalize_chinese,
@@ -33,11 +33,8 @@ async def transcribe_audio(
     vocabulary_id: Optional[str] = None,
     current_user: dict = Depends(get_current_user),
 ):
-    """Accept an audio file (m4a/wav/webm), transcribe via OpenAI Whisper-1 (zh),
-    then compare to target_chinese (if provided) for pronunciation feedback."""
-    if not OPENAI_API_KEY:
-        raise HTTPException(status_code=500, detail="OpenAI API key not configured on server")
-
+    """Accept an audio file (m4a/wav/webm), transcribe it with FunASR, then
+    compare to target_chinese (if provided) for pronunciation feedback."""
     filename = file.filename or "audio.m4a"
     suffix = "." + filename.rsplit(".", 1)[-1].lower() if "." in filename else ".m4a"
     if suffix.lstrip(".") not in _ALLOWED_AUDIO_SUFFIXES:
@@ -54,19 +51,9 @@ async def transcribe_audio(
     tmp.close()
 
     try:
-        oai = AsyncOpenAI(api_key=OPENAI_API_KEY)
-        with open(tmp.name, "rb") as f:
-            transcribed = await oai.audio.transcriptions.create(
-                model="whisper-1",
-                file=f,
-                language="zh",
-                response_format="text",
-                prompt="普通话，简体中文。",
-            )
-        if not isinstance(transcribed, str):
-            transcribed = getattr(transcribed, "text", "") or str(transcribed)
+        transcribed = await run_in_threadpool(asr.transcribe, tmp.name)
     except Exception as e:
-        logger.exception("Whisper transcription failed")
+        logger.exception("Transcription failed")
         raise HTTPException(status_code=502, detail=f"Transcription failed: {str(e)}")
     finally:
         try:
@@ -94,7 +81,7 @@ async def transcribe_audio(
             "score": p["score"],
             "exact_match": p["correct"],
             "vocabulary_id": vocabulary_id,
-            "source": "whisper",
+            "source": "funasr",
             "timestamp": datetime.now(timezone.utc),
         })
 

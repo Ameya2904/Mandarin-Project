@@ -10,7 +10,7 @@ A focused mobile app for serious Mandarin learners built on the **New Practical 
 - **Spaced Repetition Flashcards** — 6-stage SRS system (1d → 2d → 1w → 1m → 3m → 1y) with correct/incorrect progression
 - **Reading / Writing / Speaking review modes** — Each due card can be reviewed by recall, handwriting, or pronunciation
 - **Sentence Drills** — Substitution and transformation drills tied to each lesson
-- **Speaking Practice** — Browse all dialogue sentences organized by lesson folder; tap to practice pronunciation (OpenAI Whisper transcription + syllable/tone pinyin scoring)
+- **Speaking Practice** — Browse all dialogue sentences organized by lesson folder; tap to practice pronunciation (FunASR transcription + syllable/tone pinyin scoring)
 - **Handwriting Recognition** — Draw characters on a canvas; scored on-device via EasyOCR
 - **Vocabulary Library & Custom Words** — Browse NPCR vocab, search, and add your own custom words to your deck
 - **Progress Tracking** — Streak, retention rate, mastered word count, weak words
@@ -27,7 +27,7 @@ A focused mobile app for serious Mandarin learners built on the **New Practical 
 | Backend | FastAPI + Motor (async MongoDB driver) |
 | Database | MongoDB |
 | Auth | JWT (PyJWT) + bcrypt |
-| Speech | OpenAI Whisper API (transcription) + pypinyin (tone scoring) |
+| Speech | FunASR (local transcription) + pypinyin (tone scoring) |
 | Handwriting | EasyOCR (on-device Chinese OCR) |
 | Semantic matching | NLTK WordNet (English synonym checking) |
 
@@ -126,7 +126,9 @@ DB_NAME="mandarin_app"
 JWT_SECRET_KEY="your-secret-key-here"
 JWT_ALGORITHM="HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES=43200
-OPENAI_API_KEY="sk-your-openai-key-here"
+
+# Speech-to-text (FunASR, runs locally on the server)
+ASR_MODEL="FunAudioLLM/Fun-ASR-Nano-2512"
 ```
 
 ### `frontend/.env`
@@ -217,7 +219,7 @@ All routes are prefixed with `/api` and require a `Bearer` token except auth end
 | GET | `/api/vocabulary/library` | Browse + search NPCR and custom vocab |
 | POST / DELETE | `/api/vocabulary/custom` | Create / delete custom vocabulary |
 | POST | `/api/vocabulary/semantic-match` | English synonym match (WordNet) |
-| POST | `/api/speaking/transcribe` | Transcribe audio (Whisper) + pronunciation score |
+| POST | `/api/speaking/transcribe` | Transcribe audio (FunASR) + pronunciation score |
 | POST | `/api/writing/recognize` | Score handwritten characters (EasyOCR) |
 | GET | `/api/progress/dashboard` | Daily dashboard counts |
 | GET | `/api/progress/stats` | User stats (streak, retention, weak words) |

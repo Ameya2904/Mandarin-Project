@@ -279,7 +279,7 @@ export default function SpeakPracticeScreen() {
               <Text style={[styles.comparePinyin, { color: getToneColor(result.target_pinyin || pinyin) }]}>
                 {result.target_pinyin || pinyin}
               </Text>
-              <Text style={styles.compareLabel}>Whisper heard</Text>
+              <Text style={styles.compareLabel}>Heard</Text>
               <Text style={styles.compareHanzi} testID="speak-transcribed-text">
                 {result.transcribed_text || '(silence)'}
               </Text>
