@@ -97,6 +97,12 @@ export default function LoginScreen() {
               onBlur={() => setFocused(null)}
             />
 
+            <Link href="/(auth)/forgot-password" asChild>
+              <PressableScale testID="login-forgot-password-link" style={styles.forgotWrap}>
+                <Text style={styles.forgotLink}>Forgot password?</Text>
+              </PressableScale>
+            </Link>
+
             {error ? (
               <Text testID="login-error-text" style={styles.error}>
                 {error}
@@ -208,6 +214,8 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: radius.md,
   },
+  forgotWrap: { alignSelf: 'flex-end', marginTop: spacing.sm, paddingVertical: spacing.xs },
+  forgotLink: { color: colors.primary, fontSize: fontSize.sm, fontWeight: '600' },
   btnWrap: { marginTop: spacing.xl, borderRadius: radius.md },
   primaryBtn: {
     borderRadius: radius.md,

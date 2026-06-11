@@ -75,3 +75,24 @@ class UserSettingsUpdate(BaseModel):
     name: Optional[str] = None
     daily_goal: Optional[int] = None
     learner_level: Optional[str] = None
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ForgotPasswordResponse(BaseModel):
+    # In production the reset token would be emailed, not returned in the body.
+    # This app has no mail service, so we surface it so the flow is usable.
+    reset_token: str
+    expires_in_minutes: int
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str = Field(min_length=6)
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str = Field(min_length=6)

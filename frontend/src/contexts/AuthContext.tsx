@@ -9,6 +9,7 @@ type AuthContextValue = {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string) => Promise<void>;
+  resetPassword: (token: string, newPassword: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 };
@@ -47,6 +48,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(res.user);
   };
 
+  const resetPassword = async (token: string, newPassword: string) => {
+    const res = await api.resetPassword(token, newPassword);
+    await setAuthToken(res.access_token);
+    setUser(res.user);
+  };
+
   const logout = async () => {
     await clearAuthToken();
     setUser(null);
@@ -62,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, resetPassword, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

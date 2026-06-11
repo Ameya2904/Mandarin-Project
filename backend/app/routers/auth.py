@@ -1,6 +1,6 @@
 """Authentication endpoints."""
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -12,9 +12,21 @@ from ..auth import (
     verify_password,
 )
 from ..db import db
-from ..models import TokenResponse, UserCreate, UserLogin, UserPublic, UserSettingsUpdate
+from ..models import (
+    ChangePasswordRequest,
+    ForgotPasswordRequest,
+    ForgotPasswordResponse,
+    ResetPasswordRequest,
+    TokenResponse,
+    UserCreate,
+    UserLogin,
+    UserPublic,
+    UserSettingsUpdate,
+)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+RESET_TOKEN_TTL_MINUTES = 30
 
 
 @router.post("/signup", response_model=TokenResponse)
@@ -75,9 +87,70 @@ async def login(payload: UserLogin):
     return TokenResponse(access_token=token, user=user_to_public(user))
 
 
+@router.post("/forgot-password", response_model=ForgotPasswordResponse)
+async def forgot_password(payload: ForgotPasswordRequest):
+    email = payload.email.lower()
+    user = await db.users.find_one({"email": email})
+    if not user:
+        raise HTTPException(status_code=404, detail="No account found with that email")
+
+    token = str(uuid.uuid4())
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=RESET_TOKEN_TTL_MINUTES)
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"reset_token": token, "reset_token_expires_at": expires_at}},
+    )
+    # NOTE: a production deployment would email this token instead of returning it.
+    return ForgotPasswordResponse(
+        reset_token=token, expires_in_minutes=RESET_TOKEN_TTL_MINUTES
+    )
+
+
+@router.post("/reset-password", response_model=TokenResponse)
+async def reset_password(payload: ResetPasswordRequest):
+    user = await db.users.find_one({"reset_token": payload.token})
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset code")
+
+    expires_at = user.get("reset_token_expires_at")
+    if not expires_at:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset code")
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    if expires_at < datetime.now(timezone.utc):
+        raise HTTPException(status_code=400, detail="Invalid or expired reset code")
+
+    await db.users.update_one(
+        {"id": user["id"]},
+        {
+            "$set": {"hashed_password": hash_password(payload.new_password)},
+            "$unset": {"reset_token": "", "reset_token_expires_at": ""},
+        },
+    )
+
+    token = create_access_token(user["id"])
+    return TokenResponse(access_token=token, user=user_to_public(user))
+
+
 @router.get("/me", response_model=UserPublic)
 async def get_me(current_user: dict = Depends(get_current_user)):
     return user_to_public(current_user)
+
+
+@router.post("/change-password")
+async def change_password(
+    payload: ChangePasswordRequest, current_user: dict = Depends(get_current_user)
+):
+    # current_user is sanitized (no hashed_password), so re-fetch the full doc.
+    user = await db.users.find_one({"id": current_user["id"]})
+    if not user or not verify_password(payload.current_password, user["hashed_password"]):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"hashed_password": hash_password(payload.new_password)}},
+    )
+    return {"success": True}
 
 
 @router.put("/me", response_model=UserPublic)

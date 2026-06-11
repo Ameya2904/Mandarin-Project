@@ -50,6 +50,13 @@ export default function ProfileScreen() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [draftGoal, setDraftGoal] = useState('20');
+  const [changingPw, setChangingPw] = useState(false);
+  const [currentPw, setCurrentPw] = useState('');
+  const [newPw, setNewPw] = useState('');
+  const [confirmPw, setConfirmPw] = useState('');
+  const [pwSubmitting, setPwSubmitting] = useState(false);
+  const [pwError, setPwError] = useState('');
+  const [pwSuccess, setPwSuccess] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -90,6 +97,41 @@ export default function ProfileScreen() {
       { text: 'Cancel', style: 'cancel' },
       { text: 'Logout', style: 'destructive', onPress: doLogout },
     ]);
+  };
+
+  const resetPwForm = () => {
+    setChangingPw(false);
+    setCurrentPw('');
+    setNewPw('');
+    setConfirmPw('');
+    setPwError('');
+  };
+
+  const handleChangePassword = async () => {
+    setPwError('');
+    setPwSuccess(false);
+    if (!currentPw || !newPw) {
+      setPwError('Please fill in all fields.');
+      return;
+    }
+    if (newPw.length < 6) {
+      setPwError('New password must be at least 6 characters.');
+      return;
+    }
+    if (newPw !== confirmPw) {
+      setPwError('New passwords do not match.');
+      return;
+    }
+    setPwSubmitting(true);
+    try {
+      await api.changePassword(currentPw, newPw);
+      resetPwForm();
+      setPwSuccess(true);
+    } catch (e: any) {
+      setPwError(e.message || 'Could not change password.');
+    } finally {
+      setPwSubmitting(false);
+    }
   };
 
   const handleSaveGoal = async () => {
@@ -216,6 +258,88 @@ export default function ProfileScreen() {
                   </TouchableOpacity>
                 )}
               </View>
+            </View>
+
+            {/* Security */}
+            <Text style={styles.sectionTitle}>Security</Text>
+            <View style={styles.settingsCard}>
+              {!changingPw ? (
+                <TouchableOpacity
+                  testID="profile-change-password-button"
+                  style={styles.settingRow}
+                  onPress={() => {
+                    setPwSuccess(false);
+                    setChangingPw(true);
+                  }}
+                >
+                  <View style={styles.flex}>
+                    <Text style={styles.settingLabel}>Change Password</Text>
+                    <Text style={styles.settingHint}>
+                      {pwSuccess ? 'Password updated' : 'Update your account password'}
+                    </Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
+                </TouchableOpacity>
+              ) : (
+                <View style={styles.pwForm}>
+                  <TextInput
+                    testID="profile-current-password-input"
+                    style={styles.pwInput}
+                    secureTextEntry
+                    placeholder="Current password"
+                    placeholderTextColor={colors.textTertiary}
+                    value={currentPw}
+                    onChangeText={setCurrentPw}
+                  />
+                  <TextInput
+                    testID="profile-new-password-input"
+                    style={styles.pwInput}
+                    secureTextEntry
+                    placeholder="New password (min 6 characters)"
+                    placeholderTextColor={colors.textTertiary}
+                    value={newPw}
+                    onChangeText={setNewPw}
+                  />
+                  <TextInput
+                    testID="profile-confirm-password-input"
+                    style={styles.pwInput}
+                    secureTextEntry
+                    placeholder="Confirm new password"
+                    placeholderTextColor={colors.textTertiary}
+                    value={confirmPw}
+                    onChangeText={setConfirmPw}
+                  />
+
+                  {pwError ? (
+                    <Text testID="profile-password-error" style={styles.pwError}>
+                      {pwError}
+                    </Text>
+                  ) : null}
+
+                  <View style={styles.pwActions}>
+                    <TouchableOpacity
+                      testID="profile-cancel-password-button"
+                      style={[styles.pwBtn, styles.pwBtnGhost]}
+                      onPress={resetPwForm}
+                      disabled={pwSubmitting}
+                    >
+                      <Text style={styles.pwBtnGhostText}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      testID="profile-save-password-button"
+                      style={[styles.pwBtn, styles.pwBtnPrimary, pwSubmitting && styles.btnDisabled]}
+                      onPress={handleChangePassword}
+                      disabled={pwSubmitting}
+                    >
+                      {pwSubmitting ? (
+                        <ActivityIndicator color="#fff" />
+                      ) : (
+                        <Text style={styles.pwBtnPrimaryText}>Update</Text>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
             </View>
 
             <TouchableOpacity
@@ -352,6 +476,39 @@ const styles = StyleSheet.create({
   },
   editBtn: { backgroundColor: colors.primary, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: radius.sm },
   editBtnText: { color: '#fff', fontWeight: '600' },
+  pwForm: { padding: spacing.md, gap: spacing.sm },
+  pwInput: {
+    backgroundColor: colors.background,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 12,
+    fontSize: fontSize.base,
+    color: colors.textPrimary,
+    minHeight: 46,
+  },
+  pwError: {
+    color: colors.error,
+    fontSize: fontSize.sm,
+    backgroundColor: colors.errorLight,
+    padding: spacing.sm,
+    borderRadius: radius.sm,
+  },
+  pwActions: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs },
+  pwBtn: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 46,
+  },
+  pwBtnGhost: { backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border },
+  pwBtnGhostText: { color: colors.textSecondary, fontWeight: '600', fontSize: fontSize.base },
+  pwBtnPrimary: { backgroundColor: colors.primary },
+  pwBtnPrimaryText: { color: '#fff', fontWeight: '700', fontSize: fontSize.base },
+  btnDisabled: { opacity: 0.7 },
   logoutBtn: {
     flexDirection: 'row',
     alignItems: 'center',

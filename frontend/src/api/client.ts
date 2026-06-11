@@ -127,6 +127,21 @@ export const api = {
   me: () => request<UserPublic>('/auth/me'),
   updateMe: (payload: { name?: string; daily_goal?: number; learner_level?: string }) =>
     request<UserPublic>('/auth/me', { method: 'PUT', body: JSON.stringify(payload) }),
+  forgotPassword: (email: string) =>
+    request<{ reset_token: string; expires_in_minutes: number }>('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+  resetPassword: (token: string, new_password: string) =>
+    request<{ access_token: string; user: UserPublic }>('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, new_password }),
+    }),
+  changePassword: (current_password: string, new_password: string) =>
+    request<{ success: boolean }>('/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ current_password, new_password }),
+    }),
 
   dashboard: () => request<Dashboard>('/progress/dashboard'),
   stats: () =>
