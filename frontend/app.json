@@ -17,12 +17,14 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#FDFCF9"
+        "backgroundColor": "#1FA8A0"
       },
       "edgeToEdgeEnabled": true,
       "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ]
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ],
+      "package": "com.ameya2904.spacedchinese"
     },
     "web": {
       "bundler": "metro",
@@ -32,12 +34,20 @@
     "plugins": [
       "expo-router",
       [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-image.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#FDFCF9"
+          "backgroundColor": "#F7F6F2"
         }
       ],
       [
@@ -45,10 +55,18 @@
         {
           "microphonePermission": "Allow SpacedChinese to access your microphone for pronunciation practice."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "3962e659-b97c-44bd-9350-565095aa942a"
+      }
+    },
+    "owner": "ameya2904"
   }
 }
