@@ -71,12 +71,16 @@ def transcribe(audio_path: str, language: str = ASR_LANGUAGE) -> str:
     wav_path = _to_wav_16k(audio_path)
     try:
         with _infer_lock:
+            # itn=False: Inverse Text Normalization rewrites recognized sounds
+            # into "written" forms (digits, Latin letters), which makes single
+            # Mandarin syllables come back as homophonous English letters
+            # (jī -> "G", bī -> "B"). We want raw Chinese characters here.
             res = model.generate(
                 input=[wav_path],
                 cache={},
                 batch_size=1,
                 language=language,
-                itn=True,
+                itn=False,
             )
     finally:
         try:

@@ -81,7 +81,7 @@ def pronunciation_feedback(p: dict) -> str:
     if p["correct"]:
         return "Perfect pronunciation! 完美!"
     if p["total"] and p["syllables_right"] == p["total"] and p["tones_wrong"] > 0:
-        return "All the right sounds — but check your tones! 🎵"
+        return "All the syllables right, but check your tones"
     if p["tones_wrong"] > 0:
         return "Some sounds are right, but watch your tones."
     if p["score"] >= 80:
