@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from ..auth import get_current_user
 from ..config import SRS_INTERVALS
-from ..db import db
+from ..db import carded_vocab_ids, db, deck_vocab_ids
 from ..models import FlashcardReviewRequest
 
 router = APIRouter(prefix="/flashcards", tags=["flashcards"])
@@ -38,19 +38,12 @@ async def get_new_flashcards(
     """Get vocabulary words the user has added to deck but never reviewed yet."""
     user_id = current_user["id"]
 
-    deck_entries = await db.user_deck.find(
-        {"user_id": user_id}, {"vocabulary_id": 1, "_id": 0}
-    ).to_list(10000)
-    deck_ids = [e["vocabulary_id"] for e in deck_entries]
+    deck_ids = await deck_vocab_ids(user_id)
     if not deck_ids:
         return []
 
-    existing = await db.flashcards.find(
-        {"user_id": user_id}, {"vocabulary_id": 1, "_id": 0}
-    ).to_list(10000)
-    existing_ids = {e["vocabulary_id"] for e in existing}
-
-    new_ids = [vid for vid in deck_ids if vid not in existing_ids]
+    existing_ids = await carded_vocab_ids(user_id)
+    new_ids = list(deck_ids - existing_ids)
     if not new_ids:
         return []
 
@@ -79,6 +72,8 @@ async def get_review_schedule(days: int = 14, current_user: dict = Depends(get_c
 
     schedule = []
     for i in range(days):
+        # i + 1: the schedule starts tomorrow — today's due cards are "due now",
+        # not "upcoming".
         date_key = (now + timedelta(days=i + 1)).date().strftime("%Y-%m-%d")
         if date_key in counts:
             schedule.append({"date": date_key, "count": counts[date_key]})
@@ -89,6 +84,18 @@ async def get_review_schedule(days: int = 14, current_user: dict = Depends(get_c
 async def submit_review(
     payload: FlashcardReviewRequest, current_user: dict = Depends(get_current_user)
 ):
+    """Record one review and move the card through the spaced-repetition ladder.
+
+    The stage rules:
+      - Correct: advance one stage (capped at 6, the longest interval).
+      - Incorrect: reset to stage 1 — a missed word is treated as new again.
+      - A word's very first review starts at stage 2 (correct) or 1 (incorrect).
+    `next_review_at` is then `now + SRS_INTERVALS[stage]` days.
+
+    If `payload.skip_srs` is set, the attempt is only logged to history and the
+    stage is left untouched — this is how the non-final modes of a multi-mode
+    review avoid advancing the card three times for one word.
+    """
     user_id = current_user["id"]
     now = datetime.now(timezone.utc)
 

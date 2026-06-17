@@ -14,7 +14,30 @@ client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
 
 
+async def deck_vocab_ids(user_id: str) -> set[str]:
+    """The set of vocabulary ids currently in a user's deck."""
+    rows = await db.user_deck.find(
+        {"user_id": user_id}, {"vocabulary_id": 1, "_id": 0}
+    ).to_list(10000)
+    return {r["vocabulary_id"] for r in rows}
+
+
+async def carded_vocab_ids(user_id: str) -> set[str]:
+    """The set of vocabulary ids a user already has a flashcard for."""
+    rows = await db.flashcards.find(
+        {"user_id": user_id}, {"vocabulary_id": 1, "_id": 0}
+    ).to_list(10000)
+    return {r["vocabulary_id"] for r in rows}
+
+
 async def create_indexes() -> None:
+    """Create the indexes the app relies on (idempotent — safe every startup).
+
+    The `unique=True` compound indexes are load-bearing: they enforce
+    "one flashcard / one deck row per (user, word)" at the database level, which
+    is what lets the add-to-deck and review code skip manual duplicate checks.
+    The `next_review_at` index keeps the hot "cards due now" query fast.
+    """
     await db.users.create_index("email", unique=True)
     await db.flashcards.create_index([("user_id", 1), ("vocabulary_id", 1)], unique=True)
     await db.flashcards.create_index([("user_id", 1), ("next_review_at", 1)])
@@ -23,6 +46,13 @@ async def create_indexes() -> None:
 
 
 async def seed_lessons_and_vocab() -> None:
+    """Load the NPCR curriculum into the database (idempotent).
+
+    Skips entirely when the lesson count already matches the seed file. When the
+    count *differs* (e.g. you added lessons), it wipes and rebuilds only the
+    content collections — user progress (decks, flashcards, accounts) is never
+    touched, so re-seeding after a content edit is safe.
+    """
     existing = await db.lessons.count_documents({})
     if existing == len(NPCR_LESSONS):
         logger.info(f"Lessons already seeded ({existing}). Skipping.")

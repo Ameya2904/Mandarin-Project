@@ -1,3 +1,10 @@
+/**
+ * Home tab — the daily dashboard.
+ *
+ * Pulls /progress/dashboard on every focus (so counts stay fresh after a review
+ * session) and surfaces: today's goal progress, a "Continue Learning" CTA, a
+ * grid of quick-action tiles, and a few memory stats.
+ */
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
@@ -314,6 +321,8 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     borderRadius: radius.xl,
     marginBottom: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border,
     ...shadows.md,
   },
   progressHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.md },
@@ -361,6 +370,8 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     borderRadius: radius.lg,
     minHeight: 124,
+    borderWidth: 1,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   tileChip: {
@@ -380,6 +391,8 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: radius.lg,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   statDot: {

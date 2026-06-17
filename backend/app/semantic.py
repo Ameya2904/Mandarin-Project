@@ -14,6 +14,11 @@ except LookupError:
 
 
 def normalize_en(s: str) -> str:
+    """Canonicalize an English term for comparison.
+
+    Lowercases, drops trailing punctuation, and strips a leading article or
+    infinitive marker so "To call." and "call" compare equal.
+    """
     s = (s or "").strip().lower()
     s = re.sub(r"[.;]+$", "", s)
     s = re.sub(r"^(to |a |an |the )", "", s)
@@ -21,6 +26,7 @@ def normalize_en(s: str) -> str:
 
 
 def _word_synonyms(word: str) -> set:
+    """Return WordNet synonyms for a word (multiword lemmas use spaces, not _)."""
     synonyms = set()
     for synset in wn.synsets(word):
         for lemma in synset.lemmas():
@@ -29,6 +35,7 @@ def _word_synonyms(word: str) -> set:
 
 
 def words_match(w1: str, w2: str) -> bool:
+    """True if two words are equal or one is a WordNet synonym of the other."""
     if w1 == w2:
         return True
     syns1 = _word_synonyms(w1)

@@ -30,6 +30,15 @@ export function shuffleArray<T>(arr: T[]): T[] {
   return arr;
 }
 
+/**
+ * Build a review session that tests every word in all three modes.
+ *
+ * The queue is organized into `MODES.length` rounds. Each word appears once per
+ * round in a different (shuffled) mode, and rounds are concatenated in order —
+ * so the whole deck is seen in its first mode before any word reaches its
+ * second. The last round is flagged `isFinal`, which is the only point where
+ * `submit_review` advances the SRS stage (see review.tsx → handleAnswered).
+ */
 export function buildMultiModeQueue(dueCards: Flashcard[], newVocab: Vocabulary[]): Card[] {
   const entries = [
     ...dueCards.map((c) => ({ vocabulary: c.vocabulary, current_stage: c.current_stage })),
@@ -37,9 +46,11 @@ export function buildMultiModeQueue(dueCards: Flashcard[], newVocab: Vocabulary[
   ];
   if (entries.length === 0) return [];
 
-  // For each card assign 3 shuffled modes, one per round
-  const rounds: Card[][] = [[], [], []];
+  const lastRound = MODES.length - 1;
+  const rounds: Card[][] = MODES.map(() => []);
   entries.forEach((entry) => {
+    // Randomize which mode this word gets in which round, so two learners (or
+    // the same word across sessions) don't always drill in the same order.
     const modes = shuffleArray([...MODES] as Mode[]);
     modes.forEach((mode, roundIdx) => {
       rounds[roundIdx].push({
@@ -47,14 +58,15 @@ export function buildMultiModeQueue(dueCards: Flashcard[], newVocab: Vocabulary[
         current_stage: entry.current_stage,
         mode,
         round: roundIdx,
-        isFinal: roundIdx === 2,
+        isFinal: roundIdx === lastRound,
       });
     });
   });
 
-  // Shuffle within each round so same card doesn't follow itself across rounds
+  // Shuffle within each round so the same word doesn't follow itself across the
+  // round boundary.
   rounds.forEach((r) => shuffleArray(r));
-  return [...rounds[0], ...rounds[1], ...rounds[2]];
+  return rounds.flat();
 }
 
 export function formatNextReview(isoDate: string): string {

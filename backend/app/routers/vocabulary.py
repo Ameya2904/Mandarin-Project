@@ -6,7 +6,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 
 from ..auth import get_current_user
-from ..db import db
+from ..db import db, deck_vocab_ids
 from ..models import CustomVocabCreate, SemanticMatchRequest
 from ..semantic import answer_matches_target
 
@@ -17,6 +17,7 @@ router = APIRouter(prefix="/vocabulary", tags=["vocabulary"])
 async def check_semantic_match(
     payload: SemanticMatchRequest, current_user: dict = Depends(get_current_user)
 ):
+    """Synonym check for free-text reading answers (server-side fallback to WordNet)."""
     return {"match": answer_matches_target(payload.answer, payload.target)}
 
 
@@ -24,6 +25,7 @@ async def check_semantic_match(
 async def create_custom_vocab(
     payload: CustomVocabCreate, current_user: dict = Depends(get_current_user)
 ):
+    """Create a user-owned word and auto-add it to their deck."""
     user_id = current_user["id"]
     now = datetime.now(timezone.utc)
     vocab_id = str(uuid.uuid4())
@@ -58,6 +60,7 @@ async def create_custom_vocab(
 
 @router.delete("/custom/{vocab_id}")
 async def delete_custom_vocab(vocab_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete one of the user's own custom words, cascading to deck and flashcards."""
     user_id = current_user["id"]
     vocab = await db.vocabulary.find_one({"id": vocab_id})
     if not vocab:
@@ -98,23 +101,18 @@ async def vocabulary_library(
             {"english": {"$regex": q, "$options": "i"}},
         ]
 
-    # NPCR vocab (lesson_id not null) + user's own custom vocab
+    # The default ("All") view = every NPCR word PLUS this user's own customs,
+    # but never another user's customs. AND that visibility rule with whatever
+    # search/filter the user supplied above.
     if source is None:
-        query = {
-            "$and": [
-                query,
-                {"$or": [{"lesson_id": {"$ne": None}}, {"created_by": user_id}]},
-            ]
-        }
+        npcr_or_mine = {"$or": [{"lesson_id": {"$ne": None}}, {"created_by": user_id}]}
+        query = {"$and": [query, npcr_or_mine]}
 
     items = await db.vocabulary.find(query, {"_id": 0}).sort(
         [("lesson_number", 1), ("created_at", -1)]
     ).limit(limit).to_list(limit)
 
-    deck_entries = await db.user_deck.find(
-        {"user_id": user_id}, {"vocabulary_id": 1, "_id": 0}
-    ).to_list(10000)
-    deck_set = {e["vocabulary_id"] for e in deck_entries}
+    deck_set = await deck_vocab_ids(user_id)
 
     for item in items:
         item["in_deck"] = item["id"] in deck_set

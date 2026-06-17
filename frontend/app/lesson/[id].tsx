@@ -1,3 +1,9 @@
+/**
+ * Lesson detail — dialogue (split by part), grammar notes, and the vocab list.
+ *
+ * Deck membership is edited in place with optimistic updates (the `in_deck`
+ * flag is flipped locally before the request resolves) so toggles feel instant.
+ */
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,

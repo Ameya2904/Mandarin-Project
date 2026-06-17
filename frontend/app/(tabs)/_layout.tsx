@@ -17,14 +17,15 @@ export default function TabsLayout() {
         },
         tabBarStyle: {
           backgroundColor: colors.surface,
-          borderTopWidth: 0,
+          // Hairline divider instead of a shadow — cleaner on a dark canvas.
+          borderTopWidth: 1,
+          borderTopColor: colors.border,
           height: Platform.OS === 'ios' ? 88 : 68,
           paddingTop: 8,
           paddingBottom: Platform.OS === 'ios' ? 28 : 10,
-          // Floating bar with a soft upward shadow.
-          shadowColor: '#1B1D1C',
+          shadowColor: '#000000',
           shadowOffset: { width: 0, height: -3 },
-          shadowOpacity: 0.08,
+          shadowOpacity: 0.2,
           shadowRadius: 12,
           elevation: 12,
         },

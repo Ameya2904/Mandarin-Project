@@ -1,3 +1,10 @@
+/**
+ * Writing review card — handwrite the characters for an English+pinyin prompt.
+ *
+ * Captures the canvas as a PNG, sends it to the OCR endpoint, and treats the
+ * result as "passed" when the score and identity score clear their thresholds.
+ * The user can still "Mark correct anyway" when the OCR is unfairly harsh.
+ */
 import React, { useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

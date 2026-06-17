@@ -1,3 +1,9 @@
+/**
+ * Lessons tab — the NPCR lesson index.
+ *
+ * Lists every lesson with its per-user progress bar; tapping opens the lesson
+ * detail screen. Reloads on focus so mastered/started counts stay current.
+ */
 import React, { useCallback, useState } from 'react';
 import {
   View,
@@ -118,6 +124,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     padding: spacing.lg,
     marginBottom: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   lessonRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },

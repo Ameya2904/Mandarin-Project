@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TextInput,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -13,7 +12,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { colors, spacing, radius, fontSize, shadows, accents, gradients } from '@/src/theme';
+import { colors, spacing, fontSize, accents, gradients } from '@/src/theme';
+import { makeAuthStyles } from './auth.styles';
 import PressableScale from '@/src/components/PressableScale';
 import { api } from '@/src/api/client';
 import { useAuth } from '@/src/contexts/AuthContext';
@@ -211,101 +211,12 @@ export default function ForgotPasswordScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background },
-  flex: { flex: 1 },
-  scroll: { flexGrow: 1, padding: spacing.lg, justifyContent: 'center' },
-  watermark: {
-    position: 'absolute',
-    top: 0,
-    right: -24,
-    fontSize: 150,
-    fontWeight: '700',
-    color: colors.primary,
-    opacity: 0.05,
-  },
-  brandBlock: { alignItems: 'center', marginBottom: spacing.xxl },
-  brandBadge: {
-    width: 124,
-    height: 96,
-    borderRadius: radius.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.lg,
-    ...shadows.glow(accents.teal.base),
-  },
-  brandHanzi: {
-    fontSize: 44,
-    color: '#fff',
-    fontWeight: '700',
-  },
-  brandTitle: {
-    fontSize: fontSize.xxl,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    letterSpacing: -0.3,
-  },
-  brandSubtitle: {
-    fontSize: fontSize.base,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginTop: spacing.sm,
-    lineHeight: 22,
-    paddingHorizontal: spacing.lg,
-  },
-  form: { gap: spacing.xs },
-  notice: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    backgroundColor: colors.primaryLight,
-    padding: spacing.md,
-    borderRadius: radius.md,
-    lineHeight: 20,
-    marginBottom: spacing.xs,
-  },
-  label: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    marginTop: spacing.md,
-    marginBottom: spacing.xs,
-    fontWeight: '600',
-  },
-  input: {
-    backgroundColor: colors.surface,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 14,
-    fontSize: fontSize.lg,
-    color: colors.textPrimary,
-    minHeight: 48,
-  },
-  inputFocused: { borderColor: colors.primary, ...shadows.sm },
-  error: {
-    color: colors.error,
-    fontSize: fontSize.sm,
-    marginTop: spacing.md,
-    backgroundColor: colors.errorLight,
-    padding: spacing.md,
-    borderRadius: radius.md,
-  },
-  btnWrap: { marginTop: spacing.xl, borderRadius: radius.md },
-  primaryBtn: {
-    borderRadius: radius.md,
-    paddingVertical: 16,
-    alignItems: 'center',
-    minHeight: 52,
-    justifyContent: 'center',
-    ...shadows.glow(accents.teal.base),
-  },
-  primaryBtnText: { color: '#fff', fontSize: fontSize.lg, fontWeight: '700' },
-  btnDisabled: { opacity: 0.7 },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: spacing.xl,
-  },
-  footerText: { color: colors.textSecondary, fontSize: fontSize.base },
-  footerLink: { color: colors.primary, fontSize: fontSize.base, fontWeight: '700' },
+const styles = makeAuthStyles({
+  accent: colors.primary,
+  glow: accents.teal.base,
+  badgeWidth: 124,
+  hanziSize: 44,
+  titleSize: fontSize.xxl,
+  titleLetterSpacing: -0.3,
+  brandMarginBottom: spacing.xxl,
 });

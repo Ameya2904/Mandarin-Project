@@ -4,13 +4,14 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends
 
 from ..auth import get_current_user
-from ..db import db
+from ..db import carded_vocab_ids, db, deck_vocab_ids
 
 router = APIRouter(prefix="/progress", tags=["progress"])
 
 
 @router.get("/dashboard")
 async def get_dashboard(current_user: dict = Depends(get_current_user)):
+    """Home-screen counts: due/new/mastered cards, today's reviews, and goal progress."""
     user_id = current_user["id"]
     now = datetime.now(timezone.utc)
     today_start = datetime.combine(now.date(), datetime.min.time()).replace(tzinfo=timezone.utc)
@@ -29,15 +30,7 @@ async def get_dashboard(current_user: dict = Depends(get_current_user)):
     # "New" = words the user has added to their deck but never reviewed yet
     # (no flashcard exists). Counting all vocabulary in the DB would include
     # words that aren't even in this user's deck.
-    deck_entries = await db.user_deck.find(
-        {"user_id": user_id}, {"vocabulary_id": 1, "_id": 0}
-    ).to_list(10000)
-    deck_ids = {e["vocabulary_id"] for e in deck_entries}
-    existing = await db.flashcards.find(
-        {"user_id": user_id}, {"vocabulary_id": 1, "_id": 0}
-    ).to_list(10000)
-    existing_ids = {e["vocabulary_id"] for e in existing}
-    new_count = len(deck_ids - existing_ids)
+    new_count = len(await deck_vocab_ids(user_id) - await carded_vocab_ids(user_id))
     daily_goal = current_user.get("daily_goal", 20)
 
     return {
@@ -55,6 +48,7 @@ async def get_dashboard(current_user: dict = Depends(get_current_user)):
 
 @router.get("/stats")
 async def get_stats(current_user: dict = Depends(get_current_user)):
+    """Profile stats: retention rate, mastered/learning counts, and weak words."""
     user_id = current_user["id"]
 
     total_reviews = await db.review_history.count_documents({"user_id": user_id})
@@ -64,7 +58,8 @@ async def get_stats(current_user: dict = Depends(get_current_user)):
     mastered = await db.flashcards.count_documents({"user_id": user_id, "current_stage": {"$gte": 4}})
     learning = await db.flashcards.count_documents({"user_id": user_id, "current_stage": {"$lt": 4}})
 
-    # Weak words: incorrect_count > correct_count and at least 2 attempts
+    # Weak words: cards missed more often than recalled. `$expr` lets us compare
+    # two fields of the same document server-side.
     weak_cards = await db.flashcards.find(
         {"user_id": user_id, "$expr": {"$gt": ["$incorrect_count", "$correct_count"]}},
         {"_id": 0},

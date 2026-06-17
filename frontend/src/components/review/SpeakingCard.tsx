@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, Linking } from 'react-native';
+/**
+ * Speaking review card — say the Mandarin for an English prompt.
+ *
+ * Recording, permission handling, and upload all live in the shared
+ * useAudioCapture hook; this component only maps the transcription result into
+ * feedback (target vs. heard pinyin, score, tone note).
+ */
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import {
-  AudioModule,
-  useAudioRecorder,
-  RecordingPresets,
-  setAudioModeAsync,
-} from 'expo-audio';
 import { colors } from '@/src/theme';
-import { api } from '@/src/api/client';
+import { useAudioCapture } from '@/src/hooks/use-audio-capture';
 import { styles } from './review.styles';
 import type { Card, OnAnswered } from './types';
 
@@ -24,85 +25,27 @@ type SpeakingResult = {
 
 export default function SpeakingCard({ card, onAnswered }: { card: Card; onAnswered: OnAnswered }) {
   const vocab = card.vocabulary;
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
-  const [permission, setPermission] = useState<'undetermined' | 'granted' | 'denied' | 'blocked'>('undetermined');
-  const [recording, setRecording] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const { permission, recording, uploading, error: errorMsg, startRecording, stopAndTranscribe, openSettings } =
+    useAudioCapture();
   const [result, setResult] = useState<SpeakingResult | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        await setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true });
-        const status = await AudioModule.getRecordingPermissionsAsync();
-        if (status.granted) setPermission('granted');
-        else if (!status.canAskAgain) setPermission('blocked');
-        else setPermission('undetermined');
-      } catch {
-        // ignore
-      }
-    })();
-  }, []);
-
-  const requestPermission = async () => {
-    const status = await AudioModule.requestRecordingPermissionsAsync();
-    if (status.granted) {
-      setPermission('granted');
-      return true;
-    }
-    setPermission(status.canAskAgain ? 'denied' : 'blocked');
-    return false;
-  };
 
   const startRec = async () => {
-    setErrorMsg(null);
     setResult(null);
-    if (permission !== 'granted') {
-      const ok = await requestPermission();
-      if (!ok) {
-        setErrorMsg('Microphone access needed.');
-        return;
-      }
-    }
-    try {
-      await recorder.prepareToRecordAsync();
-      recorder.record();
-      setRecording(true);
-    } catch (e: any) {
-      setErrorMsg(e?.message || 'Could not start recording');
-    }
+    await startRecording();
   };
 
   const stopAndUpload = async () => {
-    setRecording(false);
-    try {
-      await recorder.stop();
-      const uri = recorder.uri;
-      if (!uri) {
-        setErrorMsg('No audio captured.');
-        return;
-      }
-      // expo-audio's stop() can resolve before the file is fully flushed to
-      // disk. Give it a brief moment so the upload can read a complete file;
-      // the API layer also retries on a dropped read as a safety net.
-      await new Promise((r) => setTimeout(r, 250));
-      setUploading(true);
-      const data = await api.transcribeAudio(uri, vocab.simplified, vocab.id);
-      setResult({
-        correct: !!data.correct,
-        score: data.score ?? 0,
-        feedback: data.feedback || 'Transcription complete',
-        transcribed: data.transcribed_text || '',
-        spokenPinyin: data.spoken_pinyin || '',
-        targetPinyin: data.target_pinyin || '',
-        tonesWrong: data.tones_wrong ?? 0,
-      });
-    } catch (e: any) {
-      setErrorMsg(e?.message || 'Transcription failed');
-    } finally {
-      setUploading(false);
-    }
+    const data = await stopAndTranscribe(vocab.simplified, vocab.id);
+    if (!data) return;
+    setResult({
+      correct: !!data.correct,
+      score: data.score ?? 0,
+      feedback: data.feedback || 'Transcription complete',
+      transcribed: data.transcribed_text || '',
+      spokenPinyin: data.spoken_pinyin || '',
+      targetPinyin: data.target_pinyin || '',
+      tonesWrong: data.tones_wrong ?? 0,
+    });
   };
 
   return (
@@ -116,7 +59,7 @@ export default function SpeakingCard({ card, onAnswered }: { card: Card; onAnswe
             <Ionicons name="alert-circle" size={22} color={colors.error} />
             <View style={styles.flex}>
               <Text style={[styles.feedbackTitle, { color: colors.error }]}>Microphone blocked</Text>
-              <TouchableOpacity onPress={() => Linking.openSettings()} style={styles.settingsBtn}>
+              <TouchableOpacity onPress={openSettings} style={styles.settingsBtn}>
                 <Text style={styles.settingsBtnText}>Open Settings</Text>
               </TouchableOpacity>
             </View>

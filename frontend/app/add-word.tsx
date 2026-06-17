@@ -1,3 +1,9 @@
+/**
+ * Add-word — form to create a custom vocabulary entry.
+ *
+ * Chinese / pinyin / English are required; the example sentence is optional.
+ * On save the backend auto-adds the new word to the user's deck.
+ */
 import React, { useState } from 'react';
 import {
   View,

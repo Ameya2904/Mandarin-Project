@@ -1,3 +1,9 @@
+/**
+ * Reading review card — show the hanzi, type the English meaning.
+ *
+ * Checks the answer locally first (englishMatches) for an instant result, then
+ * falls back to the WordNet synonym API only when the quick check fails.
+ */
 import React, { useState } from 'react';
 import {
   View,

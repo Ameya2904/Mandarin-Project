@@ -1,3 +1,12 @@
+/**
+ * Review tab — the spaced-repetition session screen.
+ *
+ * A session tests every due/new word in all three modes (reading, writing,
+ * speaking). `buildMultiModeQueue` lays those out so a word is never tested
+ * twice in a row, and this screen walks the resulting queue one card at a time,
+ * tracking per-word results so it can advance the SRS stage exactly once (on
+ * the final mode) rather than three times. See `handleAnswered` for that logic.
+ */
 import React, { useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -68,7 +77,9 @@ export default function ReviewScreen() {
 
     try {
       if (card.isFinal) {
-        // All 3 modes done — aggregate (≥2/3 correct = correct) and advance SRS once
+        // This is the word's 3rd and last mode this session. Decide the overall
+        // result by majority (≥2 of 3 modes correct) and advance the SRS stage
+        // ONCE here — the earlier two modes were logged with skip_srs.
         const correctCount = updatedResults.filter((r) => r.correct).length;
         const aggregateCorrect = correctCount >= 2;
         const res = await api.reviewFlashcardWithMode(vocabId, aggregateCorrect, mode);

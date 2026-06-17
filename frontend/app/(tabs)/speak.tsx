@@ -1,3 +1,10 @@
+/**
+ * Speak tab — browse dialogue sentences to practice pronunciation.
+ *
+ * Reuses lesson `dialogue` (not vocabulary) and groups every line into a
+ * collapsible per-lesson "folder". Tapping a sentence opens speak-practice with
+ * the chosen line passed through navigation params.
+ */
 import React, { useCallback, useState } from 'react';
 import {
   View,
@@ -205,6 +212,8 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginBottom: spacing.xs,
     minHeight: 56,
+    borderWidth: 1,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   folderIconWrap: {

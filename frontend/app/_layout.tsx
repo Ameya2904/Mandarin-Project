@@ -1,3 +1,11 @@
+/**
+ * Root layout — installs global providers and the authentication route guard.
+ *
+ * Provider order matters: gesture handler → safe-area → auth context wrap the
+ * whole tree. `ProtectedRoutes` watches the auth state and redirects so that
+ * logged-out users only ever see the (auth) group and logged-in users land in
+ * (tabs). The splash screen is held until the icon fonts have registered.
+ */
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
@@ -17,14 +25,17 @@ function ProtectedRoutes() {
   const router = useRouter();
 
   useEffect(() => {
+    // Wait until the stored session has been restored before redirecting.
     if (loading) return;
 
     const inAuthGroup = segments[0] === '(auth)';
-    const atRoot = segments.length === 0;
+    const atRoot = segments.length === 0; // sitting on "/" with no group yet
 
     if (!user && !inAuthGroup) {
+      // Logged out anywhere but the auth screens → send to login.
       router.replace('/(auth)/login');
     } else if (user && (inAuthGroup || atRoot)) {
+      // Logged in but on an auth screen or the bare root → send into the app.
       router.replace('/(tabs)');
     }
   }, [user, loading, segments]);
@@ -55,7 +66,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <AuthProvider>
-          <StatusBar style="dark" />
+          <StatusBar style="light" />
           <ProtectedRoutes />
         </AuthProvider>
       </SafeAreaProvider>

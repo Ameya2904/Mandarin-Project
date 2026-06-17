@@ -34,6 +34,7 @@ api_router = APIRouter(prefix="/api")
 
 @api_router.get("/")
 async def root():
+    """Unauthenticated liveness check at GET /api/."""
     return {"message": "Mandarin Learning API", "version": "1.0"}
 
 
@@ -53,6 +54,13 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def on_startup():
+    """Prepare the database and AI models before serving traffic.
+
+    Order matters: indexes (and their unique constraints) must exist before we
+    seed content, and seeding must finish before the legacy-deck migration reads
+    it. The ASR warm-up is last so a cold model load doesn't delay startup-time
+    DB work — it just front-loads the cost off the first user request.
+    """
     await create_indexes()
     await seed_lessons_and_vocab()
     await migrate_legacy_decks()
@@ -61,4 +69,5 @@ async def on_startup():
 
 @app.on_event("shutdown")
 async def on_shutdown():
+    """Close the MongoDB client cleanly on shutdown."""
     client.close()

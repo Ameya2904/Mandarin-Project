@@ -1,3 +1,10 @@
+/**
+ * Drill screen — speak the Mandarin for an English prompt.
+ *
+ * Shows a lesson picker first (unless a lesson is passed in), then runs that
+ * lesson's drills. Offers tiered hints (none → characters → pinyin) and grades
+ * each spoken answer through the shared audio-capture hook + speaking endpoint.
+ */
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -6,18 +13,12 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
-  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import {
-  AudioModule,
-  useAudioRecorder,
-  RecordingPresets,
-  setAudioModeAsync,
-} from 'expo-audio';
 import { colors, spacing, radius, fontSize, getToneColor } from '@/src/theme';
+import { useAudioCapture } from '@/src/hooks/use-audio-capture';
 import { api, Drill, Lesson } from '@/src/api/client';
 
 export default function DrillScreen() {
@@ -38,28 +39,10 @@ export default function DrillScreen() {
   // Hint tiers: 0 = none, 1 = chinese characters, 2 = pinyin
   const [hintLevel, setHintLevel] = useState(0);
 
-  // Audio recording state
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
-  const [permission, setPermission] = useState<'undetermined' | 'granted' | 'denied' | 'blocked'>('undetermined');
-  const [recording, setRecording] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  // Audio recording state (permission/record/upload handled by the shared hook).
+  const { permission, recording, uploading, error: errorMsg, setError, startRecording, stopAndTranscribe, openSettings } =
+    useAudioCapture();
   const [result, setResult] = useState<null | { correct: boolean; score: number; feedback: string; transcribed: string; spokenPinyin: string; tonesWrong: number }>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  // Configure audio + check mic permission once.
-  useEffect(() => {
-    (async () => {
-      try {
-        await setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true });
-        const status = await AudioModule.getRecordingPermissionsAsync();
-        if (status.granted) setPermission('granted');
-        else if (!status.canAskAgain) setPermission('blocked');
-        else setPermission('undetermined');
-      } catch {
-        // ignore
-      }
-    })();
-  }, []);
 
   // Load the lesson picker list (when no lesson chosen) or the drills for the
   // chosen lesson.
@@ -106,9 +89,7 @@ export default function DrillScreen() {
   const resetCard = () => {
     setHintLevel(0);
     setResult(null);
-    setErrorMsg(null);
-    setRecording(false);
-    setUploading(false);
+    setError(null);
   };
 
   const handleNext = () => {
@@ -120,68 +101,30 @@ export default function DrillScreen() {
     }
   };
 
-  const requestPermission = async () => {
-    const status = await AudioModule.requestRecordingPermissionsAsync();
-    if (status.granted) {
-      setPermission('granted');
-      return true;
-    }
-    setPermission(status.canAskAgain ? 'denied' : 'blocked');
-    return false;
-  };
-
   const startRec = async () => {
-    setErrorMsg(null);
     setResult(null);
-    if (permission !== 'granted') {
-      const ok = await requestPermission();
-      if (!ok) {
-        setErrorMsg('Microphone access needed.');
-        return;
-      }
-    }
-    try {
-      await recorder.prepareToRecordAsync();
-      recorder.record();
-      setRecording(true);
-    } catch (e: any) {
-      setErrorMsg(e?.message || 'Could not start recording');
-    }
+    await startRecording();
   };
 
   const stopAndCheck = async () => {
-    setRecording(false);
     if (!current) return;
-    try {
-      await recorder.stop();
-      const uri = recorder.uri;
-      if (!uri) {
-        setErrorMsg('No audio captured. Try again.');
-        return;
-      }
-      setUploading(true);
-      const r = await api.transcribeAudio(uri, current.expected_answer);
-      const isCorrect = !!r.correct;
-      const fb = {
-        correct: isCorrect,
-        score: r.score ?? 0,
-        feedback: r.feedback || 'Transcription complete',
-        transcribed: r.transcribed_text || '',
-        spokenPinyin: r.spoken_pinyin || '',
-        tonesWrong: r.tones_wrong ?? 0,
-      };
-      setResult(fb);
-      setSessionStats((s) => ({ correct: s.correct + (isCorrect ? 1 : 0), total: s.total + 1 }));
+    const r = await stopAndTranscribe(current.expected_answer);
+    if (!r) return;
+    const isCorrect = !!r.correct;
+    setResult({
+      correct: isCorrect,
+      score: r.score ?? 0,
+      feedback: r.feedback || 'Transcription complete',
+      transcribed: r.transcribed_text || '',
+      spokenPinyin: r.spoken_pinyin || '',
+      tonesWrong: r.tones_wrong ?? 0,
+    });
+    setSessionStats((s) => ({ correct: s.correct + (isCorrect ? 1 : 0), total: s.total + 1 }));
 
-      try {
-        await api.drillAttempt(current.id, r.transcribed_text || '', isCorrect);
-      } catch {
-        // ignore
-      }
-    } catch (e: any) {
-      setErrorMsg(e?.message || 'Transcription failed');
-    } finally {
-      setUploading(false);
+    try {
+      await api.drillAttempt(current.id, r.transcribed_text || '', isCorrect);
+    } catch {
+      // ignore
     }
   };
 
@@ -338,7 +281,7 @@ export default function DrillScreen() {
             <Ionicons name="alert-circle" size={22} color={colors.error} />
             <View style={styles.flex}>
               <Text style={[styles.feedbackTitle, { color: colors.error }]}>Microphone blocked</Text>
-              <TouchableOpacity onPress={() => Linking.openSettings()} style={styles.settingsBtn}>
+              <TouchableOpacity onPress={openSettings} style={styles.settingsBtn}>
                 <Text style={styles.settingsBtnText}>Open Settings</Text>
               </TouchableOpacity>
             </View>
@@ -448,7 +391,7 @@ const styles = StyleSheet.create({
   hintLabel: { fontSize: fontSize.xs, color: colors.textTertiary, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 },
   hintHanzi: { fontSize: fontSize.xl, color: colors.textPrimary },
   hintPinyin: { fontSize: fontSize.base, fontWeight: '500' },
-  hintBtn: { flexDirection: 'row', alignItems: 'center', alignSelf: 'center', gap: spacing.xs, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: radius.full, borderWidth: 1, borderColor: colors.warning, backgroundColor: '#FDF4DD', minHeight: 36 },
+  hintBtn: { flexDirection: 'row', alignItems: 'center', alignSelf: 'center', gap: spacing.xs, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: radius.full, borderWidth: 1, borderColor: colors.warning, backgroundColor: colors.warningLight, minHeight: 36 },
   hintBtnText: { color: colors.warning, fontSize: fontSize.sm, fontWeight: '600' },
   feedback: { padding: spacing.md, borderRadius: radius.lg, marginTop: spacing.lg, gap: spacing.xs, flexDirection: 'column' },
   feedbackHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },

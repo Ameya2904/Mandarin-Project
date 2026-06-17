@@ -13,6 +13,7 @@ router = APIRouter(prefix="/deck", tags=["deck"])
 
 @router.get("")
 async def list_deck(current_user: dict = Depends(get_current_user)):
+    """List the user's deck words, joined with vocab and current SRS stage."""
     user_id = current_user["id"]
     deck = await db.user_deck.find({"user_id": user_id}, {"_id": 0}).sort("added_at", -1).to_list(10000)
     result = []
@@ -34,6 +35,7 @@ async def list_deck(current_user: dict = Depends(get_current_user)):
 
 @router.post("/add")
 async def add_to_deck(payload: DeckAddRequest, current_user: dict = Depends(get_current_user)):
+    """Add words to the deck, skipping unknown or already-present ids. Returns the count added."""
     user_id = current_user["id"]
     now = datetime.now(timezone.utc)
     added = 0
@@ -56,8 +58,9 @@ async def add_to_deck(payload: DeckAddRequest, current_user: dict = Depends(get_
 
 @router.delete("/{vocabulary_id}")
 async def remove_from_deck(vocabulary_id: str, current_user: dict = Depends(get_current_user)):
+    """Remove a word from the deck and discard its SRS progress (its flashcard)."""
     user_id = current_user["id"]
     deck_res = await db.user_deck.delete_one({"user_id": user_id, "vocabulary_id": vocabulary_id})
-    # Also remove their flashcard for this word
+    # Removing a word from the deck also drops its review schedule.
     await db.flashcards.delete_one({"user_id": user_id, "vocabulary_id": vocabulary_id})
     return {"removed": deck_res.deleted_count > 0}

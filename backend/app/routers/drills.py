@@ -22,6 +22,7 @@ async def list_drills(
     limit: int = 500,
     current_user: dict = Depends(get_current_user),
 ):
+    """List drills (optionally filtered), each repeated a few times in a row."""
     query: dict = {}
     if lesson_number is not None:
         query["lesson_number"] = lesson_number
@@ -43,6 +44,7 @@ async def list_drills(
 async def submit_drill_attempt(
     payload: DrillAttemptRequest, current_user: dict = Depends(get_current_user)
 ):
+    """Log a drill attempt (correctness is decided client-side via the speaking score)."""
     await db.drill_attempts.insert_one({
         "id": str(uuid.uuid4()),
         "user_id": current_user["id"],

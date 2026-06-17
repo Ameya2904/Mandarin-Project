@@ -1,3 +1,10 @@
+/**
+ * Profile tab — stats, upcoming-review schedule, and account settings.
+ *
+ * Loads /progress/stats and /flashcards/schedule on focus, and hosts the
+ * editable daily goal, the inline change-password form, and logout. Confirm/
+ * alert dialogs branch on platform because Alert.alert is a no-op on web.
+ */
 import React, { useCallback, useState } from 'react';
 import {
   View,
@@ -415,6 +422,8 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     alignItems: 'flex-start',
     minHeight: 110,
+    borderWidth: 1,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   statChip: {
@@ -430,6 +439,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   weakRow: {
@@ -448,6 +459,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   settingRow: { flexDirection: 'row', alignItems: 'center', padding: spacing.md, gap: spacing.md, minHeight: 56 },
@@ -525,6 +538,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.border,
     ...shadows.sm,
   },
   scheduleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: spacing.md, minHeight: 48 },

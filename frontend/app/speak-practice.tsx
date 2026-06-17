@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+/**
+ * Speak-practice — pronounce a single dialogue sentence (from the Speak tab).
+ *
+ * The target sentence arrives via navigation params. The Mandarin is hidden
+ * behind a "Show Mandarin" reveal so the learner produces it from the English
+ * first; recording/scoring goes through the shared audio-capture hook.
+ */
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,32 +14,12 @@ import {
   ScrollView,
   ActivityIndicator,
   Platform,
-  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import {
-  AudioModule,
-  useAudioRecorder,
-  RecordingPresets,
-  setAudioModeAsync,
-} from 'expo-audio';
 import { colors, spacing, radius, fontSize, getToneColor } from '@/src/theme';
-import { api } from '@/src/api/client';
-
-type Result = {
-  transcribed_text: string;
-  correct?: boolean;
-  score?: number;
-  feedback?: string;
-  target_text?: string;
-  target_pinyin?: string;
-  spoken_pinyin?: string;
-  tones_wrong?: number;
-  syllables_right?: number;
-  syllable_count?: number;
-};
+import { useAudioCapture, TranscribeResult } from '@/src/hooks/use-audio-capture';
 
 export default function SpeakPracticeScreen() {
   const router = useRouter();
@@ -41,90 +28,25 @@ export default function SpeakPracticeScreen() {
   const pinyin = String(params.pinyin || '');
   const english = String(params.english || '');
 
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
-
+  const { permission, recording, uploading, error: errorMsg, setError, startRecording, stopAndTranscribe, openSettings } =
+    useAudioCapture();
   const [revealed, setRevealed] = useState(false);
-  const [permission, setPermission] = useState<'undetermined' | 'granted' | 'denied' | 'blocked'>('undetermined');
-  const [recording, setRecording] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [result, setResult] = useState<Result | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  // Configure audio mode and check existing permission state.
-  useEffect(() => {
-    (async () => {
-      try {
-        await setAudioModeAsync({
-          playsInSilentMode: true,
-          allowsRecording: true,
-        });
-        const status = await AudioModule.getRecordingPermissionsAsync();
-        if (status.granted) setPermission('granted');
-        else if (!status.canAskAgain) setPermission('blocked');
-        else setPermission('undetermined');
-      } catch (e) {
-        // ignore
-      }
-    })();
-  }, []);
-
-  const requestPermission = useCallback(async () => {
-    try {
-      const status = await AudioModule.requestRecordingPermissionsAsync();
-      if (status.granted) {
-        setPermission('granted');
-        return true;
-      }
-      setPermission(status.canAskAgain ? 'denied' : 'blocked');
-      return false;
-    } catch (e) {
-      setPermission('denied');
-      return false;
-    }
-  }, []);
+  const [result, setResult] = useState<TranscribeResult | null>(null);
 
   const handleStartRecording = async () => {
-    setErrorMsg(null);
     setResult(null);
-    if (permission !== 'granted') {
-      const ok = await requestPermission();
-      if (!ok) {
-        setErrorMsg('Microphone access is needed to practice pronunciation.');
-        return;
-      }
-    }
-    try {
-      await recorder.prepareToRecordAsync();
-      recorder.record();
-      setRecording(true);
-    } catch (e: any) {
-      setErrorMsg(e?.message || 'Could not start recording');
-    }
+    await startRecording();
   };
 
   const handleStopAndUpload = async () => {
     if (!recording) return;
-    setRecording(false);
-    try {
-      await recorder.stop();
-      const uri = recorder.uri;
-      if (!uri) {
-        setErrorMsg('No audio captured. Try again.');
-        return;
-      }
-      setUploading(true);
-      const data = await api.transcribeAudio(uri, target);
-      setResult(data);
-    } catch (e: any) {
-      setErrorMsg(e?.message || 'Transcription failed');
-    } finally {
-      setUploading(false);
-    }
+    const data = await stopAndTranscribe(target);
+    if (data) setResult(data);
   };
 
   const handleReset = () => {
     setResult(null);
-    setErrorMsg(null);
+    setError(null);
     setRevealed(false);
   };
 
@@ -210,7 +132,7 @@ export default function SpeakPracticeScreen() {
               </Text>
               <TouchableOpacity
                 testID="speak-open-settings-button"
-                onPress={() => Linking.openSettings()}
+                onPress={openSettings}
                 style={styles.settingsBtn}
               >
                 <Text style={styles.settingsBtnText}>Open Settings</Text>
@@ -376,7 +298,7 @@ const styles = StyleSheet.create({
   feedbackSub: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: 4 },
   scoreBar: {
     height: 6,
-    backgroundColor: 'rgba(0,0,0,0.06)',
+    backgroundColor: colors.surfaceAlt,
     borderRadius: radius.full,
     overflow: 'hidden',
     marginTop: spacing.md,

@@ -35,6 +35,8 @@ export default function Root({ children }: PropsWithChildren) {
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
+          // Dark canvas to avoid a white flash before React mounts on web.
+          backgroundColor: "#0F1412",
         }}
       >
         {children}

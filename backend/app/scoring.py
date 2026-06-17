@@ -66,6 +66,8 @@ def score_pronunciation(target: str, spoken: str) -> dict:
 
     credit = full + 0.5 * tone_wrong
     score = round(credit / total * 100)
+    # "Correct" is strict: every target syllable matched in sound AND tone, and
+    # the learner said no extra syllables (the length check rejects insertions).
     correct = full == total and len(spoken_syls) == total
     return {
         "score": score,

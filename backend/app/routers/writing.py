@@ -25,6 +25,7 @@ _ocr_reader: easyocr.Reader | None = None
 
 
 def _get_ocr_reader() -> easyocr.Reader:
+    """Lazily build and cache the EasyOCR reader (loads ~100 MB on first use)."""
     global _ocr_reader
     if _ocr_reader is None:
         logger.info("Initializing EasyOCR reader (first use)...")
@@ -33,7 +34,12 @@ def _get_ocr_reader() -> easyocr.Reader:
 
 
 def _ocr_score(target_norm: str, recognized_norm: str) -> tuple[int, bool]:
-    """Score recognized text against target using bag-of-characters matching."""
+    """Score recognized text against the target using bag-of-characters matching.
+
+    Position-independent on purpose: handwriting OCR often reorders or drops a
+    stroke, so we credit each target character that appears anywhere in the
+    recognition rather than requiring an exact positional match.
+    """
     target_chars = list(target_norm)
     correct_chars = sum(1 for c in recognized_norm if c in target_chars)
     score = round((correct_chars / max(len(target_chars), 1)) * 100) if target_chars else 0

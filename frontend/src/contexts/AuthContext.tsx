@@ -1,3 +1,12 @@
+/**
+ * Authentication context — the app's single source of truth for "who is logged in".
+ *
+ * It keeps the persisted JWT (in secure storage) and the in-memory `user` in
+ * lockstep: every entry point (login/signup/resetPassword) writes the token and
+ * sets the user together. On mount it restores a session by reading the stored
+ * token and calling /auth/me. The route guard in app/_layout.tsx reacts to the
+ * `user` value to redirect between the auth screens and the main tabs.
+ */
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { api, clearAuthToken, setAuthToken, UserPublic } from '@/src/api/client';
 import { storage } from '@/src/utils/storage';

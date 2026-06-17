@@ -1,3 +1,10 @@
+/**
+ * Library — browse and search NPCR + custom vocabulary, and build the deck.
+ *
+ * Supports search, an All/NPCR/Custom filter, single add/remove, and a
+ * multi-select bulk "Add to deck" bar. Custom words can be deleted (with a
+ * platform-aware confirm). Row state updates optimistically.
+ */
 import React, { useCallback, useState } from 'react';
 import {
   View,

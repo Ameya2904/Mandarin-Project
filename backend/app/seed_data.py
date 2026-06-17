@@ -807,6 +807,7 @@ NPCR_LESSONS = [
 SENTENCE_DRILLS = []
 
 def _add(items):
+    """Append a batch of expanded drill variants to the master list."""
     SENTENCE_DRILLS.extend(items)
 
 
